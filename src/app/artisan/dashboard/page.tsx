@@ -84,10 +84,7 @@ export default function ArtisanDashboard() {
                 </CardHeader>
                 <CardContent className="flex-grow flex flex-col justify-center gap-4">
                     <Button asChild size="lg">
-                        <Link href="/artisan/promote"><PlusCircle className="mr-2 h-4 w-4"/> Add New Product</Link>
-                    </Button>
-                    <Button asChild variant="outline" size="lg">
-                        <Link href="/artisan/promote">Use AI Promote Tool</Link>
+                        <Link href="#"><PlusCircle className="mr-2 h-4 w-4"/> Add New Product</Link>
                     </Button>
                      <Button asChild variant="outline" size="lg">
                         <Link href="/artisan/trends">View Market Trends</Link>

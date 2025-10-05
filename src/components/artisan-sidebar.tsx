@@ -37,7 +37,6 @@ const navItems = [
   { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
-  { href: '/artisan/promote', label: 'AI Promote', icon: Lightbulb },
 ];
 
 const secondaryNav = [
