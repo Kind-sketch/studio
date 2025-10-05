@@ -18,10 +18,7 @@ import { translateText } from '@/ai/flows/translate-text';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
-  otp: z.string().length(5, 'OTP must be 5 digits.'),
-  agreeToTerms: z.boolean().refine((val) => val === true, {
-    message: 'You must agree to the terms and conditions.',
-  }),
+  otp: z.string().min(5, 'OTP must be 5 digits.').optional(),
 });
 
 export default function ArtisanRegisterPage() {
@@ -99,7 +96,6 @@ export default function ArtisanRegisterPage() {
     defaultValues: {
       mobileNumber: '',
       otp: '',
-      agreeToTerms: false,
     },
   });
 
@@ -119,11 +115,11 @@ export default function ArtisanRegisterPage() {
     localStorage.setItem('tempPhone', mobileNumber);
 
     setTimeout(() => {
+      setIsLoading(false);
       if (!isExistingUser) {
           router.push('/artisan/register-recovery');
       } else {
         setOtpSent(true);
-        setIsLoading(false);
         toast({
             title: translatedContent.otpSentToast,
             description: translatedContent.otpSentToastDesc,
@@ -133,6 +129,16 @@ export default function ArtisanRegisterPage() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!otpSent) {
+      handleSendOtp();
+      return;
+    }
+    
+    if (!values.otp || values.otp.length !== 5) {
+      form.setError('otp', { message: 'OTP must be 5 digits.' });
+      return;
+    }
+
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -162,13 +168,12 @@ export default function ArtisanRegisterPage() {
             </div>
           <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>
-            {otpSent ? translatedContent.otpDescription : translatedContent.description}
+            {translatedContent.description}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              {!otpSent && (
                 <FormField
                     control={form.control}
                     name="mobileNumber"
@@ -176,14 +181,13 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                         <FormLabel>{translatedContent.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} />
+                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} disabled={otpSent} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
-              )}
-              {otpSent && (
+              
                 <FormField
                   control={form.control}
                   name="otp"
@@ -191,13 +195,12 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                       <FormLabel>{translatedContent.otpLabel}</FormLabel>
                       <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} />
+                        <Input placeholder={translatedContent.otpPlaceholder} {...field} disabled={!otpSent || isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
 
             </CardContent>
             <CardContent>
