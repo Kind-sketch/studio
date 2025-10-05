@@ -27,6 +27,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 const formSchema = z.object({
   productName: z.string().min(3, 'Product name is required.'),
   productCategory: z.string().min(1, 'Product category is required.'),
+  productDescription: z.string().min(10, 'Product description is required.'),
   productStory: z.string().min(10, 'Product story is required.'),
   price: z.coerce.number().min(0, 'Price must be a positive number.'),
 });
@@ -53,6 +54,7 @@ export default function AddProductPage() {
     cameraButton: 'Use Camera',
     productNameLabel: 'Product Name',
     productCategoryLabel: 'Product Category',
+    productDescriptionLabel: 'Product Description',
     productStoryLabel: 'Product Story',
     priceLabel: 'Price (₹)',
     pricePlaceholder: 'e.g., 49.99',
@@ -82,6 +84,7 @@ export default function AddProductPage() {
     defaultValues: {
       productName: '',
       productCategory: '',
+      productDescription: '',
       productStory: '',
       price: 0,
     },
@@ -103,40 +106,37 @@ export default function AddProductPage() {
   }, [language]);
 
   useEffect(() => {
-    const getCameraPermission = async () => {
-        if (useCamera) {
-            if (typeof window !== 'undefined' && navigator.mediaDevices) {
-                try {
-                    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                    setStream(mediaStream);
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = mediaStream;
-                    }
-                    setHasCameraPermission(true);
-                } catch (error) {
-                    console.error(translatedContent.cameraError, error);
-                    setHasCameraPermission(false);
-                    setUseCamera(false);
-                    toast({
-                        variant: 'destructive',
-                        title: translatedContent.cameraAccessDenied,
-                        description: translatedContent.cameraAccessDeniedDesc,
-                    });
-                }
-            } else {
-                setHasCameraPermission(false);
-            }
-        }
-    };
-
     if (useCamera) {
-        getCameraPermission();
-    }
-
-    return () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
+      const getCameraPermission = async () => {
+        if (typeof window !== 'undefined' && navigator.mediaDevices) {
+          try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            setStream(mediaStream);
+            if (videoRef.current) {
+              videoRef.current.srcObject = mediaStream;
+            }
+            setHasCameraPermission(true);
+          } catch (error) {
+            console.error(translatedContent.cameraError, error);
+            setHasCameraPermission(false);
+            setUseCamera(false);
+            toast({
+              variant: 'destructive',
+              title: translatedContent.cameraAccessDenied,
+              description: translatedContent.cameraAccessDeniedDesc,
+            });
+          }
+        } else {
+          setHasCameraPermission(false);
         }
+      };
+      getCameraPermission();
+    }
+  
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
     };
   }, [useCamera, stream, translatedContent.cameraAccessDenied, translatedContent.cameraAccessDeniedDesc, translatedContent.cameraError, toast]);
 
@@ -190,6 +190,7 @@ export default function AddProductPage() {
       const result = await generateProductDetails({ photoDataUri: imageData });
       form.setValue('productName', result.productName);
       form.setValue('productCategory', result.productCategory);
+      form.setValue('productDescription', result.productDescription);
       form.setValue('productStory', result.productStory);
       toast({
         title: translatedContent.detailsGeneratedToast,
@@ -222,6 +223,7 @@ export default function AddProductPage() {
             hint: 'custom product'
         },
         category: values.productCategory,
+        description: values.productDescription,
         likes: 0,
         sales: 0,
         createdAt: new Date().toISOString(),
@@ -348,6 +350,13 @@ export default function AddProductPage() {
                         ))}
                         </SelectContent>
                     </Select>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+               <FormField control={form.control} name="productDescription" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
+                  <FormControl><Textarea {...field} className="h-24" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>

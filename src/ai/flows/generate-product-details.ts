@@ -24,6 +24,7 @@ const GenerateProductDetailsOutputSchema = z.object({
   productName: z.string().describe('A creative and marketable name for the product.'),
   productCategory: z.enum(productCategories as [string, ...string[]]).describe('The category that best fits the product.'),
   productStory: z.string().describe('A short, engaging story about how the product was made, its inspiration, or its unique qualities.'),
+  productDescription: z.string().describe('A compelling, marketable description of the product suitable for an e-commerce listing.'),
 });
 export type GenerateProductDetailsOutput = z.infer<typeof GenerateProductDetailsOutputSchema>;
 
@@ -35,11 +36,13 @@ const prompt = ai.definePrompt({
   name: 'generateProductDetailsPrompt',
   input: {schema: GenerateProductDetailsInputSchema},
   output: {schema: GenerateProductDetailsOutputSchema},
-  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details: a product name, a product category, and a product story.
+  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details: a product name, a product category, a product story, and a product description.
 
 The product category must be one of the following: ${productCategories.join(', ')}.
 
 The product story should be a brief, compelling narrative (2-3 sentences) that describes the craftsmanship, inspiration, or unique qualities of the item.
+
+The product description should be a detailed and enticing paragraph suitable for an online store, highlighting key features, materials, and potential uses.
 
 Image: {{media url=photoDataUri}}`,
 });

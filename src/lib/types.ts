@@ -8,6 +8,7 @@ export type Product = {
     hint: string;
   };
   category: string;
+  description: string;
   likes: number;
   sales: number;
   createdAt?: string; // Add this line
