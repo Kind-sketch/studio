@@ -43,8 +43,8 @@ const baseNavItems = [
 ];
 
 const bottomNavItems = [
-    { href: '/artisan/settings', label: 'Settings', icon: Settings, keywords: ['settings', 'configuration', 'profile'] },
-]
+    // Settings removed
+];
 
 function HeaderActions() {
     const { toast } = useToast();
@@ -218,10 +218,10 @@ function NavContent() {
     return (
         <div className="flex h-full flex-col bg-sidebar">
             <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
-            <div className="flex items-center gap-2 font-semibold">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
                 <Logo className="h-8 w-8 text-primary" />
                 <span className="font-headline text-xl">Artistry Havens</span>
-            </div>
+            </Link>
             </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
             <ul className="space-y-1">
