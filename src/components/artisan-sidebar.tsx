@@ -388,10 +388,6 @@ function NavContent() {
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
-                <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground md:hidden">
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Close</span>
-                </SheetClose>
             </SheetHeader>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
@@ -492,6 +488,10 @@ export default function ArtisanSidebar() {
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0 z-[101]">
               <NavContent />
+               <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
+                </SheetClose>
             </SheetContent>
           </Sheet>
         <div className="ml-auto">
@@ -501,3 +501,5 @@ export default function ArtisanSidebar() {
     </>
   );
 }
+
+    
