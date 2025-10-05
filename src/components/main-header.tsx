@@ -31,40 +31,38 @@ export default function MainHeader() {
     return null;
   }
   
-  // Specific check for artisan pages to avoid duplicating headers.
-  // The artisan sidebar provides its own header on mobile.
+  // Specific check for artisan/sponsor pages to avoid duplicating headers on mobile.
+  // The sidebars provide their own header on mobile.
   const isArtisanPage = pathname.startsWith('/artisan/');
   const isSponsorPage = pathname.startsWith('/sponsor/');
-  const isBuyerPage = pathname.startsWith('/buyer/');
 
-  if (!isArtisanPage && !isSponsorPage && !isBuyerPage) {
-     return (
-        <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="hidden font-headline text-xl sm:inline-block">Artistry Havens</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleMicClick}
-              aria-label="Use Voice Command"
-            >
-              <Mic className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSupportClick}
-              aria-label="Support"
-            >
-              <MessageCircleQuestion className="h-5 w-5" />
-            </Button>
-          </div>
-        </header>
-     )
-  }
+  const shouldHideOnMobile = isArtisanPage || isSponsorPage;
 
-  return null;
+
+   return (
+      <header className={cn("sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4 md:px-6", shouldHideOnMobile && "md:hidden")}>
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Logo className="h-8 w-8 text-primary" />
+          <span className="hidden font-headline text-xl sm:inline-block">Artistry Havens</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleMicClick}
+            aria-label="Use Voice Command"
+          >
+            <Mic className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSupportClick}
+            aria-label="Support"
+          >
+            <MessageCircleQuestion className="h-5 w-5" />
+          </Button>
+        </div>
+      </header>
+   )
 }
