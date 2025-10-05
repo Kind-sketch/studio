@@ -14,7 +14,8 @@ import {
   HeartHandshake,
   Mic,
   MessageCircleQuestion,
-  DollarSign
+  DollarSign,
+  ShoppingBag
 } from 'lucide-react';
 import {
   Sheet,
@@ -34,6 +35,7 @@ import { useEffect, useState } from 'react';
 const baseNavItems = [
   { href: '/artisan/home', label: 'Home', icon: Home },
   { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign },
+  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
 ];

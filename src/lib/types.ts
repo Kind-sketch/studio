@@ -10,6 +10,7 @@ export type Product = {
   category: string;
   likes: number;
   sales: number;
+  createdAt?: string; // Add this line
 };
 
 export type Artisan = {

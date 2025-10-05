@@ -8,7 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { generateProductDetails } from '@/ai/flows/generate-product-details';
-import { productCategories } from '@/lib/data';
+import { productCategories, artisans } from '@/lib/data';
+import type { Product } from '@/lib/types';
+
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,34 +103,34 @@ export default function AddProductPage() {
   }, [language]);
 
   useEffect(() => {
-    const enableCamera = async () => {
+    const getCameraPermission = async () => {
         if (useCamera) {
-            try {
-                const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                setStream(mediaStream);
-                if (videoRef.current) {
-                    videoRef.current.srcObject = mediaStream;
+            if (typeof window !== 'undefined' && navigator.mediaDevices) {
+                try {
+                    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    setStream(mediaStream);
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = mediaStream;
+                    }
+                    setHasCameraPermission(true);
+                } catch (error) {
+                    console.error(translatedContent.cameraError, error);
+                    setHasCameraPermission(false);
+                    setUseCamera(false);
+                    toast({
+                        variant: 'destructive',
+                        title: translatedContent.cameraAccessDenied,
+                        description: translatedContent.cameraAccessDeniedDesc,
+                    });
                 }
-                setHasCameraPermission(true);
-            } catch (error) {
-                console.error(translatedContent.cameraError, error);
+            } else {
                 setHasCameraPermission(false);
-                setUseCamera(false);
-                toast({
-                    variant: 'destructive',
-                    title: translatedContent.cameraAccessDenied,
-                    description: translatedContent.cameraAccessDeniedDesc,
-                });
             }
         }
     };
 
-    if (typeof window !== 'undefined' && navigator.mediaDevices) {
-        enableCamera();
-    } else {
-        setHasCameraPermission(false);
-    }
-    
+    getCameraPermission();
+
     return () => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -192,16 +194,35 @@ export default function AddProductPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Mock saving the product
+    
+    const myProducts: Product[] = JSON.parse(localStorage.getItem('myArtisanProducts') || '[]');
+    
+    const newProduct: Product = {
+        id: `prod-${Date.now()}`,
+        name: values.productName,
+        artisan: artisans[0], // Mocking artisan
+        price: values.price,
+        image: {
+            url: imageData || '',
+            hint: 'custom product'
+        },
+        category: values.productCategory,
+        likes: 0,
+        sales: 0,
+        createdAt: new Date().toISOString(),
+    };
+    
+    myProducts.unshift(newProduct);
+    localStorage.setItem('myArtisanProducts', JSON.stringify(myProducts));
+
     setTimeout(() => {
-      console.log({ ...values, image: imageData });
       setIsLoading(false);
       toast({
         title: translatedContent.productSavedToast,
         description: translatedContent.productSavedToastDesc,
       });
-      router.push('/artisan/home');
-    }, 1500);
+      router.push('/artisan/my-products');
+    }, 1000);
   }
 
   const startCamera = async () => {
@@ -332,7 +353,7 @@ export default function AddProductPage() {
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {translatedContent.saveProductButton}
+                {isLoading ? translatedContent.savingProductButton : translatedContent.saveProductButton}
               </Button>
             </CardFooter>
           </form>
@@ -341,5 +362,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    
