@@ -42,7 +42,7 @@ const initialSponsorRequests: SponsorRequest[] = [
 ];
 
 export default function SponsorsPage() {
-  const [sponsorRequests, setSponsorRequests] = useState<SponsorRequest[]>(initialSponsorRequests);
+  const [sponsorRequests, setSponsorRequests] = useState<SponsorRequest[]>([]);
   const [mySponsors, setMySponsors] = useState<SponsorRequest[]>([]);
   const { toast } = useToast();
   const router = useRouter();
@@ -80,6 +80,14 @@ export default function SponsorsPage() {
   useEffect(() => {
     const sponsorsFromStorage = JSON.parse(localStorage.getItem('mySponsors') || '[]');
     setMySponsors(sponsorsFromStorage);
+
+    const requestsFromStorage = JSON.parse(localStorage.getItem('sponsorRequests'));
+    if (requestsFromStorage) {
+        setSponsorRequests(requestsFromStorage);
+    } else {
+        setSponsorRequests(initialSponsorRequests);
+        localStorage.setItem('sponsorRequests', JSON.stringify(initialSponsorRequests));
+    }
   }, []);
 
   useEffect(() => {
@@ -106,8 +114,11 @@ export default function SponsorsPage() {
         localStorage.setItem('mySponsors', JSON.stringify(updatedMySponsors));
         setMySponsors(updatedMySponsors);
     }
+    
+    const updatedRequests = sponsorRequests.filter(req => req.id !== sponsorId);
+    setSponsorRequests(updatedRequests);
+    localStorage.setItem('sponsorRequests', JSON.stringify(updatedRequests));
 
-    setSponsorRequests(prev => prev.filter(req => req.id !== sponsorId));
     toast({
       title: translatedContent.sponsorAcceptedToast,
       description: translatedContent.sponsorAcceptedToastDesc,
@@ -115,7 +126,9 @@ export default function SponsorsPage() {
   };
 
   const handleDecline = (sponsorId: string) => {
-    setSponsorRequests(prev => prev.filter(req => req.id !== sponsorId));
+    const updatedRequests = sponsorRequests.filter(req => req.id !== sponsorId)
+    setSponsorRequests(updatedRequests);
+    localStorage.setItem('sponsorRequests', JSON.stringify(updatedRequests));
     toast({
       variant: 'destructive',
       title: translatedContent.sponsorDeclinedToast,
