@@ -58,19 +58,19 @@ export default function ArtisanPostAuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <div className="w-full max-w-lg text-center">
-        <h1 className="font-headline text-4xl font-bold mb-8">{translatedTitle}</h1>
+      <div className="w-full max-w-sm text-center">
+        <h1 className="font-headline text-3xl font-bold mb-8">{translatedTitle}</h1>
         <div className="grid grid-cols-1 gap-6">
           {options.map((option) => (
             <Link href={option.href} key={option.name} passHref>
               <Card className="transform-gpu cursor-pointer text-center transition-transform hover:scale-105 hover:shadow-xl">
-                <CardHeader className="flex flex-col items-center gap-4">
-                  <option.icon className="h-10 w-10 text-primary" />
+                <CardHeader className="flex flex-col items-center gap-2 p-4">
+                  <option.icon className="h-8 w-8 text-primary" />
                   <div>
-                    <CardTitle className="font-headline text-2xl">
+                    <CardTitle className="font-headline text-xl">
                       {option.name}
                     </CardTitle>
-                    <CardDescription className="text-md">
+                    <CardDescription className="text-sm">
                       {option.description}
                     </CardDescription>
                   </div>

@@ -151,9 +151,9 @@ export default function ArtisanRegisterPage() {
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-                <Logo className="h-12 w-12 text-primary" />
+                <Logo className="h-10 w-10 text-primary" />
             </div>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>
             {translatedContent.description}
           </CardDescription>
