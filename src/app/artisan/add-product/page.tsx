@@ -16,12 +16,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Camera, Sparkles, Check } from 'lucide-react';
+import { Loader2, Upload, Camera, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 
 const formSchema = z.object({
   productName: z.string().min(3, 'Product name is required.'),
@@ -43,12 +41,13 @@ export default function AddProductPage() {
   const [useCamera, setUseCamera] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [translatedContent, setTranslatedContent] = useState({
     title: 'Add a New Product',
     description: 'Upload a photo, and let AI help you with the details.',
-    uploadTab: 'Upload Photo',
-    cameraTab: 'Use Camera',
+    uploadButton: 'Upload Photo',
+    cameraButton: 'Use Camera',
     productNameLabel: 'Product Name',
     productCategoryLabel: 'Product Category',
     productStoryLabel: 'Product Story',
@@ -72,7 +71,7 @@ export default function AddProductPage() {
     cameraError: 'Error accessing camera:',
     cameraAccessDenied: 'Camera Access Denied',
     cameraAccessDeniedDesc: 'Please enable camera permissions in your browser settings to use this app.',
-
+    uploadPlaceholder: 'Click "Upload Photo" or "Use Camera"',
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -117,10 +116,19 @@ export default function AddProductPage() {
         const dataUrl = reader.result as string;
         setImagePreview(dataUrl);
         setImageData(dataUrl);
+        stopCamera();
       };
       reader.readAsDataURL(file);
     }
   };
+  
+  const stopCamera = () => {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+    setStream(null);
+    setUseCamera(false);
+  }
 
   const handleGenerateDetails = async () => {
     if (!imageData) {
@@ -168,9 +176,9 @@ export default function AddProductPage() {
   }
 
   const startCamera = async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
+    stopCamera();
+    setImagePreview(null);
+    setUseCamera(true);
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
@@ -182,21 +190,12 @@ export default function AddProductPage() {
     } catch (error) {
       console.error(translatedContent.cameraError, error);
       setHasCameraPermission(false);
+      setUseCamera(false);
       toast({
         variant: 'destructive',
         title: translatedContent.cameraAccessDenied,
         description: translatedContent.cameraAccessDeniedDesc,
       });
-    }
-  };
-
-  const handleTabChange = (value: string) => {
-    setUseCamera(value === 'camera');
-    if (value === 'camera' && hasCameraPermission === null) {
-      startCamera();
-    } else if (value === 'upload' && stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
     }
   };
 
@@ -211,9 +210,7 @@ export default function AddProductPage() {
       const dataUrl = canvas.toDataURL('image/png');
       setImagePreview(dataUrl);
       setImageData(dataUrl);
-      setUseCamera(false);
-      stream?.getTracks().forEach(track => track.stop());
-      setStream(null);
+      stopCamera();
     }
   };
 
@@ -225,34 +222,10 @@ export default function AddProductPage() {
           <CardDescription>{translatedContent.description}</CardDescription>
         </CardHeader>
 
-        <Tabs defaultValue="upload" onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="upload"><Upload className="mr-2 h-4 w-4" />{translatedContent.uploadTab}</TabsTrigger>
-                <TabsTrigger value="camera"><Camera className="mr-2 h-4 w-4" />{translatedContent.cameraTab}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upload">
-                <CardContent className="pt-6">
-                    <div className="flex items-center justify-center w-full">
-                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-secondary hover:bg-muted">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                {imagePreview ? (
-                                    <Image src={imagePreview} alt="Preview" width={120} height={120} className="object-contain h-32"/>
-                                ) : (
-                                    <>
-                                        <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
-                                        <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                        <p className="text-xs text-muted-foreground">PNG, JPG, or WEBP</p>
-                                    </>
-                                )}
-                            </div>
-                            <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*"/>
-                        </label>
-                    </div> 
-                </CardContent>
-            </TabsContent>
-            <TabsContent value="camera">
-                 <CardContent className="pt-6 space-y-4">
-                    <div className="relative aspect-video w-full bg-muted rounded-md overflow-hidden">
+        <CardContent>
+            <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
+                {useCamera ? (
+                    <div className="relative w-full h-full">
                         <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
                         <canvas ref={canvasRef} className="hidden" />
                         {hasCameraPermission === false && (
@@ -263,19 +236,36 @@ export default function AddProductPage() {
                                 </Alert>
                             </div>
                         )}
-                         {imagePreview && !stream && (
-                             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                                <Check className="h-16 w-16 text-white" />
-                             </div>
-                        )}
                     </div>
-                    <Button onClick={handleCapture} disabled={!stream} className="w-full">
-                        <Camera className="mr-2 h-4 w-4" />
-                        {translatedContent.captureButton}
+                ) : imagePreview ? (
+                    <Image src={imagePreview} alt="Preview" layout="fill" className="object-contain"/>
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                        <Upload className="w-8 h-8 mb-2" />
+                        <p className="text-sm font-semibold">{translatedContent.uploadPlaceholder}</p>
+                    </div>
+                )}
+            </div>
+             <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
+        </CardContent>
+
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {useCamera && stream ? (
+                <Button onClick={handleCapture} className="w-full">
+                    <Camera className="mr-2 h-4 w-4" />
+                    {translatedContent.captureButton}
+                </Button>
+            ) : (
+                <>
+                    <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+                        <Upload className="mr-2 h-4 w-4" />{translatedContent.uploadButton}
                     </Button>
-                </CardContent>
-            </TabsContent>
-        </Tabs>
+                    <Button onClick={startCamera} variant="outline">
+                        <Camera className="mr-2 h-4 w-4" />{translatedContent.cameraButton}
+                    </Button>
+                </>
+            )}
+        </CardContent>
 
         <CardContent>
             <Button onClick={handleGenerateDetails} disabled={isGenerating || !imageData} className="w-full">
