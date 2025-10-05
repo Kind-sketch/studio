@@ -340,7 +340,7 @@ export default function AddProductPage() {
 
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 sm:p-4">
+    <div className="flex items-center justify-center p-2 sm:p-4">
       <Card className="w-full max-w-xl shadow-lg">
         <CardHeader>
           <div className="relative flex items-center justify-center">
@@ -495,5 +495,7 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
 
     
