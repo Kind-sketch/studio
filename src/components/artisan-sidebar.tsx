@@ -24,6 +24,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -37,7 +38,7 @@ import { ScrollArea } from './ui/scroll-area';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start'] },
+  { href: '/artisan/home', label: 'Home', keywords: ['home', 'main', 'start'] },
   { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded'] },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
@@ -64,38 +65,41 @@ function HeaderActions() {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
                 recognition.lang = language;
-                recognition.interimResults = false;
+                recognition.interimResults = true;
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = async (event: any) => {
                     const spokenText = event.results[0][0].transcript;
                     if (toastIdRef.current) {
-                        toast({
+                        const { id } = toast({
                             id: toastIdRef.current,
                             title: 'Processing Command...',
                             description: `"${spokenText}"`,
                         });
+                        toastIdRef.current = id;
                     }
 
-                    if (language === 'en') {
-                        handleVoiceCommand(spokenText.toLowerCase());
-                    } else {
-                        try {
-                            const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
-                            const translatedCommand = translatedTexts[0];
-                            if (translatedCommand) {
-                                handleVoiceCommand(translatedCommand.toLowerCase());
-                            } else {
-                                throw new Error('Translation failed');
-                            }
-                        } catch (e) {
-                             if (toastIdRef.current) {
-                                toast({
-                                    id: toastIdRef.current,
-                                    variant: 'destructive',
-                                    title: 'Translation Error',
-                                    description: 'Could not translate your command.',
-                                });
+                    if (event.results[0].isFinal) {
+                        if (language === 'en') {
+                            handleVoiceCommand(spokenText.toLowerCase());
+                        } else {
+                            try {
+                                const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
+                                const translatedCommand = translatedTexts[0];
+                                if (translatedCommand) {
+                                    handleVoiceCommand(translatedCommand.toLowerCase());
+                                } else {
+                                    throw new Error('Translation failed');
+                                }
+                            } catch (e) {
+                                 if (toastIdRef.current) {
+                                    toast({
+                                        id: toastIdRef.current,
+                                        variant: 'destructive',
+                                        title: 'Translation Error',
+                                        description: 'Could not translate your command.',
+                                    });
+                                }
                             }
                         }
                     }
@@ -366,7 +370,7 @@ export default function ArtisanSidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-             <SheetHeader className='p-4 border-b'>
+             <SheetHeader>
                 <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>
             <NavContent />
@@ -378,4 +382,5 @@ export default function ArtisanSidebar() {
   );
 }
 
+    
     
