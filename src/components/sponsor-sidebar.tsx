@@ -6,12 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
 import {
   Home,
-  FileText,
-  DollarSign,
+  User,
   LogOut,
   PanelLeft,
-  MessageCircleQuestion,
-  Mic,
 } from 'lucide-react';
 import {
   Sheet,
@@ -26,13 +23,12 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import MainHeader from './main-header';
 
 const baseNavItems = [
-  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign },
-  { href: '/sponsor/requests', label: 'Requests', icon: FileText },
+  { href: '/sponsor/dashboard', label: 'Home', icon: Home },
+  { href: '/sponsor/profile', label: 'Account', icon: User },
 ];
 
 function NavContent() {

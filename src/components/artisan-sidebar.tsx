@@ -18,6 +18,7 @@ import {
   LogOut,
   Bell,
   ChevronLeft,
+  DollarSign,
 } from 'lucide-react';
 import {
   Sheet,
@@ -50,7 +51,7 @@ import { Badge } from './ui/badge';
 
 const baseNavItems = [
   { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: BarChart3, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
+  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
   { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
@@ -498,5 +499,3 @@ export default function ArtisanSidebar() {
     </>
   );
 }
-
-    
