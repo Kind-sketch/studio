@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
+import { ScrollArea } from './ui/scroll-area';
 
 const baseQuestions = [
   "I'm having trouble uploading a product.",
@@ -121,18 +122,20 @@ export default function SupportDialog({ children }: { children: React.ReactNode 
           <DialogTitle>{translatedContent.title}</DialogTitle>
           <DialogDescription>{translatedContent.description}</DialogDescription>
         </DialogHeader>
-        <div className="space-y-2 py-4">
-          {translatedContent.questions.map((question, index) => (
-            <Button
-              key={index}
-              variant={selectedQuestion === question ? 'default' : 'outline'}
-              className="w-full justify-start text-left h-auto py-2"
-              onClick={() => setSelectedQuestion(question)}
-            >
-              {question}
-            </Button>
-          ))}
-        </div>
+        <ScrollArea className="max-h-64">
+            <div className="space-y-2 py-4 pr-6">
+            {translatedContent.questions.map((question, index) => (
+                <Button
+                key={index}
+                variant={selectedQuestion === question ? 'default' : 'outline'}
+                className="w-full justify-start text-left h-auto py-2"
+                onClick={() => setSelectedQuestion(question)}
+                >
+                {question}
+                </Button>
+            ))}
+            </div>
+        </ScrollArea>
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
