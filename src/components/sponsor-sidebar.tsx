@@ -9,6 +9,7 @@ import {
   User,
   LogOut,
   PanelLeft,
+  X,
 } from 'lucide-react';
 import {
   Sheet,
@@ -16,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -122,15 +124,12 @@ export default function SponsorSidebar() {
       <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button size="icon" variant="outline" className="sm:hidden">
+            <Button size="icon" variant="outline">
               <PanelLeft className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0 z-[101]">
-             <SheetHeader>
-              <SheetTitle className='sr-only'>Menu</SheetTitle>
-            </SheetHeader>
             <NavContent />
           </SheetContent>
         </Sheet>

@@ -19,6 +19,7 @@ import {
   Bell,
   ChevronLeft,
   DollarSign,
+  X,
 } from 'lucide-react';
 import {
   Sheet,
@@ -26,6 +27,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from '@/components/ui/sheet';
 import {
     DropdownMenu,
@@ -486,9 +488,6 @@ export default function ArtisanSidebar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0 z-[101]">
-              <SheetHeader>
-                  <SheetTitle className="sr-only">Menu</SheetTitle>
-              </SheetHeader>
               <NavContent />
             </SheetContent>
           </Sheet>
