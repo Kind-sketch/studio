@@ -16,7 +16,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -74,12 +73,16 @@ function NavContent() {
 
     return (
         <div className="flex h-full flex-col bg-card">
-            <div className="flex h-16 shrink-0 items-center border-b px-4">
-            <Link href="/sponsor/dashboard" className="flex items-center gap-2 font-semibold">
-                <Logo className="h-8 w-8 text-primary" />
-                <span className="font-headline text-xl">Artistry Havens</span>
-            </Link>
-            </div>
+            <SheetHeader className="flex h-16 shrink-0 items-center border-b px-4">
+                <Link href="/sponsor/dashboard" className="flex items-center gap-2 font-semibold">
+                    <Logo className="h-8 w-8 text-primary" />
+                    <span className="font-headline text-xl">Artistry Havens</span>
+                </Link>
+                 <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground md:hidden">
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
+                </SheetClose>
+            </SheetHeader>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
                     {navItems.map((item) => (
