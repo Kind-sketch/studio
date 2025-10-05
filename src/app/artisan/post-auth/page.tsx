@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Upload, DollarSign } from 'lucide-react';
+import { Upload, User } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useState, useEffect } from 'react';
@@ -15,10 +15,10 @@ const baseOptions = [
     icon: Upload,
   },
   {
-    name: 'Go to Revenue',
+    name: 'Visit My Page',
     description: 'View your sales, trends, and statistics.',
     href: '/artisan/dashboard',
-    icon: DollarSign,
+    icon: User,
   },
 ];
 
