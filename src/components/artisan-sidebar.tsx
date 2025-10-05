@@ -453,7 +453,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
                             isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
                         )}
                     >
-                        <Bookmark className="h-4 w-4" />
+                        <Bookmark className="h-5 w-5" />
                         {translatedSavedCollection}
                     </button>
                 </div>
@@ -512,3 +512,4 @@ export default function ArtisanSidebar() {
 }
 
     
+
