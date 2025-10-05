@@ -25,11 +25,6 @@ export default function MyProductsPage() {
           <h1 className="font-headline text-4xl font-bold">My Products</h1>
           <p className="text-muted-foreground">Here is a list of all your creations.</p>
         </div>
-        <Button asChild>
-          <Link href="/artisan/add-product">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add New Product
-          </Link>
-        </Button>
       </header>
 
       {myProducts.length > 0 ? (
