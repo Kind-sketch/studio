@@ -305,10 +305,10 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     const router = useRouter();
 
     const handleLinkClick = (href: string) => {
-        router.push(href);
         if (closeSheet) {
           closeSheet();
         }
+        router.push(href);
     };
 
     useEffect(() => {
