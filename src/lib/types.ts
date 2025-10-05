@@ -32,3 +32,11 @@ export type Language = {
   name: string;
   nativeName: string;
 };
+
+export type SponsorRequest = {
+    id: string;
+    name: string;
+    avatarUrl: string;
+    contributionAmount: number;
+    message: string;
+}

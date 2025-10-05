@@ -14,7 +14,7 @@ const roles = [
   {
     name: 'Artisan',
     description: 'Showcase your creations, connect with buyers.',
-    href: '/artisan/dashboard',
+    href: '/artisan/register',
     icon: Palette,
   },
   {

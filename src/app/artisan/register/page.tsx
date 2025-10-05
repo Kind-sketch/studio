@@ -13,11 +13,28 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
-  identifier: z.string().min(10, 'Please enter a valid number.'),
+  aadharNumber: z.string().regex(/^\d{12}$/, 'Please enter a valid 12-digit Aadhar number.'),
+  mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
+  recoveryNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit recovery number.').optional().or(z.literal('')),
   otp: z.string().length(6, 'OTP must be 6 digits.'),
+  agreeToTerms: z.boolean().refine((val) => val === true, {
+    message: 'You must agree to the terms and conditions.',
+  }),
 });
+
+const termsAndConditions = [
+    "You agree to provide accurate and complete information during registration.",
+    "You are responsible for maintaining the confidentiality of your account and password.",
+    "You will only list handmade products that you have created yourself.",
+    "You agree not to engage in any fraudulent or deceptive practices.",
+    "We reserve the right to suspend or terminate your account for any violation of these terms.",
+    "All disputes are subject to the jurisdiction of the local courts.",
+];
+
 
 export default function ArtisanRegisterPage() {
   const router = useRouter();
@@ -28,17 +45,28 @@ export default function ArtisanRegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      identifier: '',
+      aadharNumber: '',
+      mobileNumber: '',
+      recoveryNumber: '',
       otp: '',
+      agreeToTerms: false,
     },
   });
 
   function handleSendOtp() {
-    const identifier = form.getValues('identifier');
-    if (identifier.length < 10) {
-      form.setError('identifier', { message: 'Please enter a valid number.' });
+    const { aadharNumber, mobileNumber } = form.getValues();
+    const aadharResult = z.string().regex(/^\d{12}$/).safeParse(aadharNumber);
+    const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
+
+    if (!aadharResult.success) {
+      form.setError('aadharNumber', { message: 'Please enter a valid 12-digit Aadhar number.' });
       return;
     }
+     if (!mobileResult.success) {
+      form.setError('mobileNumber', { message: 'Please enter a valid 10-digit mobile number.' });
+      return;
+    }
+
     setIsLoading(true);
     setTimeout(() => {
       setOtpSent(true);
@@ -80,25 +108,55 @@ export default function ArtisanRegisterPage() {
             </div>
           <CardTitle className="font-headline text-3xl">Artisan Registration</CardTitle>
           <CardDescription>
-            {otpSent ? 'Enter the OTP sent to your mobile.' : 'Start by entering your Mobile or Aadhar number.'}
+            {otpSent ? 'Enter the OTP sent to your mobile.' : 'Create your artisan account.'}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="identifier"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mobile / Aadhar Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your 10-digit mobile or 12-digit Aadhar" {...field} disabled={otpSent} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!otpSent && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="aadharNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Aadhar Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="12-digit Aadhar number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="mobileNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="10-digit mobile number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="recoveryNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Recovery Mobile Number (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="10-digit recovery number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
               {otpSent && (
                 <FormField
                   control={form.control}
@@ -114,6 +172,34 @@ export default function ArtisanRegisterPage() {
                   )}
                 />
               )}
+
+              {!otpSent && (
+                <div className="space-y-2">
+                    <FormLabel>Terms and Conditions</FormLabel>
+                    <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
+                        <ul className="list-disc pl-5 space-y-1">
+                            {termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
+                        </ul>
+                    </ScrollArea>
+                     <FormField
+                        control={form.control}
+                        name="agreeToTerms"
+                        render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-1">
+                            <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                            <FormLabel>
+                                I agree to the terms and conditions.
+                            </FormLabel>
+                            <FormMessage />
+                            </div>
+                        </FormItem>
+                        )}
+                    />
+                </div>
+              )}
             </CardContent>
             <CardContent>
               {otpSent ? (
@@ -122,7 +208,7 @@ export default function ArtisanRegisterPage() {
                   Verify & Continue
                 </Button>
               ) : (
-                <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
+                <Button type="button" className="w-full" onClick={form.handleSubmit(handleSendOtp)} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Send OTP
                 </Button>

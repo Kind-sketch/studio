@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
   productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -136,7 +137,7 @@ export default function TrendsPage() {
                     <CardTitle>AI-Generated Insights</CardTitle>
                     <CardDescription>Here's what our AI thinks.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 space-y-6">
+                <CardContent className="flex-1 space-y-6 flex flex-col">
                     {isLoading && (
                     <div className="flex h-full items-center justify-center">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -149,16 +150,18 @@ export default function TrendsPage() {
                     </div>
                     )}
                     {result && (
-                    <div className="space-y-6">
+                    <div className="space-y-6 flex-1 flex flex-col min-h-0">
                         <div>
                             <h3 className="font-headline text-lg font-semibold mb-2">Trending Crafts This Week</h3>
                             <div className="flex flex-wrap gap-2">
                                 {result.trendingCrafts.map((craft, i) => <Badge key={i} variant="secondary">{craft}</Badge>)}
                             </div>
                         </div>
-                        <div>
+                        <div className="flex-1 flex flex-col min-h-0">
                             <h3 className="font-headline text-lg font-semibold mb-2">AI Review & Analysis</h3>
-                            <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap">{result.aiReview}</div>
+                            <ScrollArea className="flex-1 h-0">
+                                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
+                            </ScrollArea>
                         </div>
                     </div>
                     )}

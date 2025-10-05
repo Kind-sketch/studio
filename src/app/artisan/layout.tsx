@@ -6,9 +6,9 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <ArtisanSidebar />
-      <main className="flex-1 overflow-auto bg-secondary/30">{children}</main>
+      <main className="flex-1 overflow-y-auto bg-secondary/30">{children}</main>
     </div>
   );
 }
