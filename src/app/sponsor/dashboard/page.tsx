@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProductCard from "@/components/product-card";
+import Link from "next/link";
 
 export default function SponsorDashboardPage() {
   const { toast } = useToast();
@@ -89,72 +90,35 @@ export default function SponsorDashboardPage() {
 
       <section className="my-10">
         <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
-        {categories.map(category => {
-          const categoryProducts = productsByCategory(category.name);
-          if(categoryProducts.length === 0) return null;
-          
-          return (
-            <section key={category.id} className="mb-8">
-              <h3 className="font-headline text-xl font-semibold mb-4">{category.name}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {categoryProducts.map(product => (
-                  <Card key={product.id} className="overflow-hidden group">
-                    <CardContent className="p-0">
-                      <div className="relative aspect-square">
-                        <Image
-                          src={product.image.url}
-                          alt={product.name}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
-                        <div className="absolute bottom-0 left-0 p-3">
-                          <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
-                          <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardContent className="p-3">
-                      <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
-                          {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
-                      </p>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                           <Button className="w-full" onClick={() => setSelectedArtisan(product.artisan)}>{translatedContent.viewArtisanButton}</Button>
-                        </DialogTrigger>
-                        {selectedArtisan && (
-                           <DialogContent className="max-w-3xl">
-                              <DialogHeader>
-                                 <div className="flex items-center gap-4 mb-4">
-                                    <Avatar className="h-20 w-20 border-2 border-primary">
-                                          <AvatarImage src={selectedArtisan.avatar.url} alt={selectedArtisan.name} />
-                                          <AvatarFallback>{selectedArtisan.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                          <DialogTitle className="font-headline text-2xl">{selectedArtisan.name}</DialogTitle>
-                                          <DialogDescription>{translatedContent.specializesIn} {selectedArtisan.crafts?.join(', ')}</DialogDescription>
-                                    </div>
-                                 </div>
-                              </DialogHeader>
-                              <div>
-                                  <h4 className="font-semibold mb-2">{translatedContent.otherProducts}</h4>
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                      {allProductsByArtisan(selectedArtisan.id).map(p => (
-                                          <ProductCard key={p.id} product={p} />
-                                      ))}
-                                  </div>
-                              </div>
-                               <Button className="w-full mt-4" onClick={() => handleSponsor(selectedArtisan.name)}>{translatedContent.sponsorButton}</Button>
-                           </DialogContent>
-                        )}
-                      </Dialog>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          )
-        })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.map(product => (
+                <Card key={product.id} className="overflow-hidden group">
+                <CardContent className="p-0">
+                    <div className="relative aspect-square">
+                    <Image
+                        src={product.image.url}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
+                    <div className="absolute bottom-0 left-0 p-3">
+                        <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
+                        <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
+                    </div>
+                    </div>
+                </CardContent>
+                <CardContent className="p-3">
+                    <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
+                        {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
+                    </p>
+                    <Link href={`/sponsor/product/${product.id}`} passHref>
+                      <Button className="w-full">{translatedContent.viewArtisanButton}</Button>
+                    </Link>
+                </CardContent>
+                </Card>
+            ))}
+        </div>
       </section>
     </div>
   );

@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -13,6 +14,10 @@ export type Product = {
   likes: number;
   sales: number;
   createdAt?: string; // Add this line
+  reviews?: {
+      rating: number;
+      count: number;
+  }
 };
 
 export type Artisan = {
@@ -23,6 +28,7 @@ export type Artisan = {
     hint: string;
   };
   crafts?: string[];
+  phone?: string;
 };
 
 export type Category = {
