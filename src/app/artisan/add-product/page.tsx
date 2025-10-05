@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { generateProductDetails } from '@/ai/flows/generate-product-details';
-import { productCategories, artisans } from '@/lib/data';
+import { productCategories as baseProductCategories, artisans } from '@/lib/data';
 import type { Product } from '@/lib/types';
 
 
@@ -49,6 +49,7 @@ export default function AddProductPage() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [productCategories, setProductCategories] = useState(baseProductCategories);
 
   const [translatedContent, setTranslatedContent] = useState({
     title: 'Add a New Product',
@@ -104,12 +105,16 @@ export default function AddProductPage() {
     const translate = async () => {
       if (language !== 'en') {
         const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const { translatedTexts } = await translateText({ texts: [...values, ...baseProductCategories], targetLanguage: language });
         const newContent: any = {};
         Object.keys(translatedContent).forEach((key, index) => {
           newContent[key] = translatedTexts[index];
         });
         setTranslatedContent(newContent);
+        setProductCategories(translatedTexts.slice(values.length));
+
+      } else {
+        setProductCategories(baseProductCategories);
       }
     };
     translate();
@@ -203,15 +208,14 @@ export default function AddProductPage() {
         const textsToTranslate = [result.productName, result.productDescription, result.productStory];
         const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
         form.setValue('productName', translatedTexts[0]);
-        form.setValue('productCategory', result.productCategory); // Category is from a fixed list, might not need translation or should be handled differently
         form.setValue('productDescription', translatedTexts[1]);
         form.setValue('productStory', translatedTexts[2]);
       } else {
         form.setValue('productName', result.productName);
-        form.setValue('productCategory', result.productCategory);
         form.setValue('productDescription', result.productDescription);
         form.setValue('productStory', result.productStory);
       }
+      form.setValue('productCategory', result.productCategory);
 
       toast({
         title: translatedContent.detailsGeneratedToast,
@@ -298,6 +302,15 @@ export default function AddProductPage() {
     likes: 0,
     sales: 0
   };
+  
+  const getCategoryDisplayValue = (value: string) => {
+    const index = baseProductCategories.findIndex(c => c === value);
+    if (index !== -1 && productCategories.length > index) {
+      return productCategories[index];
+    }
+    return value;
+  };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 sm:p-4">
@@ -384,12 +397,16 @@ export default function AddProductPage() {
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder={translatedContent.selectCategoryPlaceholder} />
+                            <SelectValue placeholder={translatedContent.selectCategoryPlaceholder}>
+                                {getCategoryDisplayValue(field.value)}
+                            </SelectValue>
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                        {productCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        {baseProductCategories.map((cat, index) => (
+                            <SelectItem key={cat} value={cat}>
+                                {productCategories[index] || cat}
+                            </SelectItem>
                         ))}
                         </SelectContent>
                     </Select>
@@ -451,5 +468,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    
