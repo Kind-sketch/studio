@@ -56,15 +56,21 @@
     },
     {
       "id": "product-9",
-      "description": "Metalwork kinetic sculpture",
-      "imageUrl": "https://images.unsplash.com/photo-1641357435473-1bad6e870037?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWV0YWwlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzU5NTc4NDMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "metal sculpture"
+      "description": "Bronze leaf sculpture",
+      "imageUrl": "https://images.unsplash.com/photo-1620051973434-d9763d592732?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxicm9uemUlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzU5NzEwMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bronze sculpture"
     },
     {
       "id": "product-10",
-      "description": "Handmade paper lanterns",
-      "imageUrl": "https://images.unsplash.com/photo-1683235408241-854aacf38863?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXBlciUyMGxhbnRlcm5zfGVufDB8fHx8MTc1OTY0ODI4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "paper lanterns"
+      "description": "Forged iron candlesticks",
+      "imageUrl": "https://images.unsplash.com/photo-1616615340156-d767bdb4446e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmb3JnZWQlMjBpcm9ufGVufDB8fHx8MTc1OTcxMDA1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forged iron"
+    },
+    {
+      "id": "product-11",
+      "description": "Earthenware pitcher set",
+      "imageUrl": "https://images.unsplash.com/photo-1620492243283-9b6573c21345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlYXJ0aGVud2FyZXxlbnwwfHx8fDE3NTk3MTAxMDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "earthenware pitcher"
     },
     {
       "id": "artisan-1",

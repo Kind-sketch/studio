@@ -22,11 +22,11 @@ const getImage = (id: string) => {
 };
 
 export const artisans: Artisan[] = [
-  { id: '1', name: 'Elena Vance', avatar: getImage('artisan-1'), crafts: ['Ceramics', 'Glasswork'] },
+  { id: '1', name: 'Elena Vance', avatar: getImage('artisan-1'), crafts: ['Pottery', 'Glasswork'] },
   { id: '2', name: 'Marcus Stone', avatar: getImage('artisan-2'), crafts: ['Woodwork', 'Leatherwork']},
   { id: '3', name: 'Aria Wu', avatar: getImage('artisan-3'), crafts: ['Textiles'] },
-  { id: '4', name: 'Leo Rivera', avatar: getImage('artisan-4'), crafts: ['Painting'] },
-  { id: '5', name: 'Nia Patel', avatar: getImage('artisan-5'), crafts: ['Jewelry'] },
+  { id: '4', name: 'Leo Rivera', avatar: getImage('artisan-4'), crafts: ['Paintings', 'Sculpture'] },
+  { id: '5', name: 'Nia Patel', avatar: getImage('artisan-5'), crafts: ['Jewelry', 'Metalwork'] },
 ];
 
 export const products: Product[] = [
@@ -36,7 +36,7 @@ export const products: Product[] = [
     artisan: artisans[0],
     price: 45.0,
     image: getImage('product-1'),
-    category: 'Ceramics',
+    category: 'Pottery',
     description: 'A beautiful hand-thrown ceramic vase with a warm, gradient glaze reminiscent of a sunrise. Perfect for holding fresh flowers or as a standalone decorative piece. Each vase is unique, with slight variations that add to its charm.',
     likes: 120,
     sales: 30,
@@ -80,7 +80,7 @@ export const products: Product[] = [
     artisan: artisans[3],
     price: 250.0,
     image: getImage('product-5'),
-    category: 'Painting',
+    category: 'Paintings',
     description: 'A vibrant abstract painting on a large canvas. This piece is a burst of color and energy, designed to be a focal point in any modern space. The artist uses a mixed-media approach, adding texture and depth to the work.',
     likes: 450,
     sales: 15,
@@ -118,6 +118,39 @@ export const products: Product[] = [
     likes: 140,
     sales: 50,
   },
+  {
+    id: '9',
+    name: 'Bronze Leaf Sculpture',
+    artisan: artisans[3],
+    price: 320.0,
+    image: getImage('product-9'),
+    category: 'Sculpture',
+    description: 'A stunning bronze sculpture of a cluster of leaves, capturing the delicate details of nature in a permanent form. This piece has a classic, timeless appeal and will enhance any home or office decor.',
+    likes: 180,
+    sales: 12,
+  },
+  {
+    id: '10',
+    name: 'Forged Iron Candlesticks',
+    artisan: artisans[4],
+    price: 90.0,
+    image: getImage('product-10'),
+    category: 'Metalwork',
+    description: 'A pair of hand-forged iron candlesticks with a rustic, textured finish. Their sturdy and elegant design provides a perfect accent for a mantlepiece or dining table, adding a touch of old-world charm.',
+    likes: 85,
+    sales: 32,
+  },
+  {
+    id: '11',
+    name: 'Earthenware Pitcher Set',
+    artisan: artisans[0],
+    price: 75.0,
+    image: getImage('product-11'),
+    category: 'Pottery',
+    description: 'A charming set of an earthenware pitcher and two matching cups. The pieces are finished with a speckled, cream-colored glaze. Ideal for serving beverages or for use as a decorative set.',
+    likes: 155,
+    sales: 40,
+  }
 ];
 
 const categoryIcons: { [key: string]: React.ElementType } = {
