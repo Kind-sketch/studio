@@ -14,7 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -26,7 +25,6 @@ const formSchema = z.object({
 export default function TrendsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{
-    trendingCrafts: string[];
     aiReview: string;
   } | null>(null);
   const { toast } = useToast();
@@ -67,7 +65,7 @@ export default function TrendsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8 max-w-md">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Community & Trend Insights</h1>
         <p className="text-muted-foreground">Discover what's popular and get AI-powered feedback.</p>
@@ -81,7 +79,7 @@ export default function TrendsPage() {
         >
           <CarouselContent>
             {bestSelling.map((product) => (
-              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+              <CarouselItem key={product.id} className="basis-1/2">
                 <ProductCard product={product} />
               </CarouselItem>
             ))}
@@ -97,7 +95,7 @@ export default function TrendsPage() {
         >
           <CarouselContent>
             {frequentlyBought.map((product) => (
-              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+              <CarouselItem key={product.id} className="basis-1/2">
                  <ProductCard product={product} />
               </CarouselItem>
             ))}
@@ -106,7 +104,7 @@ export default function TrendsPage() {
       </section>
 
       <section>
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-1">
             <Card>
                 <CardHeader>
                     <CardTitle>AI Product Review</CardTitle>
@@ -151,15 +149,9 @@ export default function TrendsPage() {
                     )}
                     {result && (
                     <div className="space-y-6 flex-1 flex flex-col min-h-0">
-                        <div>
-                            <h3 className="font-headline text-lg font-semibold mb-2">Trending Crafts This Week</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {result.trendingCrafts.map((craft, i) => <Badge key={i} variant="secondary">{craft}</Badge>)}
-                            </div>
-                        </div>
                         <div className="flex-1 flex flex-col min-h-0">
                             <h3 className="font-headline text-lg font-semibold mb-2">AI Review & Analysis</h3>
-                            <ScrollArea className="flex-1 h-0">
+                            <ScrollArea className="flex-1 h-96">
                                 <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
                             </ScrollArea>
                         </div>

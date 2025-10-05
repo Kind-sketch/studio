@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -23,7 +22,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/types';
 
 
@@ -43,7 +41,7 @@ type Period = 'weekly' | 'monthly' | 'yearly';
 export default function StatsPage() {
   const [period, setPeriod] = useState<Period>('monthly');
   const [isLoadingReview, setIsLoadingReview] = useState(false);
-  const [reviewResult, setReviewResult] = useState<{productName: string, trendingCrafts: string[], aiReview: string} | null>(null);
+  const [reviewResult, setReviewResult] = useState<{productName: string, aiReview: string} | null>(null);
   const { toast } = useToast();
 
   const onPeriodChange = (value: string) => {
@@ -75,7 +73,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
+    <div className="container mx-auto p-4 md:p-8 max-w-md">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Your Performance</h1>
         <p className="text-muted-foreground">Analyze your sales and engagement over time.</p>
@@ -152,32 +150,21 @@ export default function StatsPage() {
                                         Here's the AI analysis of your product's potential.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
-                                <div className="space-y-4 max-h-[60vh] pr-6">
-                                     <div>
-                                        <h3 className="font-headline text-md font-semibold mb-2">Trending Crafts This Week</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {reviewResult.trendingCrafts.map((craft, i) => <Badge key={i} variant="secondary">{craft}</Badge>)}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 flex flex-col min-h-0">
-                                        <h3 className="font-headline text-md font-semibold mb-2">AI Analysis</h3>
-                                        <ScrollArea className="h-64">
-                                            <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
-                                        </ScrollArea>
-                                    </div>
-                                </div>
+                                <ScrollArea className="h-96 pr-6">
+                                    <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
+                                </ScrollArea>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Close</AlertDialogCancel>
                                 </AlertDialogFooter>
                                 </>
                             ) : (
-                                <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Get AI Insights</AlertDialogTitle>
-                                    </AlertDialogHeader>
-                                    <Sparkles className="h-12 w-12" />
-                                    <p className="mt-4">Click "AI Review" to generate an analysis.</p>
-                                </div>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Get AI Insights</AlertDialogTitle>
+                                    <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
+                                        <Sparkles className="h-12 w-12" />
+                                        <p className="mt-4">Click "AI Review" to generate an analysis.</p>
+                                    </div>
+                                </AlertDialogHeader>
                             )}
                         </AlertDialogContent>
                     </AlertDialog>

@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview A flow for artisans to view trending crafts and AI-powered reviews of their products.
+ * @fileOverview A flow for artisans to view AI-powered reviews of their products.
  *
- * - getCommunityTrendInsights - A function that retrieves trending crafts and AI-powered reviews.
+ * - getCommunityTrendInsights - A function that retrieves AI-powered reviews.
  * - CommunityTrendInsightsInput - The input type for a getCommunityTrendInsights function.
  * - CommunityTrendInsightsOutput - The return type for a getCommunityTrendInsights function.
  */
@@ -18,7 +18,6 @@ const CommunityTrendInsightsInputSchema = z.object({
 export type CommunityTrendInsightsInput = z.infer<typeof CommunityTrendInsightsInputSchema>;
 
 const CommunityTrendInsightsOutputSchema = z.object({
-  trendingCrafts: z.array(z.string()).describe('A list of trending crafts.'),
   aiReview: z.string().describe('An AI-powered review of the product, including an opinion on the idea, income potential, target audience, and suggestions for improvement.'),
 });
 export type CommunityTrendInsightsOutput = z.infer<typeof CommunityTrendInsightsOutputSchema>;
@@ -36,12 +35,11 @@ const prompt = ai.definePrompt({
   An artisan has submitted the following product idea for your review:
   Product Description: {{{productDescription}}}
 
-  Your task is to provide a comprehensive review and a list of currently trending crafts.
+  Your task is to provide a comprehensive review.
 
-  Your response must be in a JSON object with two keys: "trendingCrafts" and "aiReview".
+  Your response must be in a JSON object with one key: "aiReview".
 
-  1.  **trendingCrafts**: Provide a list of 5-7 currently trending crafts in the artisan market.
-  2.  **aiReview**: Structure your review as a string with the following four sections, clearly marked with markdown headers:
+  1.  **aiReview**: Structure your review as a string with the following four sections, clearly marked with markdown headers:
 
       ### Opinion on the Idea
       Provide your honest opinion on the viability and potential of this product idea. Is it a strong concept? What are its strengths and weaknesses?
