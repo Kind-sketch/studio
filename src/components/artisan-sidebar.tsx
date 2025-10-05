@@ -13,7 +13,8 @@ import {
   Package,
   HeartHandshake,
   Mic,
-  MessageCircleQuestion
+  MessageCircleQuestion,
+  DollarSign
 } from 'lucide-react';
 import {
   Sheet,
@@ -32,7 +33,7 @@ import { useEffect, useState } from 'react';
 
 const baseNavItems = [
   { href: '/artisan/home', label: 'Home', icon: Home },
-  { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
 ];
