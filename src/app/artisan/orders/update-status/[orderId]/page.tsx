@@ -70,7 +70,7 @@ export default function UpdateStatusPage() {
         title: 'Status Updated!',
         description: `Order status has been changed to "${values.status}".`,
       });
-      router.push('/artisan/orders/my-orders');
+      router.push('/artisan/orders');
     }, 1000);
   }
 
@@ -83,7 +83,7 @@ export default function UpdateStatusPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-2xl">
+    <div className="container mx-auto p-4 md:p-8 max-w-xl">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Update Order Status</h1>
         <p className="text-muted-foreground">Update the status for order #{order.id}.</p>

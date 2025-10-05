@@ -104,7 +104,7 @@ export default function CategorySelectionPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full max-w-lg shadow-lg">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>

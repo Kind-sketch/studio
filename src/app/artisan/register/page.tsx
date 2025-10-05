@@ -155,7 +155,7 @@ export default function ArtisanRegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full shadow-lg">
+      <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
                 <Logo className="h-12 w-12 text-primary" />
