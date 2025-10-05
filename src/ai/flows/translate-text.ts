@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview A flow for translating text into different languages using the Gemini API.
+ * @fileOverview A flow for translating text into different languages using the Google Cloud Translation API.
  *
  * - translateText - A function that handles text translation.
  * - TranslateTextInput - The input type for the translateText function.
@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import { translateTexts } from '@/services/translation-service';
 
 const TranslateTextInputSchema = z.object({
   texts: z.array(z.string()).describe('An array of texts to be translated.'),
@@ -26,26 +27,8 @@ export async function translateText(input: TranslateTextInput): Promise<Translat
   return translateTextFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'translateTextPrompt',
-  input: { schema: z.object({
-    texts: z.array(z.string()),
-    targetLanguage: z.string(),
-  })},
-  output: { schema: TranslateTextOutputSchema },
-  prompt: `Translate the following array of texts into the language with code "{{targetLanguage}}".
-  
-  Return a JSON object containing a single key "translatedTexts", which is an array of the translated strings. The translated array must have the same number of elements as the input array.
-
-  Input Texts:
-  {{#each texts}}
-  - "{{this}}"
-  {{/each}}
-  `,
-});
-
-// Simple in-memory cache
-const translationCache = new Map<string, string>();
+// In-memory cache for translations to reduce API calls
+const translationCache = new Map<string, string[]>();
 
 const translateTextFlow = ai.defineFlow(
   {
@@ -54,59 +37,34 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async (input: TranslateTextInput) => {
-    if (input.targetLanguage === 'en') {
-      return { translatedTexts: input.texts };
-    }
-
     const { texts, targetLanguage } = input;
-    const finalTranslations = new Array<string>(texts.length);
-    const textsToTranslate: { text: string, index: number }[] = [];
     
-    // Check cache for existing translations and prepare for API call
-    texts.forEach((text, index) => {
-      const cacheKey = `${targetLanguage}:${text}`;
-      if (translationCache.has(cacheKey)) {
-        finalTranslations[index] = translationCache.get(cacheKey)!;
-      } else {
-        textsToTranslate.push({ text, index });
-      }
-    });
+    // If target is English, no translation is needed.
+    if (targetLanguage === 'en') {
+      return { translatedTexts: texts };
+    }
+    
+    // Use a composite key for caching based on language and all texts
+    const cacheKey = `${targetLanguage}:${texts.join('||')}`;
+    if (translationCache.has(cacheKey)) {
+        const cachedTranslations = translationCache.get(cacheKey);
+        if (cachedTranslations) {
+            return { translatedTexts: cachedTranslations };
+        }
+    }
 
-    // If there are any texts that need translation, call the AI
-    if (textsToTranslate.length > 0) {
-      try {
-        const sourceTexts = textsToTranslate.map(t => t.text);
-        const { output } = await prompt({ texts: sourceTexts, targetLanguage });
+    try {
+        const translatedTexts = await translateTexts(texts, targetLanguage);
         
-        if (output && output.translatedTexts && output.translatedTexts.length === sourceTexts.length) {
-            // Store new translations in cache and populate the results array
-            output.translatedTexts.forEach((translatedText, i) => {
-                const originalIndex = textsToTranslate[i].index;
-                const originalText = textsToTranslate[i].text;
-                const cacheKey = `${targetLanguage}:${originalText}`;
-                
-                translationCache.set(cacheKey, translatedText);
-                finalTranslations[originalIndex] = translatedText;
-            });
-        } else {
-             throw new Error("Translation output format is invalid.");
-        }
-      } catch (error) {
-        console.error("Gemini API failed for translation, using original texts as fallback:", error);
-        // On error, fill missing translations with original text
-        textsToTranslate.forEach(({ text, index }) => {
-           finalTranslations[index] = text;
-        });
-      }
-    }
-    
-    // As a final fallback, if any translation is missing, fill it with the original text.
-    for(let i = 0; i < finalTranslations.length; i++) {
-        if (finalTranslations[i] === undefined || finalTranslations[i] === null) {
-             finalTranslations[i] = texts[i];
-        }
-    }
+        // Cache the successful translation
+        translationCache.set(cacheKey, translatedTexts);
 
-    return { translatedTexts: finalTranslations };
+        return { translatedTexts };
+
+    } catch (error) {
+        console.error("Cloud Translation API failed, returning original texts as fallback:", error);
+        // On failure, return the original texts
+        return { translatedTexts: texts };
+    }
   }
 );
