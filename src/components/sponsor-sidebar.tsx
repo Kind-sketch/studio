@@ -15,7 +15,7 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle,
+  SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -103,7 +103,7 @@ function NavContent() {
             </nav>
             <div className="mt-auto border-t p-4 space-y-2">
                 <Link
-                    href="/"
+                    href="#"
                     onClick={handleLogout}
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent"
                 >
