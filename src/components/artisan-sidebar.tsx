@@ -128,7 +128,7 @@ function HeaderActions() {
                 recognitionRef.current = recognition;
             }
         }
-    }, [language, toast, dismiss]);
+    }, [language, toast, dismiss, router]);
 
     const handleMicClick = () => {
         if (isListening) {
@@ -281,8 +281,7 @@ function NavContent() {
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
             </div>
-            <ScrollArea className="flex-1">
-                <nav className="py-4 px-2">
+            <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
                     {navItems.map((item) => (
                     <li key={item.label}>
@@ -336,8 +335,7 @@ function NavContent() {
                     {translatedSavedCollection}
                     </Link>
                 </div>
-                </nav>
-            </ScrollArea>
+            </nav>
             <div className="mt-auto border-t border-sidebar-border p-4 space-y-2">
                 {translatedBottomNav.map(item => (
                      <Link

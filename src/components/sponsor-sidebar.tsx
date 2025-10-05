@@ -238,8 +238,7 @@ function NavContent() {
                 <span className="font-headline text-xl">Artistry Havens</span>
             </Link>
             </div>
-            <ScrollArea className='flex-1'>
-            <nav className="py-4 px-2">
+            <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
                     {navItems.map((item) => (
                     <li key={item.label}>
@@ -257,7 +256,6 @@ function NavContent() {
                     ))}
                 </ul>
             </nav>
-            </ScrollArea>
             <div className="mt-auto border-t p-4 space-y-2">
                 <Link
                     href="/"
@@ -301,6 +299,3 @@ export default function SponsorSidebar() {
     </>
   );
 }
-
-    
-    
