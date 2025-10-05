@@ -24,7 +24,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -53,6 +52,7 @@ const bottomNavItems: any[] = [
 function HeaderActions() {
     const { toast, dismiss } = useToast();
     const router = useRouter();
+    const { language } = useLanguage();
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
     const toastIdRef = useRef<string | null>(null);
@@ -63,20 +63,42 @@ function HeaderActions() {
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
-                recognition.lang = 'en-US';
+                recognition.lang = language;
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
-                recognition.onresult = (event: any) => {
-                    const command = event.results[0][0].transcript;
+                recognition.onresult = async (event: any) => {
+                    const spokenText = event.results[0][0].transcript;
                     if (toastIdRef.current) {
                         toast({
                             id: toastIdRef.current,
                             title: 'Processing Command...',
-                            description: `"${command}"`,
+                            description: `"${spokenText}"`,
                         });
                     }
-                    handleVoiceCommand(command.toLowerCase());
+
+                    if (language === 'en') {
+                        handleVoiceCommand(spokenText.toLowerCase());
+                    } else {
+                        try {
+                            const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
+                            const translatedCommand = translatedTexts[0];
+                            if (translatedCommand) {
+                                handleVoiceCommand(translatedCommand.toLowerCase());
+                            } else {
+                                throw new Error('Translation failed');
+                            }
+                        } catch (e) {
+                             if (toastIdRef.current) {
+                                toast({
+                                    id: toastIdRef.current,
+                                    variant: 'destructive',
+                                    title: 'Translation Error',
+                                    description: 'Could not translate your command.',
+                                });
+                            }
+                        }
+                    }
                 };
 
                 recognition.onerror = (event: any) => {
@@ -102,13 +124,14 @@ function HeaderActions() {
                 recognitionRef.current = recognition;
             }
         }
-    }, [toast, dismiss]);
+    }, [language, toast, dismiss]);
 
     const handleMicClick = () => {
         if (isListening) {
             recognitionRef.current?.stop();
         } else {
             if (recognitionRef.current) {
+                recognitionRef.current.lang = language;
                 recognitionRef.current.start();
                 setIsListening(true);
                 const { id } = toast({
@@ -149,7 +172,7 @@ function HeaderActions() {
                     toast({
                         id: toastIdRef.current,
                         title: 'Navigating...',
-                        description: `"${command}"`,
+                        description: `Navigating to ${item.label}.`,
                     });
                 }
                 return;
@@ -343,7 +366,7 @@ export default function ArtisanSidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-             <SheetHeader className='p-4'>
+             <SheetHeader className='p-4 border-b'>
                 <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>
             <NavContent />
