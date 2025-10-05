@@ -50,7 +50,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // In a real app, you would fetch user data here.
-    // For now, we load from our mock state.
+    // For now, we load from our mock state and localStorage.
     const storedProfile = localStorage.getItem('artisanProfile');
     let data;
     if (storedProfile) {
