@@ -150,7 +150,7 @@ export default function StatsPage() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
-            <div className="w-[800px] h-[400px] pr-4">
+            <div className="w-[800px] h-[300px] pr-4">
               <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
             </div>
             <ScrollBar orientation="horizontal" />
@@ -226,3 +226,5 @@ export default function StatsPage() {
     </div>
   );
 }
+
+    
