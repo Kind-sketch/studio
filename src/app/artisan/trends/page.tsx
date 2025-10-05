@@ -19,7 +19,8 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import Autoplay from 'embla-carousel-autoplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedCollection, Product } from '@/lib/types';
-
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 const formSchema = z.object({
   productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -29,8 +30,29 @@ const formSchema = z.object({
 export default function TrendsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ aiReview: string; } | null>(null);
-  
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const [translatedContent, setTranslatedContent] = useState({
+      title: "Community & Trend Insights",
+      description: "Discover what's popular and get AI-powered feedback.",
+      bestSelling: "Best-Selling Crafts",
+      frequentlyViewed: "Frequently Viewed",
+      aiReviewTitle: "AI Product Review",
+      aiReviewDescription: "Get targeted audience insights and revenue metrics for your product idea.",
+      productDescriptionLabel: "Product Description or Idea",
+      productDescriptionPlaceholder: "Describe a product you're selling or thinking of creating...",
+      getReviewButton: "Get AI Review",
+      analyzingButton: "Analyzing...",
+      insightsGeneratedToast: "Insights Generated!",
+      insightsGeneratedToastDesc: "Your AI product review is ready.",
+      insightGenerationFailedToast: "Insight Generation Failed",
+      insightGenerationFailedToastDesc: "There was an error. Please try again.",
+      aiGeneratedInsightsTitle: "AI-Generated Insights",
+      aiGeneratedInsightsDescription: "Here's what our AI thinks.",
+      aiReviewAnalysisTitle: "AI Review & Analysis",
+      aiPlaceholder: "Your AI review and trend analysis will appear here.",
+      savedToCollectionToast: "Saved to {collectionName}",
+  });
 
   const bestSelling = [...products].sort((a, b) => b.sales - a.sales);
   const frequentlyBought = [...products].sort((a, b) => b.likes - a.likes);
@@ -39,6 +61,22 @@ export default function TrendsPage() {
     resolver: zodResolver(formSchema),
     defaultValues: { productDescription: '' },
   });
+
+  useEffect(() => {
+    const translateContent = async () => {
+      if (language !== 'en') {
+        const textsToTranslate = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translateContent();
+  }, [language]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -51,15 +89,15 @@ export default function TrendsPage() {
       });
       setResult(response);
       toast({
-        title: 'Insights Generated!',
-        description: 'Your AI product review is ready.',
+        title: translatedContent.insightsGeneratedToast,
+        description: translatedContent.insightsGeneratedToastDesc,
       });
     } catch (error) {
       console.error('Error generating insights:', error);
       toast({
         variant: 'destructive',
-        title: 'Insight Generation Failed',
-        description: 'There was an error. Please try again.',
+        title: translatedContent.insightGenerationFailedToast,
+        description: translatedContent.insightGenerationFailedToastDesc,
       });
     } finally {
       setIsLoading(false);
@@ -74,12 +112,10 @@ export default function TrendsPage() {
     let collection = collections.find(c => c.name === categoryName);
 
     if (collection) {
-      // Add product to existing collection if not already there
       if (!collection.productIds.includes(product.id)) {
         collection.productIds.push(product.id);
       }
     } else {
-      // Create new collection for the category
       collection = {
         id: `coll-${Date.now()}-${Math.random()}`,
         name: categoryName,
@@ -91,7 +127,7 @@ export default function TrendsPage() {
     localStorage.setItem('artisanCollections', JSON.stringify(collections));
 
     toast({
-      title: `Saved to ${categoryName}`,
+      title: translatedContent.savedToCollectionToast.replace('{collectionName}', categoryName),
     });
   }
 
@@ -99,12 +135,12 @@ export default function TrendsPage() {
   return (
     <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Community & Trend Insights</h1>
-        <p className="text-muted-foreground">Discover what's popular and get AI-powered feedback.</p>
+        <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
+        <p className="text-muted-foreground">{translatedContent.description}</p>
       </header>
       
       <section className="mb-12">
-        <h2 className="font-headline text-2xl font-semibold mb-4">Best-Selling Crafts</h2>
+        <h2 className="font-headline text-2xl font-semibold mb-4">{translatedContent.bestSelling}</h2>
         <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
           <CarouselContent>
             {bestSelling.map((product) => (
@@ -117,7 +153,7 @@ export default function TrendsPage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="font-headline text-2xl font-semibold mb-4">Frequently Viewed</h2>
+        <h2 className="font-headline text-2xl font-semibold mb-4">{translatedContent.frequentlyViewed}</h2>
         <Carousel opts={{ align: 'start', loop: true, direction: 'rtl' }} plugins={[Autoplay({ delay: 3000 })]}>
           <CarouselContent>
             {frequentlyBought.map((product) => (
@@ -133,23 +169,23 @@ export default function TrendsPage() {
         <div className="grid gap-8 lg:grid-cols-1">
             <Card>
                 <CardHeader>
-                    <CardTitle>AI Product Review</CardTitle>
-                    <CardDescription>Get targeted audience insights and revenue metrics for your product idea.</CardDescription>
+                    <CardTitle>{translatedContent.aiReviewTitle}</CardTitle>
+                    <CardDescription>{translatedContent.aiReviewDescription}</CardDescription>
                 </CardHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardContent>
                         <FormField control={form.control} name="productDescription" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Product Description or Idea</FormLabel>
-                            <FormControl><Textarea placeholder="Describe a product you're selling or thinking of creating..." {...field} className="h-32" /></FormControl>
+                            <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
+                            <FormControl><Textarea placeholder={translatedContent.productDescriptionPlaceholder} {...field} className="h-32" /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )} />
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" disabled={isLoading} className="w-full">
-                        {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</> : <><Lightbulb className="mr-2 h-4 w-4" /> Get AI Review</>}
+                        {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {translatedContent.analyzingButton}</> : <><Lightbulb className="mr-2 h-4 w-4" /> {translatedContent.getReviewButton}</>}
                         </Button>
                     </CardFooter>
                     </form>
@@ -158,8 +194,8 @@ export default function TrendsPage() {
 
             <Card className="flex flex-col">
                 <CardHeader>
-                    <CardTitle>AI-Generated Insights</CardTitle>
-                    <CardDescription>Here's what our AI thinks.</CardDescription>
+                    <CardTitle>{translatedContent.aiGeneratedInsightsTitle}</CardTitle>
+                    <CardDescription>{translatedContent.aiGeneratedInsightsDescription}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 space-y-6 flex flex-col">
                     {isLoading && (
@@ -170,13 +206,13 @@ export default function TrendsPage() {
                     {!isLoading && !result && (
                     <div className="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-secondary/50 p-8 text-center text-muted-foreground">
                         <Sparkles className="h-12 w-12" />
-                        <p className="mt-4">Your AI review and trend analysis will appear here.</p>
+                        <p className="mt-4">{translatedContent.aiPlaceholder}</p>
                     </div>
                     )}
                     {result && (
                     <div className="space-y-6 flex-1 flex flex-col min-h-0">
                         <div className="flex-1 flex flex-col min-h-0">
-                            <h3 className="font-headline text-lg font-semibold mb-2">AI Review & Analysis</h3>
+                            <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.aiReviewAnalysisTitle}</h3>
                             <ScrollArea className="flex-1 h-96">
                                 <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
                             </ScrollArea>

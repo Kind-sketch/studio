@@ -21,7 +21,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 const initialSponsorRequests: SponsorRequest[] = [
     {
@@ -45,11 +46,57 @@ export default function SponsorsPage() {
   const [mySponsors, setMySponsors] = useState<SponsorRequest[]>([]);
   const { toast } = useToast();
   const router = useRouter();
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Manage Sponsors',
+    description: 'Review sponsorship offers and manage current partners.',
+    requestsTab: 'Sponsor Requests',
+    mySponsorsTab: 'My Sponsors',
+    offering: 'Offering',
+    acceptButton: 'Accept',
+    declineButton: 'Decline',
+    noRequestsTitle: 'No new sponsor requests.',
+    noRequestsDescription: 'Share your work to attract sponsors!',
+    sponsorshipActive: 'Sponsorship active',
+    contribution: 'Contribution',
+    chatButton: 'Chat',
+    terminateButton: 'Terminate',
+    noSponsorsTitle: 'No current sponsors.',
+    noSponsorsDescription: 'Accepted sponsor requests will appear here.',
+    terminateDialogTitle: 'Are you sure?',
+    terminateDialogDescription: 'This will permanently terminate your sponsorship with {sponsorName}. This action cannot be undone.',
+    cancelButton: 'Cancel',
+    sponsorAcceptedToast: 'Sponsor Accepted',
+    sponsorAcceptedToastDesc: 'The sponsor has been added to "My Sponsors".',
+    sponsorDeclinedToast: 'Sponsor Declined',
+    sponsorDeclinedToastDesc: 'The sponsor request has been removed.',
+    sponsorshipTerminatedToast: 'Sponsorship Terminated',
+    sponsorshipTerminatedToastDesc: 'The sponsor has been removed from your list.',
+    chatToastTitle: 'Starting chat with {sponsorName}',
+    chatToastDesc: 'Chat functionality is not yet implemented.',
+  });
 
   useEffect(() => {
     const sponsorsFromStorage = JSON.parse(localStorage.getItem('mySponsors') || '[]');
     setMySponsors(sponsorsFromStorage);
   }, []);
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   const handleAccept = (sponsorId: string) => {
     const sponsorToMove = sponsorRequests.find(req => req.id === sponsorId);
@@ -62,8 +109,8 @@ export default function SponsorsPage() {
 
     setSponsorRequests(prev => prev.filter(req => req.id !== sponsorId));
     toast({
-      title: 'Sponsor Accepted',
-      description: 'The sponsor has been added to "My Sponsors".',
+      title: translatedContent.sponsorAcceptedToast,
+      description: translatedContent.sponsorAcceptedToastDesc,
     });
   };
 
@@ -71,8 +118,8 @@ export default function SponsorsPage() {
     setSponsorRequests(prev => prev.filter(req => req.id !== sponsorId));
     toast({
       variant: 'destructive',
-      title: 'Sponsor Declined',
-      description: 'The sponsor request has been removed.',
+      title: translatedContent.sponsorDeclinedToast,
+      description: translatedContent.sponsorDeclinedToastDesc,
     });
   };
 
@@ -83,15 +130,15 @@ export default function SponsorsPage() {
 
     toast({
       variant: 'destructive',
-      title: 'Sponsorship Terminated',
-      description: 'The sponsor has been removed from your list.',
+      title: translatedContent.sponsorshipTerminatedToast,
+      description: translatedContent.sponsorshipTerminatedToastDesc,
     });
   };
 
   const handleChat = (sponsorName: string) => {
     toast({
-        title: `Starting chat with ${sponsorName}`,
-        description: 'Chat functionality is not yet implemented.',
+        title: translatedContent.chatToastTitle.replace('{sponsorName}', sponsorName),
+        description: translatedContent.chatToastDesc,
     });
   }
 
@@ -100,8 +147,8 @@ export default function SponsorsPage() {
         return (
             <Card className="flex items-center justify-center p-12">
                 <div className="text-center text-muted-foreground">
-                    <p className="text-lg">No new sponsor requests.</p>
-                    <p>Share your work to attract sponsors!</p>
+                    <p className="text-lg">{translatedContent.noRequestsTitle}</p>
+                    <p>{translatedContent.noRequestsDescription}</p>
                 </div>
             </Card>
         )
@@ -119,7 +166,7 @@ export default function SponsorsPage() {
                 <div>
                     <CardTitle className="text-lg">{request.name}</CardTitle>
                     <CardDescription>
-                        Offering <Badge variant="secondary">₹{request.contributionAmount}/month</Badge>
+                        {translatedContent.offering} <Badge variant="secondary">₹{request.contributionAmount}/month</Badge>
                     </CardDescription>
                 </div>
               </CardHeader>
@@ -128,10 +175,10 @@ export default function SponsorsPage() {
               </CardContent>
               <CardContent className="flex gap-2">
                 <Button onClick={() => handleAccept(request.id)} className="w-full">
-                  <Check className="mr-2 h-4 w-4" /> Accept
+                  <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
                 </Button>
                 <Button onClick={() => handleDecline(request.id)} variant="outline" className="w-full">
-                  <X className="mr-2 h-4 w-4" /> Decline
+                  <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
                 </Button>
               </CardContent>
             </Card>
@@ -145,8 +192,8 @@ export default function SponsorsPage() {
         return (
             <Card className="flex items-center justify-center p-12">
                 <div className="text-center text-muted-foreground">
-                    <p className="text-lg">No current sponsors.</p>
-                    <p>Accepted sponsor requests will appear here.</p>
+                    <p className="text-lg">{translatedContent.noSponsorsTitle}</p>
+                    <p>{translatedContent.noSponsorsDescription}</p>
                 </div>
             </Card>
         )
@@ -163,36 +210,36 @@ export default function SponsorsPage() {
                 </Avatar>
                 <div>
                   <CardTitle className="text-lg">{sponsor.name}</CardTitle>
-                  <CardDescription>Sponsorship active</CardDescription>
+                  <CardDescription>{translatedContent.sponsorshipActive}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow space-y-2">
                 <p className="text-sm">
-                  <span className="font-semibold">Contribution: </span>
+                  <span className="font-semibold">{translatedContent.contribution}: </span>
                   <Badge variant="secondary">₹{sponsor.contributionAmount}/month</Badge>
                 </p>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
               <CardContent className="flex flex-col gap-2">
                  <Button onClick={() => handleChat(sponsor.name)} variant="outline" className="w-full">
-                    <MessageCircle className="mr-2 h-4 w-4" /> Chat
+                    <MessageCircle className="mr-2 h-4 w-4" /> {translatedContent.chatButton}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" className="w-full">
-                      <X className="mr-2 h-4 w-4" /> Terminate
+                      <X className="mr-2 h-4 w-4" /> {translatedContent.terminateButton}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogTitle>{translatedContent.terminateDialogTitle}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will permanently terminate your sponsorship with {sponsor.name}. This action cannot be undone.
+                        {translatedContent.terminateDialogDescription.replace('{sponsorName}', sponsor.name)}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleTerminate(sponsor.id)}>Terminate</AlertDialogAction>
+                      <AlertDialogCancel>{translatedContent.cancelButton}</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleTerminate(sponsor.id)}>{translatedContent.terminateButton}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -206,14 +253,14 @@ export default function SponsorsPage() {
   return (
     <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Manage Sponsors</h1>
-        <p className="text-muted-foreground">Review sponsorship offers and manage current partners.</p>
+        <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
+        <p className="text-muted-foreground">{translatedContent.description}</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="requests">Sponsor Requests</TabsTrigger>
-          <TabsTrigger value="my-sponsors">My Sponsors</TabsTrigger>
+          <TabsTrigger value="requests">{translatedContent.requestsTab}</TabsTrigger>
+          <TabsTrigger value="my-sponsors">{translatedContent.mySponsorsTab}</TabsTrigger>
         </TabsList>
         <TabsContent value="requests">
           {renderRequests()}

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import StatsChart from '@/components/stats-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,6 +24,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { Product } from '@/lib/types';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 
 const chartConfig = {
@@ -44,6 +46,47 @@ export default function StatsPage() {
   const [isLoadingReview, setIsLoadingReview] = useState(false);
   const [reviewResult, setReviewResult] = useState<{productName: string, aiReview: string} | null>(null);
   const { toast } = useToast();
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Your Performance',
+    description: "Analyze your sales and engagement over time.",
+    likesVsSales: 'Likes vs. Sales',
+    showingDataFor: 'Showing data for',
+    performance: 'performance',
+    weekly: 'Weekly',
+    monthly: 'Monthly',
+    yearly: 'Yearly',
+    productPerformance: 'Product Performance',
+    productPerformanceDesc: 'Review metrics and get AI insights for each product.',
+    sales: 'sales',
+    aiReview: 'AI Review',
+    generatingReviewTitle: 'Generating AI Review',
+    generatingReviewDesc: 'Please wait while the AI analyzes the product...',
+    reviewFor: 'AI Review for:',
+    analysisOfPotential: "Here's the AI analysis of your product's potential.",
+    close: 'Close',
+    getInsightsTitle: 'Get AI Insights',
+    getInsightsDesc: 'Click "AI Review" to generate an analysis.',
+    reviewFailed: 'Review Failed',
+    reviewFailedDesc: 'There was an error generating the AI review.',
+  });
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   const onPeriodChange = (value: string) => {
     setPeriod(value as Period);
@@ -51,6 +94,13 @@ export default function StatsPage() {
   
   const activeData = statsData[period];
   const dataKey = period === 'weekly' ? 'week' : period === 'monthly' ? 'month' : 'year';
+  
+  const getPeriodText = () => {
+    if (language === 'en') {
+        return period.charAt(0).toUpperCase() + period.slice(1);
+    }
+    return translatedContent[period];
+  }
 
   const handleAiReview = async (product: Product) => {
     setIsLoadingReview(true);
@@ -65,8 +115,8 @@ export default function StatsPage() {
         console.error('Error generating review:', error);
         toast({
             variant: 'destructive',
-            title: 'Review Failed',
-            description: 'There was an error generating the AI review.',
+            title: translatedContent.reviewFailed,
+            description: translatedContent.reviewFailedDesc,
         });
     } finally {
         setIsLoadingReview(false);
@@ -76,24 +126,24 @@ export default function StatsPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">Your Performance</h1>
-        <p className="text-sm text-muted-foreground">Analyze your sales and engagement over time.</p>
+        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
+        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
       </header>
 
       <Card className="mb-8">
         <CardHeader>
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Likes vs. Sales</CardTitle>
+              <CardTitle>{translatedContent.likesVsSales}</CardTitle>
               <CardDescription>
-                Showing data for {period.charAt(0).toUpperCase() + period.slice(1)} performance.
+                {translatedContent.showingDataFor} {getPeriodText()} {translatedContent.performance}.
               </CardDescription>
             </div>
             <Tabs defaultValue={period} onValueChange={onPeriodChange} className="w-full sm:w-auto">
               <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs">
-                <TabsTrigger value="weekly">Weekly</TabsTrigger>
-                <TabsTrigger value="monthly">Monthly</TabsTrigger>
-                <TabsTrigger value="yearly">Yearly</TabsTrigger>
+                <TabsTrigger value="weekly">{translatedContent.weekly}</TabsTrigger>
+                <TabsTrigger value="monthly">{translatedContent.monthly}</TabsTrigger>
+                <TabsTrigger value="yearly">{translatedContent.yearly}</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -110,8 +160,8 @@ export default function StatsPage() {
       
       <Card>
         <CardHeader>
-            <CardTitle>Product Performance</CardTitle>
-            <CardDescription>Review metrics and get AI insights for each product.</CardDescription>
+            <CardTitle>{translatedContent.productPerformance}</CardTitle>
+            <CardDescription>{translatedContent.productPerformanceDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             {products.map(product => (
@@ -122,23 +172,23 @@ export default function StatsPage() {
                        <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                      </div>
                      <div className="text-right text-xs sm:text-sm space-y-1">
-                        <p className="font-medium">{product.sales} sales</p>
+                        <p className="font-medium">{product.sales} {translatedContent.sales}</p>
                         <p className="text-muted-foreground flex items-center justify-end gap-1"><Heart className="h-3 w-3"/>{product.likes}</p>
                      </div>
                      <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="outline" size="sm" onClick={() => handleAiReview(product)}>
                                 <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">AI Review</span>
+                                <span className="hidden sm:inline">{translatedContent.aiReview}</span>
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="max-w-2xl">
                             {isLoadingReview ? (
                                 <div className="flex h-64 items-center justify-center">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Generating AI Review</AlertDialogTitle>
+                                        <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Please wait while the AI analyzes the product...
+                                            {translatedContent.generatingReviewDesc}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -146,24 +196,24 @@ export default function StatsPage() {
                             ) : reviewResult ? (
                                 <>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>AI Review for: <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
+                                    <AlertDialogTitle>{translatedContent.reviewFor} <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Here's the AI analysis of your product's potential.
+                                        {translatedContent.analysisOfPotential}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <ScrollArea className="h-96 pr-6">
                                     <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
                                 </ScrollArea>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Close</AlertDialogCancel>
+                                    <AlertDialogCancel>{translatedContent.close}</AlertDialogCancel>
                                 </AlertDialogFooter>
                                 </>
                             ) : (
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Get AI Insights</AlertDialogTitle>
+                                    <AlertDialogTitle>{translatedContent.getInsightsTitle}</AlertDialogTitle>
                                     <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
                                         <Sparkles className="h-12 w-12" />
-                                        <p className="mt-4">Click "AI Review" to generate an analysis.</p>
+                                        <p className="mt-4">{translatedContent.getInsightsDesc}</p>
                                     </div>
                                 </AlertDialogHeader>
                             )}

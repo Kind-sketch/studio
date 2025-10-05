@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -30,9 +33,49 @@ export default function OrdersPage() {
   const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
   const { toast } = useToast();
   const router = useRouter();
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Manage Orders',
+    description: 'Review requests and track ongoing orders.',
+    orderRequestsTab: 'Order Requests',
+    myOrdersTab: 'My Orders',
+    processingTab: 'Processing',
+    shippedTab: 'Shipped',
+    deliveredTab: 'Delivered',
+    noOrdersInCategory: 'No orders in this category.',
+    quantity: 'Quantity',
+    orderDate: 'Order Date',
+    expectedDelivery: 'Expected Delivery',
+    updateStatusButton: 'Update Status',
+    noNewRequests: 'No new order requests.',
+    checkBackLater: 'Check back later for new opportunities.',
+    from: 'From',
+    acceptButton: 'Accept',
+    declineButton: 'Decline',
+    orderAcceptedToast: 'Order Accepted',
+    orderAcceptedToastDesc: 'The order has been moved to "My Orders".',
+    orderDeclinedToast: 'Order Declined',
+    orderDeclinedToastDesc: 'The order request has been removed.',
+  });
 
   useEffect(() => {
-    // Load my orders from localStorage
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translate();
+  }, [language]);
+
+
+  useEffect(() => {
     const myOrdersFromStorage = JSON.parse(localStorage.getItem('myOrders') || '[]');
     const enrichedOrders = myOrdersFromStorage.map((order: any) => {
         const deliveryDate = new Date(order.orderDate);
@@ -44,7 +87,6 @@ export default function OrdersPage() {
     });
     setMyOrders(enrichedOrders);
 
-    // Mock loading order requests
      if (!localStorage.getItem('myOrders') && !localStorage.getItem('hasLoadedOrderRequests')) {
         const initialRequests = sampleProducts.slice(0, 3).map(p => ({...p, quantity: Math.floor(Math.random() * 3) + 1, buyerName: "Random Buyer"}));
         setOrderRequests(initialRequests);
@@ -63,7 +105,7 @@ export default function OrdersPage() {
             ...orderToMove,
             status: 'Processing',
             orderDate: new Date().toISOString(),
-            expectedDelivery: '', // This will be set in the effect
+            expectedDelivery: '',
         };
 
         const updatedMyOrders = [...myOrders, newOrder];
@@ -79,8 +121,8 @@ export default function OrdersPage() {
         localStorage.setItem('orderRequests', JSON.stringify(updatedRequests));
 
         toast({
-          title: 'Order Accepted',
-          description: 'The order has been moved to "My Orders".',
+          title: translatedContent.orderAcceptedToast,
+          description: translatedContent.orderAcceptedToastDesc,
         });
     }
   };
@@ -92,8 +134,8 @@ export default function OrdersPage() {
 
     toast({
       variant: 'destructive',
-      title: 'Order Declined',
-      description: 'The order request has been removed.',
+      title: translatedContent.orderDeclinedToast,
+      description: translatedContent.orderDeclinedToastDesc,
     });
   };
 
@@ -107,7 +149,7 @@ export default function OrdersPage() {
     if (filteredOrders.length === 0) {
       return (
         <div className="text-center text-muted-foreground py-12">
-          <p>No orders in this category.</p>
+          <p>{translatedContent.noOrdersInCategory}</p>
         </div>
       );
     }
@@ -129,14 +171,14 @@ export default function OrdersPage() {
               <div className="flex-1 space-y-1">
                 <CardTitle className="text-md sm:text-lg font-headline leading-tight">{order.name}</CardTitle>
                 <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
-                    <p>Quantity: <span className="font-medium">{order.quantity}</span></p>
-                    <p>Order Date: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
-                    <p>Expected Delivery: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
+                    <p>{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
+                    <p>{translatedContent.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
+                    <p>{translatedContent.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2 w-full sm:w-auto self-end sm:self-center">
                 <p className="font-bold text-md sm:text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
-                <Button onClick={() => handleUpdate(order.id)} size="sm">Update Status</Button>
+                <Button onClick={() => handleUpdate(order.id)} size="sm">{translatedContent.updateStatusButton}</Button>
               </div>
             </CardContent>
           </Card>
@@ -150,8 +192,8 @@ export default function OrdersPage() {
       return (
         <Card className="flex items-center justify-center p-12">
             <div className="text-center text-muted-foreground">
-                <p className="text-lg">No new order requests.</p>
-                <p>Check back later for new opportunities.</p>
+                <p className="text-lg">{translatedContent.noNewRequests}</p>
+                <p>{translatedContent.checkBackLater}</p>
             </div>
         </Card>
       );
@@ -173,16 +215,16 @@ export default function OrdersPage() {
                </div>
               <div className="flex-1">
                 <CardTitle className="text-md sm:text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">From: {order.buyerName}</p>
+                <p className="text-sm text-muted-foreground">{translatedContent.from}: {order.buyerName}</p>
                 <p className="font-bold text-md sm:text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
-                <p className="text-sm">Quantity: <span className="font-medium">{order.quantity}</span></p>
+                <p className="text-sm">{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
               </div>
               <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
                 <Button onClick={() => handleAccept(order.id)} className="w-full">
-                  <Check className="mr-2 h-4 w-4" /> Accept
+                  <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
                 </Button>
                 <Button onClick={() => handleDecline(order.id)} variant="outline" className="w-full">
-                  <X className="mr-2 h-4 w-4" /> Decline
+                  <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
                 </Button>
               </div>
             </CardContent>
@@ -195,14 +237,14 @@ export default function OrdersPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">Manage Orders</h1>
-        <p className="text-sm text-muted-foreground">Review requests and track ongoing orders.</p>
+        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
+        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="requests">Order Requests</TabsTrigger>
-          <TabsTrigger value="my-orders">My Orders</TabsTrigger>
+          <TabsTrigger value="requests">{translatedContent.orderRequestsTab}</TabsTrigger>
+          <TabsTrigger value="my-orders">{translatedContent.myOrdersTab}</TabsTrigger>
         </TabsList>
         <TabsContent value="requests">
           {renderRequests()}
@@ -211,13 +253,13 @@ export default function OrdersPage() {
           <Tabs defaultValue="processing" className="w-full">
             <TabsList className="grid w-full grid-cols-3 text-xs">
               <TabsTrigger value="processing">
-                <Package className="mr-1 h-4 w-4" /> Processing
+                <Package className="mr-1 h-4 w-4" /> {translatedContent.processingTab}
               </TabsTrigger>
               <TabsTrigger value="shipped">
-                <Ship className="mr-1 h-4 w-4" /> Shipped
+                <Ship className="mr-1 h-4 w-4" /> {translatedContent.shippedTab}
               </TabsTrigger>
               <TabsTrigger value="delivered">
-                <CheckCircle className="mr-1 h-4 w-4" /> Delivered
+                <CheckCircle className="mr-1 h-4 w-4" /> {translatedContent.deliveredTab}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="processing">
