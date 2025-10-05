@@ -340,8 +340,8 @@ export default function AddProductPage() {
 
 
   return (
-    <div className="flex items-center justify-center p-2 sm:p-4">
-      <Card className="w-full max-w-xl shadow-lg">
+    <div className="block w-full p-4">
+      <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
           <div className="relative flex items-center justify-center">
             <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.back()} aria-label={translatedContent.backButton}>
