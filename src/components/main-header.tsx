@@ -12,14 +12,16 @@ import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
+import SupportDialog from '@/components/support-dialog';
+
 
 const navKeywords: { [key: string]: string[] } = {
   '/buyer/home': ['home', 'main', 'start', 'feed', 'discover'],
   '/buyer/categories': ['categories', 'browse', 'sections', 'types'],
   '/buyer/customize': ['customize', 'design', 'create', 'AI design'],
   '/buyer/profile': ['profile', 'account', 'me', 'my details'],
-  '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed'],
-  '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances'],
+  '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'],
+  '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'],
   '/artisan/my-products': ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'],
   '/artisan/stats': ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'],
   '/artisan/profile': ['profile', 'account', 'me', 'my details', 'user'],
@@ -68,15 +70,10 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
           if (event.results[0].isFinal) {
             const lowerCaseSpokenText = spokenText.toLowerCase();
             let commandFound = false;
+            
+            commandFound = handleVoiceCommand(lowerCaseSpokenText);
 
-            if (language === 'en') {
-              commandFound = handleVoiceCommand(lowerCaseSpokenText);
-            } else {
-              // First, check original spoken text for direct keyword matches (for loanwords)
-              commandFound = handleVoiceCommand(lowerCaseSpokenText);
-
-              if (!commandFound) {
-                // If not found, then try translating
+            if (!commandFound && language !== 'en') {
                 try {
                   const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
                   const translatedCommand = translatedTexts[0];
@@ -88,8 +85,8 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
                 } catch (e) {
                    console.error("Translation or command handling failed:", e);
                 }
-              }
             }
+
              if (!commandFound && toastIdRef.current) {
                 toast({
                     id: toastIdRef.current,
@@ -167,27 +164,21 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
     return false; // Command was not handled
   };
 
-  const handleSupportClick = () => {
-    toast({
-      title: 'Support',
-      description: 'Support functionality is not yet implemented.',
-    });
-  };
-
   const isSponsorPage = pathname.startsWith('/sponsor/');
   const shouldHideOnDesktop = isSponsorPage && !isArtisanFlow;
 
 
   return (
     <div className={cn("ml-auto flex items-center gap-2", shouldHideOnDesktop && "md:hidden")}>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleSupportClick}
-          aria-label="Support"
-        >
-          <MessageCircleQuestion className="h-5 w-5" />
-        </Button>
+        <SupportDialog>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Support"
+          >
+            <MessageCircleQuestion className="h-5 w-5" />
+          </Button>
+        </SupportDialog>
         <Button
           variant="ghost"
           size="icon"

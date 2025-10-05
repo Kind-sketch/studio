@@ -35,11 +35,12 @@ import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
 import MainHeader from './main-header';
+import SupportDialog from './support-dialog';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed'] },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: LayoutDashboard, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances'] },
+  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
+  { href: '/artisan/dashboard', label: 'Revenue', icon: LayoutDashboard, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
   { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
@@ -56,6 +57,17 @@ export function HeaderActions() {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
     const toastIdRef = useRef<string | null>(null);
+
+    const navKeywords: { [key: string]: string[] } = {
+        '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'],
+        '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'],
+        '/artisan/my-products': ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'],
+        '/artisan/stats': ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'],
+        '/artisan/profile': ['profile', 'account', 'me', 'my details', 'user'],
+        '/artisan/orders': ['orders', 'requests', 'shipments', 'manage orders'],
+        '/artisan/sponsors': ['sponsors', 'sponsorships', 'partners', 'supporters'],
+        '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
+    };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -79,14 +91,17 @@ export function HeaderActions() {
                     }
 
                     if (event.results[0].isFinal) {
-                        if (language === 'en') {
-                            handleVoiceCommand(spokenText.toLowerCase());
-                        } else {
+                        const lowerCaseSpokenText = spokenText.toLowerCase();
+                        let commandFound = false;
+                        
+                        commandFound = handleVoiceCommand(lowerCaseSpokenText);
+
+                        if (!commandFound && language !== 'en') {
                             try {
                                 const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
                                 const translatedCommand = translatedTexts[0];
                                 if (translatedCommand) {
-                                    handleVoiceCommand(translatedCommand.toLowerCase());
+                                    commandFound = handleVoiceCommand(translatedCommand.toLowerCase());
                                 } else {
                                     throw new Error('Translation failed');
                                 }
@@ -100,6 +115,15 @@ export function HeaderActions() {
                                     });
                                 }
                             }
+                        }
+
+                        if (!commandFound && toastIdRef.current) {
+                            toast({
+                                id: toastIdRef.current,
+                                variant: 'destructive',
+                                title: 'Command Not Recognized',
+                                description: `Could not find a page for "${spokenText}".`,
+                            });
                         }
                     }
                 };
@@ -152,57 +176,35 @@ export function HeaderActions() {
             }
         }
     };
-    
-    const handleSupportClick = () => {
-        toast({
-        title: 'Support',
-        description: 'Support functionality is not yet implemented.',
-        });
-    };
 
-    const handleVoiceCommand = (command: string) => {
-        const allNavItems = [
-            ...baseNavItems,
-            ...bottomNavItems,
-            { href: '/artisan/orders', label: 'Orders', keywords: ['orders', 'requests', 'shipments'] },
-            { href: '/artisan/sponsors', label: 'Sponsors', keywords: ['sponsors', 'sponsorships', 'partners', 'supporters'] },
-            { href: '/artisan/saved-collection', label: 'Saved Collection', keywords: ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'] },
-        ];
-
-        for (const item of allNavItems) {
-            if (item.keywords.some(keyword => command.includes(keyword))) {
-                router.push(item.href);
+    const handleVoiceCommand = (command: string): boolean => {
+        for (const path in navKeywords) {
+            if (navKeywords[path].some(keyword => command.includes(keyword))) {
+                router.push(path);
                  if (toastIdRef.current) {
                     toast({
                         id: toastIdRef.current,
                         title: 'Navigating...',
-                        description: `Taking you to ${item.label}.`,
+                        description: `Taking you to the requested page.`,
                     });
                 }
-                return;
+                return true;
             }
         }
-
-        if (toastIdRef.current) {
-            toast({
-                id: toastIdRef.current,
-                variant: 'destructive',
-                title: 'Command Not Recognized',
-                description: `Could not find a page for "${command}".`,
-            });
-        }
+        return false;
     };
 
     return (
         <div className="ml-auto flex items-center gap-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSupportClick}
-                aria-label="Support"
-            >
-                <MessageCircleQuestion className="h-5 w-5" />
-            </Button>
+            <SupportDialog>
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Support"
+              >
+                  <MessageCircleQuestion className="h-5 w-5" />
+              </Button>
+            </SupportDialog>
             <Button
                 variant="ghost"
                 size="icon"
@@ -400,26 +402,30 @@ function NavContent() {
 
 export default function ArtisanSidebar() {
   const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <>
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <PanelLeft className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 z-[101]">
-             <SheetHeader>
-                <SheetTitle className="sr-only">Menu</SheetTitle>
-            </SheetHeader>
-            <NavContent />
-          </SheetContent>
-        </Sheet>
+        {pathname !== '/artisan/add-product' && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="outline">
+                <PanelLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0 z-[101]">
+              <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+              </SheetHeader>
+              <NavContent />
+            </SheetContent>
+          </Sheet>
+        )}
         <div className="ml-auto">
             <MainHeader isArtisanFlow={true}/>
         </div>
