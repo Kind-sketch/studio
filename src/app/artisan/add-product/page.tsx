@@ -84,6 +84,7 @@ export default function AddProductPage() {
     previewButton: 'Preview',
     previewTitle: 'Product Preview',
     previewDescription: "This is how your product will look to buyers.",
+    selectCategoryPlaceholder: 'Select a category',
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -383,7 +384,7 @@ export default function AddProductPage() {
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                            <SelectValue placeholder={translatedContent.selectCategoryPlaceholder} />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -450,3 +451,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
