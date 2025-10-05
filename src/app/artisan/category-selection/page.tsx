@@ -99,7 +99,7 @@ export default function CategorySelectionPage() {
       title: translatedContent.savedToast,
       description: translatedContent.savedToastDesc,
     });
-    router.push('/artisan/profile');
+    router.push('/artisan/post-auth');
   };
 
   return (

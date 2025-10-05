@@ -39,7 +39,6 @@ const baseNavItems = [
 ];
 
 const bottomNavItems = [
-    { href: '/artisan/profile', label: 'Profile', icon: User },
     { href: '/artisan/settings', label: 'Settings', icon: Settings },
 ]
 
