@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -193,7 +194,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
+    <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Manage Orders</h1>
         <p className="text-muted-foreground">Review requests and track ongoing orders.</p>

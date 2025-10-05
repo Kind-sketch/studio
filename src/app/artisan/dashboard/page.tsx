@@ -16,7 +16,7 @@ export default function ArtisanDashboard() {
   const recentSales = products.slice(0, 3);
   
   return (
-    <div className="container mx-auto max-w-md p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Welcome back, Artisan!</h1>
         <p className="text-muted-foreground">Here's a snapshot of your creative haven.</p>

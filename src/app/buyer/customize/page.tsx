@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -97,7 +98,7 @@ export default function BuyerCustomizePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <h1 className="font-headline text-4xl font-bold">
           Design with AI

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { products, categories } from '@/lib/data';
@@ -10,7 +11,7 @@ export default function BuyerHomePage() {
   const trendingProducts = [...products].sort((a, b) => b.likes - a.likes);
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight">
           Discover Handcrafted Wonders

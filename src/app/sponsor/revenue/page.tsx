@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +16,6 @@ const myRevenueData = [
   {
     ...products[3],
     revenue: 1200,
-  },
-  {
-    ...products[4],
-    revenue: 750,
   },
 ];
 
@@ -38,7 +35,7 @@ const sharedRevenueData = [
 
 export default function RevenuePage() {
   return (
-    <div className="container mx-auto max-w-4xl p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Revenue Generated</h1>
         <p className="text-lg text-muted-foreground">Track your sponsorship returns.</p>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -115,7 +116,7 @@ export default function TrendsPage() {
 
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-md">
+    <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Community & Trend Insights</h1>
         <p className="text-muted-foreground">Discover what's popular and get AI-powered feedback.</p>

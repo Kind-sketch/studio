@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -203,7 +204,7 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
+    <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Manage Sponsors</h1>
         <p className="text-muted-foreground">Review sponsorship offers and manage current partners.</p>
