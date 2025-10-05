@@ -8,7 +8,6 @@ import {
   Home,
   BarChart3,
   User,
-  PanelLeft,
   Package,
   HeartHandshake,
   Mic,
@@ -17,26 +16,9 @@ import {
   Bookmark,
   LogOut,
   Bell,
-  ChevronLeft,
   DollarSign,
   X,
 } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetClose,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
@@ -46,7 +28,14 @@ import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
 import SupportDialog from './support-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from './ui/badge';
 
 
@@ -288,8 +277,11 @@ export function HeaderActions() {
     )
 }
 
+interface ArtisanSidebarProps {
+  closeSheet?: () => void;
+}
 
-function NavContent({ closeSheet }: { closeSheet?: () => void }) {
+export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const pathname = usePathname();
     const { toast } = useToast();
     const { language } = useLanguage();
@@ -388,19 +380,17 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     };
 
     return (
-        <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+        <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground w-64 border-r border-sidebar-border">
             <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
                 {closeSheet && (
-                    <SheetClose asChild>
-                        <Button variant="ghost" size="icon">
-                            <X className="h-5 w-5" />
-                            <span className="sr-only">Close</span>
-                        </Button>
-                    </SheetClose>
+                    <Button variant="ghost" size="icon" onClick={closeSheet} className="absolute right-4 top-4">
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close</span>
+                    </Button>
                 )}
             </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
@@ -481,35 +471,3 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
         </div>
     );
 }
-
-
-export default function ArtisanSidebar() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  return (
-    <>
-      <aside className="hidden w-64 flex-col border-r bg-sidebar md:flex h-full sticky top-0">
-        <NavContent />
-      </aside>
-      <div className="md:hidden">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button size="icon" variant="outline">
-                  <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-full max-w-[300px] p-0 z-[101]">
-                <NavContent closeSheet={() => setIsSheetOpen(false)} />
-              </SheetContent>
-            </Sheet>
-          <HeaderActions />
-        </header>
-      </div>
-    </>
-  );
-}
-
-    
-
