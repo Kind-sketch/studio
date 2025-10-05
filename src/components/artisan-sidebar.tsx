@@ -34,7 +34,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
-import { ScrollArea } from './ui/scroll-area';
 
 
 const baseNavItems = [
@@ -356,10 +355,10 @@ function NavContent() {
 export default function ArtisanSidebar() {
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-screen sticky top-0 bg-sidebar">
+      <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
-      <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
+      <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden sticky top-0 z-40">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -367,7 +366,7 @@ export default function ArtisanSidebar() {
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
+          <SheetContent side="left" className="w-64 p-0 z-[101]">
              <SheetHeader>
                 <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>

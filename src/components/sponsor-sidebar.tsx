@@ -27,7 +27,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
-import { ScrollArea } from './ui/scroll-area';
 
 const baseNavItems = [
   { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main'] },
@@ -276,10 +275,10 @@ function NavContent() {
 export default function SponsorSidebar() {
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-screen sticky top-0">
+      <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0">
         <NavContent />
       </aside>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline" className="sm:hidden">
@@ -287,7 +286,7 @@ export default function SponsorSidebar() {
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
+          <SheetContent side="left" className="w-64 p-0 z-[101]">
              <SheetHeader>
               <SheetTitle className='sr-only'>Menu</SheetTitle>
             </SheetHeader>

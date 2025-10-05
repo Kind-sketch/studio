@@ -1,3 +1,4 @@
+
 'use client';
 
 import ArtisanSidebar from '@/components/artisan-sidebar';
@@ -19,11 +20,11 @@ export default function ArtisanLayout({
   }
 
   return (
-    <div className="flex h-screen flex-col md:flex-row">
+    <div className="flex h-full flex-col md:flex-row">
       <ArtisanSidebar />
       <main className="flex-1 overflow-y-auto bg-secondary/30">
         {children}
-        <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-50">
+        <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
             <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
                 <Plus className="h-6 w-6" />
             </Button>

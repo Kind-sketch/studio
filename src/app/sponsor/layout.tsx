@@ -1,3 +1,4 @@
+
 import SponsorSidebar from "@/components/sponsor-sidebar";
 
 export default function SponsorLayout({
@@ -6,7 +7,7 @@ export default function SponsorLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-full">
       <SponsorSidebar />
       <main className="flex-1 bg-secondary/30">{children}</main>
     </div>
