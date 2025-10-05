@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -95,8 +96,10 @@ export default function RoleSelectionPage() {
     translateContent();
   }, [language]);
 
-  const getPrefix = (roleName: string) => {
-    switch (roleName) {
+  const getPrefix = (roleIndex: number) => {
+    // We use the index to reliably know which original role we're dealing with
+    const originalRoleName = baseRoles[roleIndex].name;
+    switch (originalRoleName) {
         case 'Artisan': return translatedContent.artisanPrefix;
         case 'Buyer': return translatedContent.buyerPrefix;
         case 'Sponsor': return translatedContent.sponsorPrefix;
@@ -126,7 +129,7 @@ export default function RoleSelectionPage() {
                   <role.icon className="h-8 w-8 text-primary" />
                   <div>
                     <CardTitle className="font-headline text-base">
-                      {getPrefix(baseRoles[index].name)} {role.name}
+                      {getPrefix(index)} {role.name}
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {role.description}
