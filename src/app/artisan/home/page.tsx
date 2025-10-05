@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,18 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Input } from '@/components/ui/input';
 import type { SavedCollection, Product } from '@/lib/types';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
@@ -39,17 +28,10 @@ const CURRENT_ARTISAN_ID = '1';
 export default function ArtisanHomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ aiReview: string; } | null>(null);
-  const [collections, setCollections] = useState<SavedCollection[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { toast } = useToast();
   const { language } = useLanguage();
   
-  useEffect(() => {
-    const storedCollections = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
-    setCollections(storedCollections);
-  }, []);
-
   const [translatedContent, setTranslatedContent] = useState({
     pageTitle: "Your Creative Space",
     pageDescription: "Manage your products and get AI-powered feedback.",
@@ -68,16 +50,7 @@ export default function ArtisanHomePage() {
     aiGeneratedInsightsDescription: "Here's what our AI thinks.",
     aiReviewAnalysisTitle: "AI Review & Analysis",
     aiPlaceholder: "Your AI review and trend analysis will appear here.",
-    saveToCollectionTitle: "Save to Collection",
-    saveToCollectionDescription: 'Save "{productName}" to an existing collection or create a new one.',
-    existingCollections: "Existing Collections",
-    createNewCollection: "Create New Collection",
-    collectionNamePlaceholder: "e.g., 'Inspiration', 'Next Project'",
-    createAndSaveButton: "Create and Save",
     savedToCollectionToast: "Saved to {collectionName}",
-    collectionCreatedToast: "Collection Created",
-    collectionCreatedToastDesc: 'Successfully created and saved to "{collectionName}".',
-    cancelButton: "Cancel"
   });
 
   useEffect(() => {
@@ -104,16 +77,7 @@ export default function ArtisanHomePage() {
             aiGeneratedInsightsDescription: translatedTexts[14],
             aiReviewAnalysisTitle: translatedTexts[15],
             aiPlaceholder: translatedTexts[16],
-            saveToCollectionTitle: translatedTexts[17],
-            saveToCollectionDescription: translatedTexts[18],
-            existingCollections: translatedTexts[19],
-            createNewCollection: translatedTexts[20],
-            collectionNamePlaceholder: translatedTexts[21],
-            createAndSaveButton: translatedTexts[22],
-            savedToCollectionToast: translatedTexts[23],
-            collectionCreatedToast: translatedTexts[24],
-            collectionCreatedToastDesc: translatedTexts[25],
-            cancelButton: translatedTexts[26],
+            savedToCollectionToast: translatedTexts[17],
         });
       }
     };
@@ -128,13 +92,6 @@ export default function ArtisanHomePage() {
       productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
     })),
     defaultValues: { productDescription: '' },
-  });
-
-  const collectionForm = useForm({
-    resolver: zodResolver(z.object({
-      collectionName: z.string().min(2, 'Collection name must be at least 2 characters.'),
-    })),
-    defaultValues: { collectionName: '' },
   });
 
   async function onSubmit(values: { productDescription: string }) {
@@ -162,45 +119,34 @@ export default function ArtisanHomePage() {
     }
   }
 
-  function onSaveToCollection(collectionId: string) {
-    if (!selectedProduct) return;
-  
-    const updatedCollections = collections.map(c => 
-        c.id === collectionId 
-            ? { ...c, productIds: [...new Set([...c.productIds, selectedProduct.id])] } 
-            : c
-    );
-  
-    setCollections(updatedCollections);
-    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
-    
-    toast({
-        title: translatedContent.savedToCollectionToast.replace('{collectionName}', collections.find(c => c.id === collectionId)?.name || ''),
-    });
-    setSelectedProduct(null);
-  }
-  
-  function onCreateCollection(values: { collectionName: string }) {
-    if (!selectedProduct) return;
-  
-    const newCollection: SavedCollection = {
-        id: `coll-${Date.now()}`,
-        name: values.collectionName,
-        productIds: [selectedProduct.id],
-    };
-  
-    const updatedCollections = [...collections, newCollection];
-    setCollections(updatedCollections);
-    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
-  
-    toast({
-        title: translatedContent.collectionCreatedToast,
-        description: translatedContent.collectionCreatedToastDesc.replace('{collectionName}', values.collectionName),
-    });
-    collectionForm.reset();
-    setSelectedProduct(null);
-  }
+  function handleSaveToCollection(product: Product) {
+    if (!product) return;
 
+    const collections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    const categoryName = product.category;
+    let collection = collections.find(c => c.name === categoryName);
+
+    if (collection) {
+      // Add product to existing collection if not already there
+      if (!collection.productIds.includes(product.id)) {
+        collection.productIds.push(product.id);
+      }
+    } else {
+      // Create new collection for the category
+      collection = {
+        id: `coll-${Date.now()}-${Math.random()}`,
+        name: categoryName,
+        productIds: [product.id],
+      };
+      collections.push(collection);
+    }
+
+    localStorage.setItem('artisanCollections', JSON.stringify(collections));
+
+    toast({
+      title: translatedContent.savedToCollectionToast.replace('{collectionName}', categoryName),
+    });
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -209,134 +155,85 @@ export default function ArtisanHomePage() {
         <p className="text-muted-foreground">{translatedContent.pageDescription}</p>
       </header>
       
-      <AlertDialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <section className="mb-12">
-          <h2 className="font-headline text-2xl font-semibold mb-4">{translatedContent.myProductsTitle}</h2>
-          {myProducts.length > 0 ? (
-            <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
-                <CarouselContent>
-                {myProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                    <AlertDialogTrigger asChild>
-                      <ProductCard product={product} onSave={() => setSelectedProduct(product)} showSaveButton />
-                    </AlertDialogTrigger>
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-            </Carousel>
-           ) : (
-             <Card className="flex items-center justify-center p-12">
-                <div className="text-center text-muted-foreground">
-                    <p className="text-lg">You haven't added any products yet.</p>
-                </div>
-            </Card>
-           )}
-        </section>
-      
-        <section>
-          <div className="grid gap-8 lg:grid-cols-2">
-              <Card>
-                  <CardHeader>
-                      <CardTitle>{translatedContent.aiReviewTitle}</CardTitle>
-                      <CardDescription>{translatedContent.aiReviewDescription}</CardDescription>
-                  </CardHeader>
-                  <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)}>
-                      <CardContent>
-                          <FormField control={form.control} name="productDescription" render={({ field }) => (
-                          <FormItem>
-                              <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
-                              <FormControl><Textarea placeholder={translatedContent.productDescriptionPlaceholder} {...field} className="h-32" /></FormControl>
-                              <FormMessage />
-                          </FormItem>
-                          )} />
-                      </CardContent>
-                      <CardFooter>
-                          <Button type="submit" disabled={isLoading} className="w-full">
-                          {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {translatedContent.analyzingButton}</> : <><Lightbulb className="mr-2 h-4 w-4" /> {translatedContent.getReviewButton}</>}
-                          </Button>
-                      </CardFooter>
-                      </form>
-                  </Form>
-              </Card>
-
-              <Card className="flex flex-col">
-                  <CardHeader>
-                      <CardTitle>{translatedContent.aiGeneratedInsightsTitle}</CardTitle>
-                      <CardDescription>{translatedContent.aiGeneratedInsightsDescription}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1 space-y-6 flex flex-col">
-                      {isLoading && (
-                      <div className="flex h-full items-center justify-center">
-                          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                      </div>
-                      )}
-                      {!isLoading && !result && (
-                      <div className="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-secondary/50 p-8 text-center text-muted-foreground">
-                          <Sparkles className="h-12 w-12" />
-                          <p className="mt-4">{translatedContent.aiPlaceholder}</p>
-                      </div>
-                      )}
-                      {result && (
-                      <div className="space-y-6 flex-1 flex flex-col min-h-0">
-                          <div className="flex-1 flex flex-col min-h-0">
-                              <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.aiReviewAnalysisTitle}</h3>
-                              <ScrollArea className="flex-1 h-96">
-                                  <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
-                              </ScrollArea>
-                          </div>
-                      </div>
-                      )}
-                  </CardContent>
-              </Card>
-          </div>
-        </section>
-
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>{translatedContent.saveToCollectionTitle}</AlertDialogTitle>
-                <AlertDialogDescription>
-                    {translatedContent.saveToCollectionDescription.replace('{productName}', selectedProduct?.name || '')}
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="space-y-4 py-4">
-                {collections.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">{translatedContent.existingCollections}</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                            {collections.map(c => (
-                                <Button key={c.id} variant="outline" onClick={() => onSaveToCollection(c.id)}>
-                                    {c.name}
-                                </Button>
-                            ))}
-                        </div>
-                      </div>
-                )}
-                <Form {...collectionForm}>
-                    <form onSubmit={collectionForm.handleSubmit(onCreateCollection)} className="space-y-2">
-                        <h4 className="font-medium text-sm">{translatedContent.createNewCollection}</h4>
-                          <FormField
-                            control={collectionForm.control}
-                            name="collectionName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Input placeholder={translatedContent.collectionNamePlaceholder} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" className="w-full">{translatedContent.createAndSaveButton}</Button>
+      <section className="mb-12">
+        <h2 className="font-headline text-2xl font-semibold mb-4">{translatedContent.myProductsTitle}</h2>
+        {myProducts.length > 0 ? (
+          <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
+              <CarouselContent>
+              {myProducts.map((product) => (
+                  <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                  </CarouselItem>
+              ))}
+              </CarouselContent>
+          </Carousel>
+          ) : (
+            <Card className="flex items-center justify-center p-12">
+              <div className="text-center text-muted-foreground">
+                  <p className="text-lg">You haven't added any products yet.</p>
+              </div>
+          </Card>
+          )}
+      </section>
+    
+      <section>
+        <div className="grid gap-8 lg:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>{translatedContent.aiReviewTitle}</CardTitle>
+                    <CardDescription>{translatedContent.aiReviewDescription}</CardDescription>
+                </CardHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardContent>
+                        <FormField control={form.control} name="productDescription" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
+                            <FormControl><Textarea placeholder={translatedContent.productDescriptionPlaceholder} {...field} className="h-32" /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )} />
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" disabled={isLoading} className="w-full">
+                        {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {translatedContent.analyzingButton}</> : <><Lightbulb className="mr-2 h-4 w-4" /> {translatedContent.getReviewButton}</>}
+                        </Button>
+                    </CardFooter>
                     </form>
                 </Form>
-            </div>
-            <AlertDialogFooter>
-                <AlertDialogCancel>{translatedContent.cancelButton}</AlertDialogCancel>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Card>
 
+            <Card className="flex flex-col">
+                <CardHeader>
+                    <CardTitle>{translatedContent.aiGeneratedInsightsTitle}</CardTitle>
+                    <CardDescription>{translatedContent.aiGeneratedInsightsDescription}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 space-y-6 flex flex-col">
+                    {isLoading && (
+                    <div className="flex h-full items-center justify-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                    )}
+                    {!isLoading && !result && (
+                    <div className="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-secondary/50 p-8 text-center text-muted-foreground">
+                        <Sparkles className="h-12 w-12" />
+                        <p className="mt-4">{translatedContent.aiPlaceholder}</p>
+                    </div>
+                    )}
+                    {result && (
+                    <div className="space-y-6 flex-1 flex flex-col min-h-0">
+                        <div className="flex-1 flex flex-col min-h-0">
+                            <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.aiReviewAnalysisTitle}</h3>
+                            <ScrollArea className="flex-1 h-96">
+                                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
+                            </ScrollArea>
+                        </div>
+                    </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+      </section>
     </div>
   );
 }
