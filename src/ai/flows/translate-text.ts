@@ -30,6 +30,7 @@ const prompt = ai.definePrompt({
   input: {schema: TranslateTextInputSchema},
   output: {schema: TranslateTextOutputSchema},
   prompt: `Translate the following array of texts into the language with code "{{targetLanguage}}".
+When translating, ensure that all pronouns are correctly translated according to the grammar and context of the target language. Do not leave pronouns in English unless their pronunciation is identical in the target language.
 Return the result as a JSON object with a single key "translatedTexts" which is an array of the translated strings, in the same order as the input.
 
 Input Texts:
