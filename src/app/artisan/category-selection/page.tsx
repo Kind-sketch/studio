@@ -106,7 +106,7 @@ export default function CategorySelectionPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,7 +115,7 @@ export default function CategorySelectionPage() {
               <Button
                 key={category.id}
                 variant={selectedCategories.includes(category.id) ? 'default' : 'outline'}
-                className="h-20 flex-col gap-2 relative"
+                className="h-20 flex-col gap-2 relative text-xs"
                 onClick={() => toggleCategory(category.id)}
               >
                 {selectedCategories.includes(category.id) && (
@@ -123,8 +123,8 @@ export default function CategorySelectionPage() {
                     <Check className="h-4 w-4" />
                   </div>
                 )}
-                <category.icon className="h-6 w-6" />
-                <span>{category.name}</span>
+                <category.icon className="h-5 w-5" />
+                <span className="text-center">{category.name}</span>
               </Button>
             ))}
           </div>

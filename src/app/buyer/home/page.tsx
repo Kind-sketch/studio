@@ -62,11 +62,11 @@ export default function BuyerHomePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 text-center">
-        <h1 className="font-headline text-4xl font-bold tracking-tight">
+      <header className="mb-8 text-center px-4">
+        <h1 className="font-headline text-3xl font-bold tracking-tight">
           {translatedContent.title}
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <p className="mt-2 text-md text-muted-foreground">
           {translatedContent.description}
         </p>
       </header>
@@ -76,15 +76,15 @@ export default function BuyerHomePage() {
         <h2 className="mb-4 font-headline text-2xl font-semibold">
           {translatedContent.categoriesTitle}
         </h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 md:grid-cols-5">
           {categories.map((category) => (
             <Card
               key={category.id}
               className="group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1"
             >
-              <CardContent className="flex flex-col items-center justify-center p-6">
-                <category.icon className="mb-2 h-8 w-8 text-primary transition-colors group-hover:text-accent-foreground" />
-                <span className="font-semibold text-foreground group-hover:text-accent-foreground">{category.name}</span>
+              <CardContent className="flex flex-col items-center justify-center p-3 md:p-6">
+                <category.icon className="mb-2 h-6 w-6 md:h-8 md:w-8 text-primary transition-colors group-hover:text-accent-foreground" />
+                <span className="font-semibold text-xs md:text-sm text-foreground group-hover:text-accent-foreground text-center">{category.name}</span>
               </CardContent>
             </Card>
           ))}

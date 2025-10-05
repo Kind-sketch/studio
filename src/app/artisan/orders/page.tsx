@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -128,14 +127,14 @@ export default function OrdersPage() {
                 />
                </div>
               <div className="flex-1 space-y-1">
-                <CardTitle className="text-lg font-headline">{order.name}</CardTitle>
+                <CardTitle className="text-lg font-headline leading-tight">{order.name}</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-0.5">
                     <p>Quantity: <span className="font-medium">{order.quantity}</span></p>
-                    <p>Order Date: <span className="font-medium">{format(new Date(order.orderDate), 'PPP p')}</span></p>
+                    <p>Order Date: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
                     <p>Expected Delivery: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
+              <div className="flex flex-col items-end gap-2 w-full sm:w-auto self-end sm:self-center">
                 <p className="font-bold text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <Button onClick={() => handleUpdate(order.id)} size="sm">Update Status</Button>
               </div>
@@ -173,12 +172,12 @@ export default function OrdersPage() {
                 />
                </div>
               <div className="flex-1">
-                <CardTitle className="text-lg font-headline mb-1">{order.name}</CardTitle>
+                <CardTitle className="text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">From: {order.buyerName}</p>
                 <p className="font-bold text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <p className="text-sm">Quantity: <span className="font-medium">{order.quantity}</span></p>
               </div>
-              <div className="flex sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
+              <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
                 <Button onClick={() => handleAccept(order.id)} className="w-full">
                   <Check className="mr-2 h-4 w-4" /> Accept
                 </Button>
@@ -196,7 +195,7 @@ export default function OrdersPage() {
   return (
     <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Manage Orders</h1>
+        <h1 className="font-headline text-3xl md:text-4xl font-bold">Manage Orders</h1>
         <p className="text-muted-foreground">Review requests and track ongoing orders.</p>
       </header>
 
@@ -210,15 +209,15 @@ export default function OrdersPage() {
         </TabsContent>
         <TabsContent value="my-orders">
           <Tabs defaultValue="processing" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 text-xs">
               <TabsTrigger value="processing">
-                <Package className="mr-2 h-4 w-4" /> Processing
+                <Package className="mr-1 h-4 w-4" /> Processing
               </TabsTrigger>
               <TabsTrigger value="shipped">
-                <Ship className="mr-2 h-4 w-4" /> Shipped
+                <Ship className="mr-1 h-4 w-4" /> Shipped
               </TabsTrigger>
               <TabsTrigger value="delivered">
-                <CheckCircle className="mr-2 h-4 w-4" /> Delivered
+                <CheckCircle className="mr-1 h-4 w-4" /> Delivered
               </TabsTrigger>
             </TabsList>
             <TabsContent value="processing">

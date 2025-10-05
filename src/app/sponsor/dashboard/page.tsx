@@ -89,8 +89,8 @@ export default function SponsorDashboardPage() {
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
-        <p className="text-lg text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl md:text-4xl font-bold">{translatedContent.title}</h1>
+        <p className="text-md md:text-lg text-muted-foreground">{translatedContent.description}</p>
       </header>
 
       <div className="space-y-12">
@@ -116,7 +116,7 @@ export default function SponsorDashboardPage() {
                     </div>
                   </CardContent>
                   <CardContent className="p-4">
-                     <p className="text-sm text-muted-foreground mb-4 h-10">
+                     <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">
                         {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
                      </p>
                     <Button className="w-full" onClick={() => handleSponsor(product)}>{translatedContent.sponsorButton}</Button>

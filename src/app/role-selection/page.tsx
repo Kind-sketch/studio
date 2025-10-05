@@ -88,38 +88,40 @@ export default function RoleSelectionPage() {
   }, [language]);
 
   return (
-    <div className="w-full max-w-sm text-center p-4">
-      <div className="mb-8 flex flex-col items-center">
-        <Logo className="mb-4 h-12 w-12 text-primary" />
-        <h1 className="font-headline text-3xl font-bold">
-          {translatedContent.welcome}
-        </h1>
-        <p className="mt-2 text-md text-muted-foreground">
-          {translatedContent.joinCommunity}
+    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
+      <div className="w-full max-w-sm text-center">
+        <div className="mb-8 flex flex-col items-center">
+          <Logo className="mb-4 h-10 w-10 text-primary" />
+          <h1 className="font-headline text-2xl font-bold">
+            {translatedContent.welcome}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {translatedContent.joinCommunity}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4">
+          {roles.map((role) => (
+            <Link href={role.href} key={role.name} passHref>
+              <Card className="transform-gpu cursor-pointer text-left transition-transform hover:scale-105 hover:shadow-xl">
+                <CardHeader className="flex flex-row items-center gap-4 p-4">
+                  <role.icon className="h-8 w-8 text-primary" />
+                  <div>
+                    <CardTitle className="font-headline text-base">
+                      {translatedContent.artisanPrefix} {role.name}
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      {role.description}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
+        <p className="mt-6 text-xs text-muted-foreground">
+          {translatedContent.footer}
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4">
-        {roles.map((role) => (
-          <Link href={role.href} key={role.name} passHref>
-            <Card className="transform-gpu cursor-pointer text-left transition-transform hover:scale-105 hover:shadow-xl">
-              <CardHeader className="flex flex-row items-center gap-4 p-4">
-                <role.icon className="h-8 w-8 text-primary" />
-                <div>
-                  <CardTitle className="font-headline text-lg">
-                    {translatedContent.artisanPrefix} {role.name}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {role.description}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
-       <p className="mt-6 text-xs text-muted-foreground">
-        {translatedContent.footer}
-      </p>
     </div>
   );
 }

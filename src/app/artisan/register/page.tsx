@@ -153,8 +153,8 @@ export default function ArtisanRegisterPage() {
             <div className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
             </div>
-          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-headline text-xl">{translatedContent.title}</CardTitle>
+          <CardDescription className="text-sm">
             {translatedContent.description}
           </CardDescription>
         </CardHeader>
@@ -168,7 +168,7 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                         <FormLabel>{translatedContent.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} disabled={otpSent} />
+                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -182,7 +182,7 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                       <FormLabel>{translatedContent.otpLabel}</FormLabel>
                       <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} disabled={!otpSent || isLoading} />
+                        <Input placeholder={translatedContent.otpPlaceholder} {...field} disabled={!otpSent || isLoading} className="text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

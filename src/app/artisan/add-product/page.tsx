@@ -110,12 +110,16 @@ export default function AddProductPage() {
 
   useEffect(() => {
     const getCameraPermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: true});
-        setHasCameraPermission(true);
-        stream.getTracks().forEach(track => track.stop());
-      } catch (error) {
-        console.error('Error accessing camera:', error);
+      if (typeof window !== 'undefined' && navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({video: true});
+          setHasCameraPermission(true);
+          stream.getTracks().forEach(track => track.stop()); // Stop immediately, we only need to check permission
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+        }
+      } else {
         setHasCameraPermission(false);
       }
     };
@@ -233,7 +237,7 @@ export default function AddProductPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>
         </CardHeader>
 
@@ -275,7 +279,7 @@ export default function AddProductPage() {
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline">
                         <Upload className="mr-2 h-4 w-4" />{translatedContent.uploadButton}
                     </Button>
-                    <Button onClick={startCamera} variant="outline">
+                    <Button onClick={startCamera} variant="outline" disabled={hasCameraPermission === null}>
                         <Camera className="mr-2 h-4 w-4" />{translatedContent.cameraButton}
                     </Button>
                 </>
