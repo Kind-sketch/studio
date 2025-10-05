@@ -1,3 +1,100 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "splash-screen",
+      "description": "Splash screen image for Artistry Havens",
+      "imageUrl": "https://images.unsplash.com/photo-1668840306122-526500331070?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcnRpc2FuJTIwcG90dGVyeSUyMGNsYXl8ZW58MHx8fHwxNzU5NjQ4MjgzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan pottery clay"
+    },
+    {
+      "id": "product-1",
+      "description": "Hand-painted ceramic vase",
+      "imageUrl": "https://images.unsplash.com/photo-1631125915973-e0d155a14e4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjZXJhbWljJTIwdmFzZXxlbnwwfHx8fDE3NTk1ODUzMTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ceramic vase"
+    },
+    {
+      "id": "product-2",
+      "description": "Woven wall tapestry",
+      "imageUrl": "https://images.unsplash.com/photo-1581558714049-220f0d812879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b3ZlbiUyMHRhcGVzdHJ5fGVufDB8fHx8MTc1OTY0ODI4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woven tapestry"
+    },
+    {
+      "id": "product-3",
+      "description": "Sculpted wooden bowl",
+      "imageUrl": "https://images.unsplash.com/photo-1609688538023-2090aa8e874e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b29kZW4lMjBib3dsfGVufDB8fHx8MTc1OTU4ODA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wooden bowl"
+    },
+    {
+      "id": "product-4",
+      "description": "Silver and turquoise necklace",
+      "imageUrl": "https://images.unsplash.com/photo-1611012916032-68e4d87901e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzaWx2ZXIlMjBuZWNrbGFjZXxlbnwwfHx8fDE3NTk1MzQzODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silver necklace"
+    },
+    {
+      "id": "product-5",
+      "description": "Abstract canvas painting",
+      "imageUrl": "https://images.unsplash.com/photo-1541512416146-3cf58d6b27cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhYnN0cmFjdCUyMHBhaW50aW5nfGVufDB8fHx8MTc1OTYyMDU3NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract painting"
+    },
+    {
+      "id": "product-6",
+      "description": "Leather-bound journal",
+      "imageUrl": "https://images.unsplash.com/photo-1583341655648-78bdf4ed6d13?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwam91cm5hbHxlbnwwfHx8fDE3NTk2MjQ4Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather journal"
+    },
+    {
+      "id": "product-7",
+      "description": "Hand-blown glass sculpture",
+      "imageUrl": "https://images.unsplash.com/photo-1572902705651-09421f68fae1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxnbGFzcyUyMHNjdWxwdHVyZXxlbnwwfHx8fDE3NTk2NDgyODN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "glass sculpture"
+    },
+    {
+      "id": "product-8",
+      "description": "Embroidered silk scarf",
+      "imageUrl": "https://images.unsplash.com/photo-1707978932202-751b08324daf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzaWxrJTIwc2NhcmZ8ZW58MHx8fHwxNzU5NTYwMDM0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silk scarf"
+    },
+    {
+      "id": "product-9",
+      "description": "Metalwork kinetic sculpture",
+      "imageUrl": "https://images.unsplash.com/photo-1641357435473-1bad6e870037?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWV0YWwlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzU5NTc4NDMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "metal sculpture"
+    },
+    {
+      "id": "product-10",
+      "description": "Handmade paper lanterns",
+      "imageUrl": "https://images.unsplash.com/photo-1683235408241-854aacf38863?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwYXBlciUyMGxhbnRlcm5zfGVufDB8fHx8MTc1OTY0ODI4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "paper lanterns"
+    },
+    {
+      "id": "artisan-1",
+      "description": "Artisan portrait",
+      "imageUrl": "https://images.unsplash.com/photo-1719154717789-2b4d2ec8105c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzU5NTg2OTYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "artisan-2",
+      "description": "Artisan portrait",
+      "imageUrl": "https://images.unsplash.com/photo-1749706075417-5998b38e352f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzU5NTg2OTYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "artisan-3",
+      "description": "Artisan portrait",
+      "imageUrl": "https://images.unsplash.com/photo-1719154717749-0d05f61a0588?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcnRpc2FuJTIwd29tYW58ZW58MHx8fHwxNzU5NjQ4MjgzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan woman"
+    },
+    {
+      "id": "artisan-4",
+      "description": "Artisan portrait",
+      "imageUrl": "https://images.unsplash.com/photo-1536243696867-c8cec3c7d5d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpc2FuJTIwbWFufGVufDB8fHx8MTc1OTY0ODI4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan man"
+    },
+    {
+      "id": "artisan-5",
+      "description": "Artisan portrait",
+      "imageUrl": "https://images.unsplash.com/photo-1720381297951-591944869f00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjcmFmdHNwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTk2NDgyODN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "craftsperson portrait"
+    }
+  ]
 }
