@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/context/language-context';
+import { useEffect, useState } from 'react';
 
 const metadata: Metadata = {
   title: 'Artistry Havens',
@@ -16,6 +17,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,7 +44,7 @@ export default function RootLayout({
             <div className="h-full w-full overflow-y-auto">
               {children}
             </div>
-            <Toaster />
+            {isClient && <Toaster />}
           </div>
         </LanguageProvider>
       </body>
