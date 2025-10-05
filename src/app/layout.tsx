@@ -30,15 +30,15 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased flex items-center justify-center min-h-screen">
+      <body className="font-body antialiased flex items-center justify-center min-h-screen bg-zinc-200 dark:bg-zinc-800">
         <LanguageProvider>
           <div className="relative w-full max-w-[420px] h-[860px] max-h-[90vh] bg-background shadow-2xl rounded-3xl overflow-hidden border-4 border-black">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-6 bg-black rounded-b-xl z-50"></div>
             <div className="h-full w-full overflow-y-auto">
               {children}
             </div>
+            <Toaster />
           </div>
-          <Toaster />
         </LanguageProvider>
       </body>
     </html>
