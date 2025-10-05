@@ -381,17 +381,11 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
 
     return (
         <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground w-64 border-r border-sidebar-border">
-            <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
+            <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
-                {closeSheet && (
-                    <Button variant="ghost" size="icon" onClick={closeSheet} className="absolute right-4 top-4">
-                        <X className="h-5 w-5" />
-                        <span className="sr-only">Close</span>
-                    </Button>
-                )}
             </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
