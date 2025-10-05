@@ -1,13 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import 'regenerator-runtime/runtime';
 import {
   Home,
   FileText,
   DollarSign,
   LogOut,
   PanelLeft,
+  MessageCircleQuestion,
+  Mic,
 } from 'lucide-react';
 import {
   Sheet,
@@ -20,13 +23,120 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const baseNavItems = [
-  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign },
-  { href: '/sponsor/requests', label: 'Requests', icon: FileText },
+  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main'] },
+  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign, keywords: ['revenue', 'generated', 'money', 'earnings'] },
+  { href: '/sponsor/requests', label: 'Requests', icon: FileText, keywords: ['requests', 'offers'] },
 ];
+
+function HeaderActions() {
+    const { toast } = useToast();
+    const router = useRouter();
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = (event: any) => {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    handleVoiceCommand(command);
+                };
+
+                recognition.onerror = (event: any) => {
+                    console.error('Speech recognition error', event.error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Voice Error',
+                        description: 'Could not recognize your voice. Please try again.',
+                    });
+                    setIsListening(false);
+                };
+
+                recognition.onend = () => {
+                    setIsListening(false);
+                };
+
+                recognitionRef.current = recognition;
+            }
+        }
+    }, [toast]);
+
+    const handleMicClick = () => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+        } else {
+            if (recognitionRef.current) {
+                recognitionRef.current.start();
+                setIsListening(true);
+                toast({
+                    title: 'Listening...',
+                    description: 'Please say a command.',
+                });
+            } else {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Not Supported',
+                    description: 'Voice command is not supported on your browser.',
+                });
+            }
+        }
+    };
+
+    const handleSupportClick = () => {
+        toast({
+        title: 'Support',
+        description: 'Support functionality is not yet implemented.',
+        });
+    };
+
+    const handleVoiceCommand = (command: string) => {
+        for (const item of baseNavItems) {
+            if (item.keywords.some(keyword => command.includes(keyword))) {
+                router.push(item.href);
+                return;
+            }
+        }
+
+        toast({
+            variant: 'destructive',
+            title: 'Command Not Recognized',
+            description: `Could not find a page for "${command}".`,
+        });
+    };
+
+    return (
+        <div className="ml-auto flex items-center gap-2">
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSupportClick}
+                aria-label="Support"
+            >
+                <MessageCircleQuestion className="h-5 w-5" />
+            </Button>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleMicClick}
+                aria-label="Use Voice Command"
+                className={cn("rounded-full bg-primary/10 text-primary hover:bg-primary/20", isListening && "animate-pulse")}
+            >
+                <Mic className="h-5 w-5" />
+            </Button>
+        </div>
+    )
+}
 
 function NavContent() {
     const pathname = usePathname();
@@ -128,6 +238,7 @@ export default function SponsorSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
+        <HeaderActions />
       </header>
     </>
   );
