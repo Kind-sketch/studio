@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { generateProductDetails } from '@/ai/flows/generate-product-details';
 import { productCategories as baseProductCategories, artisans } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import ProductPreview from '@/components/product-preview';
 
 
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye } from 'lucide-reac
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import ProductCard from '@/components/product-card';
 
 
@@ -445,17 +446,17 @@ export default function AddProductPage() {
                     {translatedContent.previewButton}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-xs">
-                  <DialogHeader>
-                    <DialogTitle>{translatedContent.previewTitle}</DialogTitle>
-                    <DialogDescription>
-                      {translatedContent.previewDescription}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex justify-center">
-                    <div className="w-64">
-                       <ProductCard product={previewProduct} />
+                <DialogContent className="max-w-full w-full h-full max-h-full p-0 flex flex-col">
+                    <div className="relative p-4 border-b">
+                        <DialogTitle className="text-center font-headline">{translatedContent.previewTitle}</DialogTitle>
+                         <DialogClose className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <Button variant="ghost" size="icon">
+                                <ChevronLeft className="h-6 w-6" />
+                            </Button>
+                         </DialogClose>
                     </div>
+                  <div className="flex-1 overflow-y-auto">
+                     <ProductPreview product={previewProduct} />
                   </div>
                 </DialogContent>
               </Dialog>
