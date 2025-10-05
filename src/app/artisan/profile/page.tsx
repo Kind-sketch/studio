@@ -41,10 +41,10 @@ export default function ProfilePage() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: artisan.name,
-      companyName: artisan.companyName,
-      address: artisan.address,
-      phone: artisan.phone,
+      name: '',
+      companyName: '',
+      address: '',
+      phone: '',
     },
   });
 
@@ -52,18 +52,19 @@ export default function ProfilePage() {
     // In a real app, you would fetch user data here.
     // For now, we load from our mock state.
     const storedProfile = localStorage.getItem('artisanProfile');
+    let data;
     if (storedProfile) {
-        const data = JSON.parse(storedProfile);
+        data = JSON.parse(storedProfile);
         setArtisan(prev => ({...prev, ...data}));
-        form.reset(data);
     } else {
-        form.reset({
+        data = {
             name: artisan.name,
             companyName: artisan.companyName,
             address: artisan.address,
             phone: artisan.phone,
-        });
+        };
     }
+    form.reset(data);
   }, [form, artisan.name, artisan.companyName, artisan.address, artisan.phone]);
 
 
