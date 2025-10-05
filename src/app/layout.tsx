@@ -4,10 +4,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import MainHeader from '@/components/main-header';
 import { LanguageProvider } from '@/context/language-context';
-import { usePathname } from 'next/navigation';
-
 
 const metadata: Metadata = {
   title: 'Artistry Havens',
@@ -19,10 +16,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const noHeaderPaths = ['/', '/language-selection', '/role-selection'];
-  const showHeader = !noHeaderPaths.includes(pathname);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,10 +30,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased flex items-center justify-center min-h-screen">
         <LanguageProvider>
-          {showHeader && <MainHeader />}
-          {children}
+          <div className="relative w-full max-w-[420px] h-[860px] max-h-[90vh] bg-background shadow-2xl rounded-3xl overflow-hidden border-4 border-black">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-6 bg-black rounded-b-xl z-50"></div>
+            <div className="h-full w-full overflow-y-auto">
+              {children}
+            </div>
+          </div>
           <Toaster />
         </LanguageProvider>
       </body>
