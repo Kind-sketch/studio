@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import ProductCard from '@/components/product-card';
 import type { SavedCollection, Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
@@ -10,10 +10,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function SavedCollectionPage() {
   const [collections, setCollections] = useState<SavedCollection[]>([]);
+  const [openCollections, setOpenCollections] = useState<string[]>([]);
 
   useEffect(() => {
-    const storedCollections = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    const storedCollections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
     setCollections(storedCollections);
+    setOpenCollections(storedCollections.map(c => c.id));
   }, []);
 
   return (
@@ -24,7 +26,7 @@ export default function SavedCollectionPage() {
       </header>
 
       {collections.length > 0 ? (
-        <Accordion type="multiple" defaultValue={collections.map(c => c.id)} className="w-full space-y-4">
+        <Accordion type="multiple" value={openCollections} onValueChange={setOpenCollections} className="w-full space-y-4">
           {collections.map(collection => (
             <Card key={collection.id}>
                 <AccordionItem value={collection.id} className="border-b-0">
