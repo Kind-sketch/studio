@@ -6,6 +6,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/context/language-context';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const metadata: Metadata = {
   title: 'Artistry Havens',
@@ -39,7 +40,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased flex items-center justify-center bg-zinc-200 dark:bg-zinc-800" suppressHydrationWarning>
         <LanguageProvider>
-          <div className="relative w-full max-w-[420px] h-screen bg-background shadow-2xl overflow-hidden">
+          <div className={cn("relative w-full max-w-[420px] bg-background shadow-2xl overflow-hidden", isClient ? "h-screen" : "h-full")}>
             <div className="h-full w-full overflow-y-auto">
               {children}
             </div>
