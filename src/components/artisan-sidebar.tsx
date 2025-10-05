@@ -420,9 +420,6 @@ export default function ArtisanSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
-         <Button onClick={() => router.back()} variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
-            <ChevronLeft className="h-6 w-6" />
-        </Button>
         <div className="ml-auto">
             <MainHeader isArtisanFlow={true}/>
         </div>

@@ -341,6 +341,9 @@ export default function AddProductPage() {
 
   return (
     <div className="p-4">
+      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
       <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
           <div className="text-center">
