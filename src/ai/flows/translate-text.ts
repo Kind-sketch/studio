@@ -40,6 +40,9 @@ Input Texts:
 `,
 });
 
+// Simple in-memory cache
+const translationCache = new Map<string, string>();
+
 const translateTextFlow = ai.defineFlow(
   {
     name: 'translateTextFlow',
@@ -50,7 +53,59 @@ const translateTextFlow = ai.defineFlow(
     if (input.targetLanguage === 'en') {
       return { translatedTexts: input.texts };
     }
-    const {output} = await prompt(input);
-    return output!;
+
+    const { texts, targetLanguage } = input;
+    const translatedTexts: string[] = [];
+    const textsToTranslate: string[] = [];
+    const indicesToTranslate: number[] = [];
+
+    // Check cache for existing translations
+    texts.forEach((text, index) => {
+      const cacheKey = `${targetLanguage}:${text}`;
+      if (translationCache.has(cacheKey)) {
+        translatedTexts[index] = translationCache.get(cacheKey)!;
+      } else {
+        textsToTranslate.push(text);
+        indicesToTranslate.push(index);
+      }
+    });
+
+    // If all texts are in cache, return them
+    if (textsToTranslate.length === 0) {
+      // Need to build the final array in the correct order
+      const finalTexts: string[] = [];
+      texts.forEach((text, index) => {
+         const cacheKey = `${targetLanguage}:${text}`;
+         finalTexts[index] = translationCache.get(cacheKey)!;
+      });
+      return { translatedTexts: finalTexts };
+    }
+
+    // Call AI for texts that are not in the cache
+    const { output } = await prompt({ texts: textsToTranslate, targetLanguage });
+
+    if (output) {
+      // Store new translations in cache and populate the results
+      output.translatedTexts.forEach((translatedText, i) => {
+        const originalIndex = indicesToTranslate[i];
+        const originalText = textsToTranslate[i];
+        const cacheKey = `${targetLanguage}:${originalText}`;
+        
+        translationCache.set(cacheKey, translatedText);
+        translatedTexts[originalIndex] = translatedText;
+      });
+    }
+
+    // Fill any gaps with original text if translation failed for some items
+    for(let i = 0; i < texts.length; i++) {
+        if (translatedTexts[i] === undefined) {
+             const cacheKey = `${targetLanguage}:${texts[i]}`;
+             if (translationCache.has(cacheKey)) {
+                translatedTexts[i] = translationCache.get(cacheKey)!;
+             }
+        }
+    }
+
+    return { translatedTexts };
   }
 );
