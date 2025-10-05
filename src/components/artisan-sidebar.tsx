@@ -135,8 +135,8 @@ function NavContent() {
     };
 
     return (
-        <div className="flex h-full flex-col bg-card">
-            <div className="flex h-16 shrink-0 items-center border-b px-4">
+        <div className="flex h-full flex-col bg-sidebar">
+            <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
             <Link href="/" className="flex items-center gap-2 font-semibold">
                 <Logo className="h-8 w-8 text-primary" />
                 <span className="font-headline text-xl">Artistry Havens</span>
@@ -149,8 +149,8 @@ function NavContent() {
                     <Link
                     href={item.href}
                     className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                        isLinkActive(item.href) && 'bg-accent text-primary font-semibold'
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                        isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
                     )}
                     >
                     <item.icon className="h-4 w-4" />
@@ -164,8 +164,8 @@ function NavContent() {
                 <Link
                 href={'/artisan/orders'}
                 className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                    isLinkActive('/artisan/orders') && 'bg-accent text-primary font-semibold'
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
                 )}
                 >
                 <Package className="h-4 w-4" />
@@ -176,8 +176,8 @@ function NavContent() {
                 <Link
                 href={'/artisan/sponsors'}
                 className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                    isLinkActive('/artisan/sponsors') && 'bg-accent text-primary font-semibold'
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
                 )}
                 >
                 <HeartHandshake className="h-4 w-4" />
@@ -185,12 +185,12 @@ function NavContent() {
                 </Link>
             </div>
             </nav>
-            <div className="mt-auto border-t p-4 space-y-2">
+            <div className="mt-auto border-t border-sidebar-border p-4 space-y-2">
                 {translatedBottomNav.map(item => (
                      <Link
                         key={item.href}
                         href={item.href}
-                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive(item.href) && "bg-accent text-primary font-semibold" )}
+                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
                         >
                         <item.icon className="h-4 w-4" />
                         {item.label}
@@ -205,10 +205,10 @@ function NavContent() {
 export default function ArtisanSidebar() {
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-screen sticky top-0">
+      <aside className="hidden w-64 flex-col border-r md:flex h-screen sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-sidebar px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline" className="sm:hidden">
