@@ -30,9 +30,9 @@ import { useEffect, useState, useRef } from 'react';
 import MainHeader from './main-header';
 
 const baseNavItems = [
-  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main', 'discover'] },
-  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign, keywords: ['revenue', 'generated', 'money', 'earnings', 'returns', 'investment'] },
-  { href: '/sponsor/requests', label: 'Requests', icon: FileText, keywords: ['requests', 'offers', 'sent', 'pending'] },
+  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home },
+  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign },
+  { href: '/sponsor/requests', label: 'Requests', icon: FileText },
 ];
 
 function NavContent() {
@@ -123,7 +123,7 @@ export default function SponsorSidebar() {
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0">
         <NavContent />
       </aside>
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline" className="sm:hidden">
