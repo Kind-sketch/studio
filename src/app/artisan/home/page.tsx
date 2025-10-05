@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 import { products as allProducts } from '@/lib/data';
 import ProductCard from '@/components/product-card';
