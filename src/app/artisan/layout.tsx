@@ -9,7 +9,7 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/profile', '/artisan/post-auth', '/artisan/register-recovery'];
+  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/profile', '/artisan/post-auth'];
 
   if (noSidebarRoutes.includes(pathname)) {
     return <main>{children}</main>;
