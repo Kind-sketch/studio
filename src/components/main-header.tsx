@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import SupportDialog from '@/components/support-dialog';
-import { HeaderActions } from '@/components/artisan-sidebar';
 
 
 const navKeywords: { [key: string]: string[] } = {
@@ -167,11 +166,6 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
 
   const isSponsorPage = pathname.startsWith('/sponsor/');
   const shouldHideOnDesktop = isSponsorPage && !isArtisanFlow;
-  
-  if (isArtisanFlow) {
-      return <HeaderActions />;
-  }
-
 
   return (
     <div className={cn("ml-auto flex items-center gap-2", shouldHideOnDesktop && "md:hidden")}>
@@ -196,5 +190,3 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
       </div>
   );
 }
-
-    

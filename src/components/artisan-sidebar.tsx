@@ -45,7 +45,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
-import MainHeader from './main-header';
 import SupportDialog from './support-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
@@ -496,9 +495,7 @@ export default function ArtisanSidebar() {
               <NavContent closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
-        <div className="ml-auto">
-            <MainHeader isArtisanFlow={true}/>
-        </div>
+        <HeaderActions />
       </header>
     </>
   );
