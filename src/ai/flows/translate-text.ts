@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 
 const TranslateTextInputSchema = z.object({
   texts: z.array(z.string()).describe('An array of texts to be translated.'),
@@ -55,57 +55,47 @@ const translateTextFlow = ai.defineFlow(
     }
 
     const { texts, targetLanguage } = input;
-    const translatedTexts: string[] = [];
+    const finalTranslations = new Array<string>(texts.length);
     const textsToTranslate: string[] = [];
     const indicesToTranslate: number[] = [];
 
-    // Check cache for existing translations
+    // Check cache for existing translations and prepare for AI call
     texts.forEach((text, index) => {
       const cacheKey = `${targetLanguage}:${text}`;
       if (translationCache.has(cacheKey)) {
-        translatedTexts[index] = translationCache.get(cacheKey)!;
+        finalTranslations[index] = translationCache.get(cacheKey)!;
       } else {
         textsToTranslate.push(text);
         indicesToTranslate.push(index);
       }
     });
 
-    // If all texts are in cache, return them
-    if (textsToTranslate.length === 0) {
-      // Need to build the final array in the correct order
-      const finalTexts: string[] = [];
-      texts.forEach((text, index) => {
-         const cacheKey = `${targetLanguage}:${text}`;
-         finalTexts[index] = translationCache.get(cacheKey)!;
-      });
-      return { translatedTexts: finalTexts };
+    // If there are any texts that need translation, call the AI
+    if (textsToTranslate.length > 0) {
+      const { output } = await prompt({ texts: textsToTranslate, targetLanguage });
+
+      if (output && output.translatedTexts) {
+        // Store new translations in cache and populate the results array
+        output.translatedTexts.forEach((translatedText, i) => {
+          const originalIndex = indicesToTranslate[i];
+          const originalText = textsToTranslate[i];
+          const cacheKey = `${targetLanguage}:${originalText}`;
+          
+          translationCache.set(cacheKey, translatedText);
+          finalTranslations[originalIndex] = translatedText;
+        });
+      }
     }
-
-    // Call AI for texts that are not in the cache
-    const { output } = await prompt({ texts: textsToTranslate, targetLanguage });
-
-    if (output) {
-      // Store new translations in cache and populate the results
-      output.translatedTexts.forEach((translatedText, i) => {
-        const originalIndex = indicesToTranslate[i];
-        const originalText = textsToTranslate[i];
-        const cacheKey = `${targetLanguage}:${originalText}`;
-        
-        translationCache.set(cacheKey, translatedText);
-        translatedTexts[originalIndex] = translatedText;
-      });
-    }
-
-    // Fill any gaps with original text if translation failed for some items
-    for(let i = 0; i < texts.length; i++) {
-        if (translatedTexts[i] === undefined) {
-             const cacheKey = `${targetLanguage}:${texts[i]}`;
-             if (translationCache.has(cacheKey)) {
-                translatedTexts[i] = translationCache.get(cacheKey)!;
-             }
+    
+    // As a fallback, if any translation is missing (e.g., AI failed for an item),
+    // fill it with the original text.
+    for(let i = 0; i < finalTranslations.length; i++) {
+        if (finalTranslations[i] === undefined) {
+             finalTranslations[i] = texts[i];
         }
     }
 
-    return { translatedTexts };
+
+    return { translatedTexts: finalTranslations };
   }
 );
