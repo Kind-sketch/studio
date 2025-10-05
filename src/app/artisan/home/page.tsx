@@ -45,6 +45,11 @@ export default function ArtisanHomePage() {
   const { toast } = useToast();
   const { language } = useLanguage();
   
+  useEffect(() => {
+    const storedCollections = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    setCollections(storedCollections);
+  }, []);
+
   const [translatedContent, setTranslatedContent] = useState({
     pageTitle: "Your Creative Space",
     pageDescription: "Manage your products and get AI-powered feedback.",
@@ -159,23 +164,35 @@ export default function ArtisanHomePage() {
 
   function onSaveToCollection(collectionId: string) {
     if (!selectedProduct) return;
-
-    setCollections(prev => prev.map(c => 
-        c.id === collectionId ? { ...c, productIds: [...c.productIds, selectedProduct.id] } : c
-    ));
+  
+    const updatedCollections = collections.map(c => 
+        c.id === collectionId 
+            ? { ...c, productIds: [...new Set([...c.productIds, selectedProduct.id])] } 
+            : c
+    );
+  
+    setCollections(updatedCollections);
+    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
+    
     toast({
         title: translatedContent.savedToCollectionToast.replace('{collectionName}', collections.find(c => c.id === collectionId)?.name || ''),
     });
     setSelectedProduct(null);
   }
-
+  
   function onCreateCollection(values: { collectionName: string }) {
+    if (!selectedProduct) return;
+  
     const newCollection: SavedCollection = {
         id: `coll-${Date.now()}`,
         name: values.collectionName,
-        productIds: selectedProduct ? [selectedProduct.id] : [],
+        productIds: [selectedProduct.id],
     };
-    setCollections(prev => [...prev, newCollection]);
+  
+    const updatedCollections = [...collections, newCollection];
+    setCollections(updatedCollections);
+    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
+  
     toast({
         title: translatedContent.collectionCreatedToast,
         description: translatedContent.collectionCreatedToastDesc.replace('{collectionName}', values.collectionName),
@@ -200,7 +217,9 @@ export default function ArtisanHomePage() {
                 <CarouselContent>
                 {myProducts.map((product) => (
                     <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                    <ProductCard product={product} />
+                    <AlertDialogTrigger asChild>
+                      <ProductCard product={product} onSave={() => setSelectedProduct(product)} showSaveButton />
+                    </AlertDialogTrigger>
                     </CarouselItem>
                 ))}
                 </CarouselContent>

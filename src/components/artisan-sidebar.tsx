@@ -15,7 +15,8 @@ import {
   Mic,
   MessageCircleQuestion,
   DollarSign,
-  ShoppingBag
+  ShoppingBag,
+  Bookmark
 } from 'lucide-react';
 import {
   Sheet,
@@ -92,13 +93,14 @@ function NavContent() {
     const [translatedBottomNav, setTranslatedBottomNav] = useState(bottomNavItems);
     const [translatedOrders, setTranslatedOrders] = useState('Orders');
     const [translatedSponsors, setTranslatedSponsors] = useState('Sponsors');
+    const [translatedSavedCollection, setTranslatedSavedCollection] = useState('Saved Collection');
 
     useEffect(() => {
         const translateNav = async () => {
             if (language !== 'en') {
                 const labels = baseNavItems.map(item => item.label);
                 const bottomLabels = bottomNavItems.map(item => item.label);
-                const { translatedTexts } = await translateText({ texts: [...labels, 'Orders', 'Sponsors', ...bottomLabels], targetLanguage: language });
+                const { translatedTexts } = await translateText({ texts: [...labels, 'Orders', 'Sponsors', 'Saved Collection', ...bottomLabels], targetLanguage: language });
                 
                 const translatedNavItems = baseNavItems.map((item, index) => ({
                     ...item,
@@ -108,10 +110,11 @@ function NavContent() {
 
                 setTranslatedOrders(translatedTexts[labels.length]);
                 setTranslatedSponsors(translatedTexts[labels.length + 1]);
+                setTranslatedSavedCollection(translatedTexts[labels.length + 2]);
 
                 const newBottomNav = bottomNavItems.map((item, index) => ({
                     ...item,
-                    label: translatedTexts[labels.length + 2 + index],
+                    label: translatedTexts[labels.length + 3 + index],
                 }));
                 setTranslatedBottomNav(newBottomNav);
 
@@ -120,6 +123,7 @@ function NavContent() {
                 setTranslatedBottomNav(bottomNavItems);
                 setTranslatedOrders('Orders');
                 setTranslatedSponsors('Sponsors');
+                setTranslatedSavedCollection('Saved Collection');
             }
         };
         translateNav();
@@ -183,6 +187,18 @@ function NavContent() {
                 >
                 <HeartHandshake className="h-4 w-4" />
                 {translatedSponsors}
+                </Link>
+            </div>
+            <div className="px-3 py-2">
+                <Link
+                href={'/artisan/saved-collection'}
+                className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
+                )}
+                >
+                <Bookmark className="h-4 w-4" />
+                {translatedSavedCollection}
                 </Link>
             </div>
             </nav>

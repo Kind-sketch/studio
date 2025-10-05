@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -49,6 +49,11 @@ export default function TrendsPage() {
 
   const { toast } = useToast();
 
+  useEffect(() => {
+    const storedCollections = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    setCollections(storedCollections);
+  }, []);
+
   const bestSelling = [...products].sort((a, b) => b.sales - a.sales);
   const frequentlyBought = [...products].sort((a, b) => b.likes - a.likes);
 
@@ -89,23 +94,35 @@ export default function TrendsPage() {
 
   function onSaveToCollection(collectionId: string) {
     if (!selectedProduct) return;
-
-    setCollections(prev => prev.map(c => 
-        c.id === collectionId ? { ...c, productIds: [...c.productIds, selectedProduct.id] } : c
-    ));
+  
+    const updatedCollections = collections.map(c => 
+        c.id === collectionId 
+            ? { ...c, productIds: [...new Set([...c.productIds, selectedProduct.id])] } 
+            : c
+    );
+  
+    setCollections(updatedCollections);
+    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
+    
     toast({
         title: `Saved to ${collections.find(c => c.id === collectionId)?.name}`,
     });
     setSelectedProduct(null);
   }
-
+  
   function onCreateCollection(values: z.infer<typeof collectionSchema>) {
+    if (!selectedProduct) return;
+  
     const newCollection: SavedCollection = {
         id: `coll-${Date.now()}`,
         name: values.collectionName,
-        productIds: selectedProduct ? [selectedProduct.id] : [],
+        productIds: [selectedProduct.id],
     };
-    setCollections(prev => [...prev, newCollection]);
+  
+    const updatedCollections = [...collections, newCollection];
+    setCollections(updatedCollections);
+    localStorage.setItem('artisanCollections', JSON.stringify(updatedCollections));
+  
     toast({
         title: "Collection Created",
         description: `Successfully created and saved to "${values.collectionName}".`
