@@ -82,7 +82,15 @@ function HeaderActions() {
 function NavContent() {
     const pathname = usePathname();
     
-    const isLinkActive = (href: string) => pathname.startsWith(href);
+    const isLinkActive = (href: string) => {
+        if (href === '/artisan/orders') {
+            return pathname.startsWith('/artisan/orders');
+        }
+        if (href === '/artisan/sponsors') {
+            return pathname.startsWith('/artisan/sponsors');
+        }
+        return pathname === href;
+    };
 
     return (
         <div className="flex h-full flex-col bg-card">

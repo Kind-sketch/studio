@@ -45,8 +45,13 @@ export default function OrdersPage() {
     setMyOrders(enrichedOrders);
 
     // Mock loading order requests
-     if (!localStorage.getItem('myOrders')) {
-        setOrderRequests(sampleProducts.slice(0, 3).map(p => ({...p, quantity: Math.floor(Math.random() * 3) + 1, buyerName: "Random Buyer"})));
+     if (!localStorage.getItem('myOrders') && !localStorage.getItem('hasLoadedOrderRequests')) {
+        const initialRequests = sampleProducts.slice(0, 3).map(p => ({...p, quantity: Math.floor(Math.random() * 3) + 1, buyerName: "Random Buyer"}));
+        setOrderRequests(initialRequests);
+        localStorage.setItem('orderRequests', JSON.stringify(initialRequests));
+        localStorage.setItem('hasLoadedOrderRequests', 'true');
+     } else {
+        setOrderRequests(JSON.parse(localStorage.getItem('orderRequests') || '[]'));
      }
   }, []);
 
@@ -67,9 +72,12 @@ export default function OrdersPage() {
         const deliveryDate = new Date(newOrder.orderDate);
         deliveryDate.setDate(deliveryDate.getDate() + 7);
         newOrder.expectedDelivery = deliveryDate.toISOString();
-
         setMyOrders(updatedMyOrders);
-        setOrderRequests(prev => prev.filter(order => order.id !== orderId));
+        
+        const updatedRequests = orderRequests.filter(order => order.id !== orderId);
+        setOrderRequests(updatedRequests);
+        localStorage.setItem('orderRequests', JSON.stringify(updatedRequests));
+
         toast({
           title: 'Order Accepted',
           description: 'The order has been moved to "My Orders".',
@@ -78,7 +86,10 @@ export default function OrdersPage() {
   };
 
   const handleDecline = (orderId: string) => {
-    setOrderRequests(prev => prev.filter(order => order.id !== orderId));
+    const updatedRequests = orderRequests.filter(order => order.id !== orderId);
+    setOrderRequests(updatedRequests);
+    localStorage.setItem('orderRequests', JSON.stringify(updatedRequests));
+
     toast({
       variant: 'destructive',
       title: 'Order Declined',
@@ -106,13 +117,15 @@ export default function OrdersPage() {
         {filteredOrders.map(order => (
           <Card key={order.id} className="overflow-hidden">
             <CardContent className="p-4 flex flex-col sm:flex-row items-start gap-4">
-              <Image
-                src={order.image.url}
-                alt={order.name}
-                width={100}
-                height={100}
-                className="rounded-md object-cover aspect-square bg-muted"
-              />
+               <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+                <Image
+                    src={order.image.url}
+                    alt={order.name}
+                    width={128}
+                    height={128}
+                    className="rounded-md object-cover aspect-square bg-muted"
+                />
+               </div>
               <div className="flex-1 space-y-1">
                 <CardTitle className="text-lg font-headline">{order.name}</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-0.5">
@@ -149,13 +162,15 @@ export default function OrdersPage() {
         {orderRequests.map((order) => (
           <Card key={order.id} className="overflow-hidden">
             <CardContent className="p-4 flex flex-col sm:flex-row items-start gap-4">
-              <Image
-                src={order.image.url}
-                alt={order.name}
-                width={120}
-                height={120}
-                className="rounded-md object-cover aspect-square bg-muted"
-              />
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+                <Image
+                    src={order.image.url}
+                    alt={order.name}
+                    width={128}
+                    height={128}
+                    className="rounded-md object-cover aspect-square bg-muted"
+                />
+               </div>
               <div className="flex-1">
                 <CardTitle className="text-lg font-headline mb-1">{order.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">From: {order.buyerName}</p>
