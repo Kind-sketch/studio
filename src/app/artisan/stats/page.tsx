@@ -135,7 +135,13 @@ export default function StatsPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent className="max-w-2xl">
                             {isLoadingReview ? (
-                                 <div className="flex h-64 items-center justify-center">
+                                <div className="flex h-64 items-center justify-center">
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Generating AI Review</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Please wait while the AI analyzes the product...
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
                                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
                                 </div>
                             ) : reviewResult ? (
@@ -166,8 +172,11 @@ export default function StatsPage() {
                                 </>
                             ) : (
                                 <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Get AI Insights</AlertDialogTitle>
+                                    </AlertDialogHeader>
                                     <Sparkles className="h-12 w-12" />
-                                    <p className="mt-4">Click "AI Review" to get started.</p>
+                                    <p className="mt-4">Click "AI Review" to generate an analysis.</p>
                                 </div>
                             )}
                         </AlertDialogContent>
