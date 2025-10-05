@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
@@ -18,7 +19,7 @@ interface StatsChartProps {
 
 export default function StatsChart({ data, config, dataKey }: StatsChartProps) {
   return (
-    <ChartContainer config={config} className="min-h-[200px] w-full h-[400px]">
+    <ChartContainer config={config} className="min-h-[200px] w-full h-full">
       <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
         <XAxis
