@@ -22,12 +22,18 @@ const TranslateTextOutputSchema = z.object({
 });
 export type TranslateTextOutput = z.infer<typeof TranslateTextOutputSchema>;
 
-export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
-  return translateTextFlow(input);
-}
-
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
+
+// Queueing and rate-limiting state
+const translationQueue: {
+  input: TranslateTextInput;
+  resolve: (value: TranslateTextOutput) => void;
+  reject: (reason?: any) => void;
+}[] = [];
+let isProcessing = false;
+let isCoolingDown = false;
+const COOL_DOWN_PERIOD = 60000; // 60 seconds
 
 const prompt = ai.definePrompt({
     name: 'translateTextPrompt',
@@ -44,45 +50,75 @@ const prompt = ai.definePrompt({
     `,
 });
 
-const translateTextFlow = ai.defineFlow(
-  {
-    name: 'translateTextFlow',
-    inputSchema: TranslateTextInputSchema,
-    outputSchema: TranslateTextOutputSchema,
-  },
-  async (input: TranslateTextInput) => {
+async function processQueue() {
+  if (isProcessing || translationQueue.length === 0 || isCoolingDown) {
+    return;
+  }
+  isProcessing = true;
+
+  const { input, resolve, reject } = translationQueue.shift()!;
+  
+  try {
+    const result = await performTranslation(input);
+    resolve(result);
+  } catch (error) {
+    console.error("Translation failed, re-queueing after cool-down:", error);
+    // Put it back at the front of the queue to be retried.
+    translationQueue.unshift({ input, resolve, reject });
+    
+    // Check if it's a rate limit error to trigger cool-down
+    if (error instanceof Error && error.message.includes('429')) {
+        console.log(`Rate limit detected. Cooling down for ${COOL_DOWN_PERIOD / 1000} seconds.`);
+        isCoolingDown = true;
+        setTimeout(() => {
+            isCoolingDown = false;
+            processQueue(); // Resume processing after cool-down
+        }, COOL_DOWN_PERIOD);
+    }
+  } finally {
+    isProcessing = false;
+    // Process next item if not cooling down
+    if (!isCoolingDown) {
+      processQueue();
+    }
+  }
+}
+
+async function performTranslation(input: TranslateTextInput): Promise<TranslateTextOutput> {
     const { texts, targetLanguage } = input;
     
-    // If target is English, no translation is needed.
     if (targetLanguage === 'en') {
       return { translatedTexts: texts };
     }
     
-    // Use a composite key for caching based on language and all texts
     const cacheKey = `${targetLanguage}:${texts.join('||')}`;
     if (translationCache.has(cacheKey)) {
-        const cachedTranslations = translationCache.get(cacheKey);
-        if (cachedTranslations) {
-            return { translatedTexts: cachedTranslations };
-        }
+      const cachedTranslations = translationCache.get(cacheKey);
+      if (cachedTranslations) {
+        return { translatedTexts: cachedTranslations };
+      }
     }
 
     try {
         const { output } = await prompt(input);
         
         if (output?.translatedTexts && output.translatedTexts.length === texts.length) {
-            // Cache the successful translation
             translationCache.set(cacheKey, output.translatedTexts);
             return { translatedTexts: output.translatedTexts };
         } else {
             console.warn("Translation returned incorrect number of items, returning original texts.");
             return { translatedTexts: texts };
         }
-
-    } catch (error) {
-        console.error("Generative AI translation failed, returning original texts as fallback:", error);
-        // On failure, return the original texts
-        return { translatedTexts: texts };
+    } catch (error: any) {
+        console.error("Generative AI translation failed:", error);
+        // Re-throw to be caught by the queue processor
+        throw error;
     }
-  }
-);
+}
+
+export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
+    return new Promise((resolve, reject) => {
+        translationQueue.push({ input, resolve, reject });
+        processQueue();
+    });
+}
