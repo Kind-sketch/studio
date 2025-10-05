@@ -100,32 +100,45 @@ export default function AddProductPage() {
   }, [language]);
 
   useEffect(() => {
+    if (useCamera) {
+      const getCameraPermission = async () => {
+        if (typeof window !== 'undefined' && navigator.mediaDevices) {
+          try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            setStream(mediaStream);
+            setHasCameraPermission(true);
+            if (videoRef.current) {
+              videoRef.current.srcObject = mediaStream;
+            }
+          } catch (error) {
+            console.error(translatedContent.cameraError, error);
+            setHasCameraPermission(false);
+            setUseCamera(false);
+            toast({
+              variant: 'destructive',
+              title: translatedContent.cameraAccessDenied,
+              description: translatedContent.cameraAccessDeniedDesc,
+            });
+          }
+        } else {
+          setHasCameraPermission(false);
+        }
+      };
+      getCameraPermission();
+    } else {
+      // Cleanup: stop camera stream when not in use
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        setStream(null);
+      }
+    }
+
     return () => {
-      // Cleanup: stop camera stream when component unmounts
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [stream]);
-
-  useEffect(() => {
-    const getCameraPermission = async () => {
-      if (typeof window !== 'undefined' && navigator.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({video: true});
-          setHasCameraPermission(true);
-          stream.getTracks().forEach(track => track.stop()); // Stop immediately, we only need to check permission
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-        }
-      } else {
-        setHasCameraPermission(false);
-      }
-    };
-
-    getCameraPermission();
-  }, []);
+  }, [useCamera]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -198,24 +211,6 @@ export default function AddProductPage() {
     stopCamera();
     setImagePreview(null);
     setUseCamera(true);
-
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      setStream(mediaStream);
-      setHasCameraPermission(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
-    } catch (error) {
-      console.error(translatedContent.cameraError, error);
-      setHasCameraPermission(false);
-      setUseCamera(false);
-      toast({
-        variant: 'destructive',
-        title: translatedContent.cameraAccessDenied,
-        description: translatedContent.cameraAccessDeniedDesc,
-      });
-    }
   };
 
   const handleCapture = () => {
@@ -234,17 +229,17 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 md:p-4">
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>
         </CardHeader>
 
         <CardContent>
-            <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
+            <div className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
                 {useCamera ? (
-                    <div className="relative w-full h-full">
+                    <>
                         <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
                         <canvas ref={canvasRef} className="hidden" />
                         {hasCameraPermission === false && (
@@ -255,9 +250,9 @@ export default function AddProductPage() {
                                 </Alert>
                             </div>
                         )}
-                    </div>
+                    </>
                 ) : imagePreview ? (
-                    <Image src={imagePreview} alt="Preview" layout="fill" className="object-contain"/>
+                    <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
                 ) : (
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                         <Upload className="w-8 h-8 mb-2" />
@@ -270,7 +265,7 @@ export default function AddProductPage() {
 
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {useCamera && stream ? (
-                <Button onClick={handleCapture} className="w-full">
+                 <Button onClick={handleCapture} className="w-full">
                     <Camera className="mr-2 h-4 w-4" />
                     {translatedContent.captureButton}
                 </Button>
@@ -279,7 +274,7 @@ export default function AddProductPage() {
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline">
                         <Upload className="mr-2 h-4 w-4" />{translatedContent.uploadButton}
                     </Button>
-                    <Button onClick={startCamera} variant="outline" disabled={hasCameraPermission === null}>
+                    <Button onClick={startCamera} variant="outline">
                         <Camera className="mr-2 h-4 w-4" />{translatedContent.cameraButton}
                     </Button>
                 </>
