@@ -61,8 +61,6 @@ export default function StatsPage() {
     productPerformance: 'Product Performance',
     productPerformanceDesc: 'Review metrics and get AI insights for each product.',
     productHeader: 'Product',
-    salesHeader: 'Sales',
-    likesHeader: 'Likes',
     reviewHeader: 'AI Review',
     generatingReviewTitle: 'Generating AI Review',
     generatingReviewDesc: 'Please wait while the AI analyzes the product...',
@@ -78,13 +76,54 @@ export default function StatsPage() {
   useEffect(() => {
     const translate = async () => {
       if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
+        const textsToTranslate = [
+          'Your Performance',
+          "Analyze your sales and engagement over time.",
+          'Likes vs. Sales',
+          'Showing data for',
+          'performance',
+          'Weekly',
+          'Monthly',
+          'Yearly',
+          'Product Performance',
+          'Review metrics and get AI insights for each product.',
+          'Product',
+          'AI Review',
+          'Generating AI Review',
+          'Please wait while the AI analyzes the product...',
+          'AI Review for:',
+          "Here's the AI analysis of your product's potential.",
+          'Close',
+          'Get AI Insights',
+          'Click "AI Review" to generate an analysis.',
+          'Review Failed',
+          'There was an error generating the AI review.',
+        ];
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+        
+        setTranslatedContent({
+            title: translatedTexts[0],
+            description: translatedTexts[1],
+            likesVsSales: translatedTexts[2],
+            showingDataFor: translatedTexts[3],
+            performance: translatedTexts[4],
+            weekly: translatedTexts[5],
+            monthly: translatedTexts[6],
+            yearly: translatedTexts[7],
+            productPerformance: translatedTexts[8],
+            productPerformanceDesc: translatedTexts[9],
+            productHeader: translatedTexts[10],
+            reviewHeader: translatedTexts[11],
+            generatingReviewTitle: translatedTexts[12],
+            generatingReviewDesc: translatedTexts[13],
+            reviewFor: translatedTexts[14],
+            analysisOfPotential: translatedTexts[15],
+            close: translatedTexts[16],
+            getInsightsTitle: translatedTexts[17],
+            getInsightsDesc: translatedTexts[18],
+            reviewFailed: translatedTexts[19],
+            reviewFailedDesc: translatedTexts[20],
         });
-        setTranslatedContent(newContent);
       }
     };
     translate();
@@ -102,7 +141,7 @@ export default function StatsPage() {
     if (language === 'en') {
         return period.charAt(0).toUpperCase() + period.slice(1);
     }
-    return translatedContent[period];
+    return translatedContent[period] || period;
   }
 
   const handleAiReview = async (product: Product) => {
@@ -171,8 +210,6 @@ export default function StatsPage() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>{translatedContent.productHeader}</TableHead>
-                        <TableHead className="text-center">{translatedContent.salesHeader}</TableHead>
-                        <TableHead className="text-center">{translatedContent.likesHeader}</TableHead>
                         <TableHead className="text-right">{translatedContent.reviewHeader}</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -186,8 +223,6 @@ export default function StatsPage() {
                                     <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-center font-medium">{product.sales}</TableCell>
-                            <TableCell className="text-center font-medium">{product.likes}</TableCell>
                             <TableCell className="text-right">
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
