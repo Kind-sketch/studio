@@ -20,10 +20,10 @@ export default function ArtisanDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <span className="text-muted-foreground">$</span>
+            <span className="text-muted-foreground">₹</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$4,231.89</div>
+            <div className="text-2xl font-bold">₹4,231.89</div>
             <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -63,7 +63,7 @@ export default function ArtisanDashboard() {
                      <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-md object-cover aspect-square"/>
                      <div className="flex-1 text-sm">
                        <p className="font-medium">{product.name}</p>
-                       <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
+                       <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                      </div>
                      <div className="text-right text-sm">
                         <p className="font-medium">{product.sales} sales</p>

@@ -62,7 +62,7 @@ export default function OrderRequestsPage() {
                 <div className="flex-1">
                   <CardTitle className="text-lg font-headline mb-1">{order.name}</CardTitle>
                   <p className="text-sm text-muted-foreground">From: {order.buyerName}</p>
-                  <p className="font-bold text-lg my-2">${(order.price * order.quantity).toFixed(2)}</p>
+                  <p className="font-bold text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
                   <p className="text-sm">Quantity: <span className="font-medium">{order.quantity}</span></p>
                 </div>
                 <div className="flex sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">

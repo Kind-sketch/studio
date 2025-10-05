@@ -81,7 +81,7 @@ export default function MyOrdersPage() {
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
-                <p className="font-bold text-lg">${(order.price * order.quantity).toFixed(2)}</p>
+                <p className="font-bold text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <Button onClick={() => handleUpdate(order.id)} size="sm">Update Status</Button>
               </div>
             </CardContent>

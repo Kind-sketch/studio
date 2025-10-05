@@ -75,7 +75,7 @@ export default function SponsorRequestsPage() {
                 <div>
                     <CardTitle className="text-lg">{request.name}</CardTitle>
                     <CardDescription>
-                        Offering <Badge variant="secondary">${request.contributionAmount}/month</Badge>
+                        Offering <Badge variant="secondary">₹{request.contributionAmount}/month</Badge>
                     </CardDescription>
                 </div>
               </CardHeader>

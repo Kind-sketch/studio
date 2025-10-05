@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p className="text-sm text-muted-foreground">
             by {product.artisan.name}
           </p>
-          <p className="mt-2 font-semibold text-lg">${product.price.toFixed(2)}</p>
+          <p className="mt-2 font-semibold text-lg">₹{product.price.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>
