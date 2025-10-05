@@ -389,11 +389,17 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
 
     return (
         <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-            <SheetHeader className="relative flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
+            <SheetHeader className="relative flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
+                <SheetClose asChild>
+                    <Button variant="ghost" size="icon">
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close</span>
+                    </Button>
+                </SheetClose>
             </SheetHeader>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
