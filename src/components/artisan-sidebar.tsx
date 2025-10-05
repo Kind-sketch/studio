@@ -66,6 +66,7 @@ function HeaderActions() {
                 size="icon"
                 onClick={handleMicClick}
                 aria-label="Use Voice Command"
+                className="rounded-full bg-primary/10 text-primary hover:bg-primary/20 animate-pulse"
             >
                 <Mic className="h-5 w-5" />
             </Button>
