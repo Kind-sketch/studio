@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   TrendingUp,
   BarChart3,
-  Lightbulb,
   User,
   Settings,
   PanelLeft,
@@ -24,20 +23,22 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
+import { useEffect, useState } from 'react';
 
 
-const navItems = [
+const baseNavItems = [
   { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
 ];
+
+const bottomNavItems = [
+    { href: '/artisan/profile', label: 'Profile', icon: User },
+    { href: '/artisan/settings', label: 'Settings', icon: Settings },
+]
 
 function HeaderActions() {
     const { toast } = useToast();
@@ -81,6 +82,43 @@ function HeaderActions() {
 
 function NavContent() {
     const pathname = usePathname();
+    const { language } = useLanguage();
+    const [navItems, setNavItems] = useState(baseNavItems);
+    const [translatedBottomNav, setTranslatedBottomNav] = useState(bottomNavItems);
+    const [translatedOrders, setTranslatedOrders] = useState('Orders');
+    const [translatedSponsors, setTranslatedSponsors] = useState('Sponsors');
+
+    useEffect(() => {
+        const translateNav = async () => {
+            if (language !== 'en') {
+                const labels = baseNavItems.map(item => item.label);
+                const bottomLabels = bottomNavItems.map(item => item.label);
+                const { translatedTexts } = await translateText({ texts: [...labels, 'Orders', 'Sponsors', ...bottomLabels], targetLanguage: language });
+                
+                const translatedNavItems = baseNavItems.map((item, index) => ({
+                    ...item,
+                    label: translatedTexts[index],
+                }));
+                setNavItems(translatedNavItems);
+
+                setTranslatedOrders(translatedTexts[labels.length]);
+                setTranslatedSponsors(translatedTexts[labels.length + 1]);
+
+                const newBottomNav = bottomNavItems.map((item, index) => ({
+                    ...item,
+                    label: translatedTexts[labels.length + 2 + index],
+                }));
+                setTranslatedBottomNav(newBottomNav);
+
+            } else {
+                setNavItems(baseNavItems);
+                setTranslatedBottomNav(bottomNavItems);
+                setTranslatedOrders('Orders');
+                setTranslatedSponsors('Sponsors');
+            }
+        };
+        translateNav();
+    }, [language]);
     
     const isLinkActive = (href: string) => {
         if (href === '/artisan/orders') {
@@ -127,7 +165,7 @@ function NavContent() {
                 )}
                 >
                 <Package className="h-4 w-4" />
-                Orders
+                {translatedOrders}
                 </Link>
             </div>
              <div className="px-3 py-2">
@@ -139,25 +177,21 @@ function NavContent() {
                 )}
                 >
                 <HeartHandshake className="h-4 w-4" />
-                Sponsors
+                {translatedSponsors}
                 </Link>
             </div>
             </nav>
             <div className="mt-auto border-t p-4 space-y-2">
-                <Link
-                    href="/artisan/profile"
-                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/profile") && "bg-accent text-primary font-semibold" )}
-                    >
-                    <User className="h-4 w-4" />
-                    Profile
-                </Link>
-                <Link
-                    href="/artisan/settings"
-                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/settings") && "bg-accent text-primary font-semibold" )}
-                    >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                </Link>
+                {translatedBottomNav.map(item => (
+                     <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive(item.href) && "bg-accent text-primary font-semibold" )}
+                        >
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                    </Link>
+                ))}
             </div>
         </div>
     );
