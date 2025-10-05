@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Product } from '@/lib/types';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
@@ -59,8 +60,10 @@ export default function StatsPage() {
     yearly: 'Yearly',
     productPerformance: 'Product Performance',
     productPerformanceDesc: 'Review metrics and get AI insights for each product.',
-    sales: 'sales',
-    aiReview: 'AI Review',
+    productHeader: 'Product',
+    salesHeader: 'Sales',
+    likesHeader: 'Likes',
+    reviewHeader: 'AI Review',
     generatingReviewTitle: 'Generating AI Review',
     generatingReviewDesc: 'Please wait while the AI analyzes the product...',
     reviewFor: 'AI Review for:',
@@ -163,68 +166,80 @@ export default function StatsPage() {
             <CardTitle>{translatedContent.productPerformance}</CardTitle>
             <CardDescription>{translatedContent.productPerformanceDesc}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-            {products.map(product => (
-                <div key={product.id} className="flex items-center gap-2 sm:gap-4 p-2 rounded-lg border">
-                     <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-md object-cover aspect-square bg-muted"/>
-                     <div className="flex-1 text-sm">
-                       <p className="font-medium truncate">{product.name}</p>
-                       <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
-                     </div>
-                     <div className="text-right text-xs sm:text-sm space-y-1">
-                        <p className="font-medium">{product.sales} {translatedContent.sales}</p>
-                        <p className="text-muted-foreground flex items-center justify-end gap-1"><Heart className="h-3 w-3"/>{product.likes}</p>
-                     </div>
-                     <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => handleAiReview(product)}>
-                                <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">{translatedContent.aiReview}</span>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="max-w-2xl">
-                            {isLoadingReview ? (
-                                <div className="flex h-64 items-center justify-center">
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {translatedContent.generatingReviewDesc}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <CardContent>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>{translatedContent.productHeader}</TableHead>
+                        <TableHead className="text-center">{translatedContent.salesHeader}</TableHead>
+                        <TableHead className="text-center">{translatedContent.likesHeader}</TableHead>
+                        <TableHead className="text-right">{translatedContent.reviewHeader}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {products.map(product => (
+                        <TableRow key={product.id}>
+                            <TableCell className="flex items-center gap-2 sm:gap-4">
+                                <Image src={product.image.url} alt={product.name} width={48} height={48} className="rounded-md object-cover aspect-square bg-muted"/>
+                                <div className="flex-1 text-sm">
+                                    <p className="font-medium truncate">{product.name}</p>
+                                    <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                                 </div>
-                            ) : reviewResult ? (
-                                <>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>{translatedContent.reviewFor} <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {translatedContent.analysisOfPotential}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <ScrollArea className="h-96 pr-6">
-                                    <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
-                                </ScrollArea>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>{translatedContent.close}</AlertDialogCancel>
-                                </AlertDialogFooter>
-                                </>
-                            ) : (
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>{translatedContent.getInsightsTitle}</AlertDialogTitle>
-                                    <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
-                                        <Sparkles className="h-12 w-12" />
-                                        <p className="mt-4">{translatedContent.getInsightsDesc}</p>
-                                    </div>
-                                </AlertDialogHeader>
-                            )}
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-            ))}
+                            </TableCell>
+                            <TableCell className="text-center font-medium">{product.sales}</TableCell>
+                            <TableCell className="text-center font-medium">{product.likes}</TableCell>
+                            <TableCell className="text-right">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" size="sm" onClick={() => handleAiReview(product)}>
+                                            <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
+                                            <span className="hidden sm:inline">Review</span>
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent className="max-w-2xl">
+                                        {isLoadingReview ? (
+                                            <div className="flex h-64 items-center justify-center">
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        {translatedContent.generatingReviewDesc}
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                            </div>
+                                        ) : reviewResult ? (
+                                            <>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>{translatedContent.reviewFor} <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    {translatedContent.analysisOfPotential}
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <ScrollArea className="h-96 pr-6">
+                                                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
+                                            </ScrollArea>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>{translatedContent.close}</AlertDialogCancel>
+                                            </AlertDialogFooter>
+                                            </>
+                                        ) : (
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>{translatedContent.getInsightsTitle}</AlertDialogTitle>
+                                                <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
+                                                    <Sparkles className="h-12 w-12" />
+                                                    <p className="mt-4">{translatedContent.getInsightsDesc}</p>
+                                                </div>
+                                            </AlertDialogHeader>
+                                        )}
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    
