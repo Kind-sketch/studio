@@ -62,28 +62,38 @@ export default function MainHeader() {
           }
 
           if (event.results[0].isFinal) {
+            const lowerCaseSpokenText = spokenText.toLowerCase();
+            let commandFound = false;
+
             if (language === 'en') {
-              handleVoiceCommand(spokenText.toLowerCase());
+              commandFound = handleVoiceCommand(lowerCaseSpokenText);
             } else {
-              try {
-                const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
-                const translatedCommand = translatedTexts[0];
-                if (translatedCommand) {
-                  handleVoiceCommand(translatedCommand.toLowerCase());
-                } else {
-                  throw new Error('Translation failed');
-                }
-              } catch (e) {
-                if (toastIdRef.current) {
-                  toast({
-                    id: toastIdRef.current,
-                    variant: 'destructive',
-                    title: 'Translation Error',
-                    description: 'Could not translate your command.',
-                  });
+              // First, check original spoken text for direct keyword matches (for loanwords)
+              commandFound = handleVoiceCommand(lowerCaseSpokenText);
+
+              if (!commandFound) {
+                // If not found, then try translating
+                try {
+                  const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
+                  const translatedCommand = translatedTexts[0];
+                  if (translatedCommand) {
+                    commandFound = handleVoiceCommand(translatedCommand.toLowerCase());
+                  } else {
+                     throw new Error('Translation failed to return text.');
+                  }
+                } catch (e) {
+                   console.error("Translation or command handling failed:", e);
                 }
               }
             }
+             if (!commandFound && toastIdRef.current) {
+                toast({
+                    id: toastIdRef.current,
+                    variant: 'destructive',
+                    title: 'Command Not Recognized',
+                    description: `Could not find a page for "${spokenText}".`,
+                });
+             }
           }
         };
 
@@ -136,7 +146,7 @@ export default function MainHeader() {
     }
   };
 
-  const handleVoiceCommand = (command: string) => {
+  const handleVoiceCommand = (command: string): boolean => {
     for (const path in navKeywords) {
       if (navKeywords[path].some(keyword => command.includes(keyword))) {
         router.push(path);
@@ -147,17 +157,10 @@ export default function MainHeader() {
             description: `Taking you to the requested page.`,
           });
         }
-        return;
+        return true; // Command was handled
       }
     }
-    if (toastIdRef.current) {
-      toast({
-        id: toastIdRef.current,
-        variant: 'destructive',
-        title: 'Command Not Recognized',
-        description: `Could not find a page for "${command}".`,
-      });
-    }
+    return false; // Command was not handled
   };
 
   const handleSupportClick = () => {
