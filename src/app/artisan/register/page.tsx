@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +43,8 @@ export default function ArtisanRegisterPage() {
     invalidOtpToastDesc: 'The OTP you entered is incorrect. Please try again.',
     welcomeBackToast: 'Verification Successful',
     welcomeBackToastDesc: 'Welcome back!',
-    invalidNumber: 'Please enter a valid 10-digit mobile number.'
+    invalidNumber: 'Please enter a valid 10-digit mobile number.',
+    termsAndConditions: 'Terms & Conditions',
   });
 
   useEffect(() => {
@@ -65,7 +66,8 @@ export default function ArtisanRegisterPage() {
           'The OTP you entered is incorrect. Please try again.',
           'Verification Successful',
           'Welcome back!',
-          'Please enter a valid 10-digit mobile number.'
+          'Please enter a valid 10-digit mobile number.',
+          'Terms & Conditions',
         ];
         const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
         setTranslatedContent({
@@ -85,6 +87,7 @@ export default function ArtisanRegisterPage() {
           welcomeBackToast: translatedTexts[13],
           welcomeBackToastDesc: translatedTexts[14],
           invalidNumber: translatedTexts[15],
+          termsAndConditions: translatedTexts[16],
         });
       }
     };
@@ -218,6 +221,9 @@ export default function ArtisanRegisterPage() {
             </CardContent>
           </form>
         </Form>
+        <CardFooter className="justify-center text-xs text-muted-foreground">
+          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsAndConditions}</Button>
+        </CardFooter>
       </Card>
     </div>
   );

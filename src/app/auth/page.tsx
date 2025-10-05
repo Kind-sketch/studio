@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -264,6 +264,9 @@ export default function AuthPage() {
             </TabsContent>
           </Tabs>
         </CardContent>
+        <CardFooter className="justify-center text-xs text-muted-foreground">
+          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsLabel}</Button>
+        </CardFooter>
       </Card>
     </div>
   );
