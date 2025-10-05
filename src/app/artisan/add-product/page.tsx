@@ -188,10 +188,21 @@ export default function AddProductPage() {
     setIsGenerating(true);
     try {
       const result = await generateProductDetails({ photoDataUri: imageData });
-      form.setValue('productName', result.productName);
-      form.setValue('productCategory', result.productCategory);
-      form.setValue('productDescription', result.productDescription);
-      form.setValue('productStory', result.productStory);
+      
+      if (language !== 'en') {
+        const textsToTranslate = [result.productName, result.productDescription, result.productStory];
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+        form.setValue('productName', translatedTexts[0]);
+        form.setValue('productCategory', result.productCategory); // Category is from a fixed list, might not need translation or should be handled differently
+        form.setValue('productDescription', translatedTexts[1]);
+        form.setValue('productStory', translatedTexts[2]);
+      } else {
+        form.setValue('productName', result.productName);
+        form.setValue('productCategory', result.productCategory);
+        form.setValue('productDescription', result.productDescription);
+        form.setValue('productStory', result.productStory);
+      }
+
       toast({
         title: translatedContent.detailsGeneratedToast,
         description: translatedContent.detailsGeneratedToastDesc,
