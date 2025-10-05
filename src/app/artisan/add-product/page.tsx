@@ -343,14 +343,9 @@ export default function AddProductPage() {
     <div className="p-4">
       <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
-          <div className="relative flex items-center justify-center">
-            <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.back()} aria-label={translatedContent.backButton}>
-                <ChevronLeft className="h-6 w-6" />
-            </Button>
-            <div className="text-center">
-                <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
-                <CardDescription>{translatedContent.description}</CardDescription>
-            </div>
+          <div className="text-center">
+              <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
+              <CardDescription>{translatedContent.description}</CardDescription>
           </div>
         </CardHeader>
 

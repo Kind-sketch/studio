@@ -31,7 +31,11 @@ const navKeywords: { [key: string]: string[] } = {
   '/sponsor/requests': ['requests', 'offers', 'sent', 'pending', 'sponsorship requests'],
 };
 
-export default function MainHeader() {
+interface MainHeaderProps {
+    isArtisanFlow?: boolean;
+}
+
+export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast, dismiss } = useToast();
@@ -171,16 +175,11 @@ export default function MainHeader() {
   };
 
   const isSponsorPage = pathname.startsWith('/sponsor/');
-
-  const shouldHideOnDesktop = isSponsorPage;
+  const shouldHideOnDesktop = isSponsorPage && !isArtisanFlow;
 
 
   return (
-    <header className={cn("sticky top-0 z-50 flex h-16 items-center border-b bg-card px-4 md:px-6", shouldHideOnDesktop && "md:hidden")}>
-      <div className="flex items-center gap-2 font-semibold md:hidden">
-        <Logo className="h-8 w-8 text-primary" />
-      </div>
-      <div className="ml-auto flex items-center gap-2">
+    <div className={cn("ml-auto flex items-center gap-2", shouldHideOnDesktop && "md:hidden")}>
         <Button
           variant="ghost"
           size="icon"
@@ -199,6 +198,5 @@ export default function MainHeader() {
           <Mic className="h-5 w-5" />
         </Button>
       </div>
-    </header>
   );
 }

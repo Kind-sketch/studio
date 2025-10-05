@@ -24,7 +24,6 @@ export default function ArtisanLayout({
     <div className="flex h-full flex-col md:flex-row">
       <ArtisanSidebar />
       <main className="flex-1 overflow-y-auto bg-secondary/30">
-        <MainHeader />
         {children}
         {pathname !== '/artisan/add-product' && (
             <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">

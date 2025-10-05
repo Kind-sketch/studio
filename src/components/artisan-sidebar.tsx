@@ -16,7 +16,8 @@ import {
   ShoppingBag,
   Bookmark,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  ChevronLeft,
 } from 'lucide-react';
 import {
   Sheet,
@@ -120,7 +121,7 @@ export function HeaderActions() {
                     setIsListening(false);
                     setTimeout(() => {
                         if(toastIdRef.current) dismiss(toastIdRef.current);
-                    }, 5000);
+                    }, 3000);
                 };
 
                 recognitionRef.current = recognition;
@@ -398,12 +399,13 @@ function NavContent() {
 
 
 export default function ArtisanSidebar() {
+  const router = useRouter();
   return (
     <>
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
-      <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden sticky top-0 z-40">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -418,8 +420,11 @@ export default function ArtisanSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
+         <Button onClick={() => router.back()} variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
+            <ChevronLeft className="h-6 w-6" />
+        </Button>
         <div className="ml-auto">
-            <MainHeader />
+            <MainHeader isArtisanFlow={true}/>
         </div>
       </header>
     </>
