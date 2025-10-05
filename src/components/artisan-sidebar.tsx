@@ -495,7 +495,7 @@ export default function ArtisanSidebar() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0 z-[101]">
+            <SheetContent side="left" className="w-full max-w-[300px] p-0 z-[101]">
               <NavContent closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
