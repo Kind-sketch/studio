@@ -38,11 +38,11 @@ import { useEffect, useState, useRef } from 'react';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular'] },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
-  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded'] },
-  { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics'] },
-  { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me'] },
+  { href: '/artisan/home', label: 'Home', keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed'] },
+  { href: '/artisan/dashboard', label: 'Revenue', keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances'] },
+  { href: '/artisan/my-products', label: 'My Products', keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
+  { href: '/artisan/stats', label: 'Statistics', keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
+  { href: '/artisan/profile', label: 'My Profile', keywords: ['profile', 'account', 'me', 'my details', 'user'] },
 ];
 
 const bottomNavItems: any[] = [
@@ -121,7 +121,7 @@ export function HeaderActions() {
                     setIsListening(false);
                     setTimeout(() => {
                         if(toastIdRef.current) dismiss(toastIdRef.current);
-                    }, 2000);
+                    }, 5000);
                 };
 
                 recognitionRef.current = recognition;
@@ -163,9 +163,9 @@ export function HeaderActions() {
         const allNavItems = [
             ...baseNavItems,
             ...bottomNavItems,
-            { href: '/artisan/orders', label: 'Orders', keywords: ['orders', 'requests'] },
-            { href: '/artisan/sponsors', label: 'Sponsors', keywords: ['sponsors', 'sponsorships', 'partners'] },
-            { href: '/artisan/saved-collection', label: 'Saved Collection', keywords: ['saved', 'collection', 'bookmarks'] },
+            { href: '/artisan/orders', label: 'Orders', keywords: ['orders', 'requests', 'shipments'] },
+            { href: '/artisan/sponsors', label: 'Sponsors', keywords: ['sponsors', 'sponsorships', 'partners', 'supporters'] },
+            { href: '/artisan/saved-collection', label: 'Saved Collection', keywords: ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'] },
         ];
 
         for (const item of allNavItems) {
@@ -175,7 +175,7 @@ export function HeaderActions() {
                     toast({
                         id: toastIdRef.current,
                         title: 'Navigating...',
-                        description: `Navigating to ${item.label}.`,
+                        description: `Taking you to ${item.label}.`,
                     });
                 }
                 return;
@@ -423,3 +423,5 @@ export default function ArtisanSidebar() {
     </>
   );
 }
+
+    

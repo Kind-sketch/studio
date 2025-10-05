@@ -29,9 +29,9 @@ import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
 
 const baseNavItems = [
-  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main'] },
-  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign, keywords: ['revenue', 'generated', 'money', 'earnings'] },
-  { href: '/sponsor/requests', label: 'Requests', icon: FileText, keywords: ['requests', 'offers'] },
+  { href: '/sponsor/dashboard', label: 'Dashboard', keywords: ['dashboard', 'home', 'main', 'discover'] },
+  { href: '/sponsor/revenue', label: 'Revenue Generated', keywords: ['revenue', 'generated', 'money', 'earnings', 'returns', 'investment'] },
+  { href: '/sponsor/requests', label: 'Requests', keywords: ['requests', 'offers', 'sent', 'pending'] },
 ];
 
 function HeaderActions() {
@@ -105,7 +105,7 @@ function HeaderActions() {
                     setIsListening(false);
                      setTimeout(() => {
                         if(toastIdRef.current) dismiss(toastIdRef.current);
-                    }, 2000);
+                    }, 5000);
                 };
 
                 recognitionRef.current = recognition;
@@ -151,7 +151,7 @@ function HeaderActions() {
                     toast({
                         id: toastIdRef.current,
                         title: 'Navigating...',
-                        description: `Navigating to ${item.label}.`,
+                        description: `Taking you to ${item.label}.`,
                     });
                 }
                 return;
@@ -298,3 +298,5 @@ export default function SponsorSidebar() {
     </>
   );
 }
+
+    
