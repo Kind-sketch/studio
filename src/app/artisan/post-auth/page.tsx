@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Upload, User } from 'lucide-react';
+import { Upload, User, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useState, useEffect } from 'react';
@@ -18,7 +18,7 @@ const baseOptions = [
     name: 'Visit My Page',
     description: 'View your sales, trends, and statistics.',
     href: '/artisan/dashboard',
-    icon: User,
+    icon: LayoutDashboard,
   },
 ];
 
@@ -63,8 +63,8 @@ export default function ArtisanPostAuthPage() {
         <div className="grid grid-cols-1 gap-6">
           {options.map((option) => (
             <Link href={option.href} key={option.name} passHref>
-              <Card className="transform-gpu cursor-pointer text-left transition-transform hover:scale-105 hover:shadow-xl">
-                <CardHeader className="flex flex-row items-center gap-4">
+              <Card className="transform-gpu cursor-pointer text-center transition-transform hover:scale-105 hover:shadow-xl">
+                <CardHeader className="flex flex-col items-center gap-4">
                   <option.icon className="h-10 w-10 text-primary" />
                   <div>
                     <CardTitle className="font-headline text-2xl">
