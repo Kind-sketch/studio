@@ -94,13 +94,13 @@ export default function ArtisanProfilePage() {
         title: translatedContent.successToast,
         description: translatedContent.successToastDesc,
       });
-      router.push('/artisan/dashboard');
+      router.push('/artisan/home');
     }, 1500);
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full max-w-lg shadow-lg">
+      <Card className="w-full shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>

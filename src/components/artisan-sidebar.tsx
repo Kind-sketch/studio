@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  Home,
   LayoutDashboard,
   TrendingUp,
   BarChart3,
@@ -30,6 +31,7 @@ import { useEffect, useState } from 'react';
 
 
 const baseNavItems = [
+  { href: '/artisan/home', label: 'Home', icon: Home },
   { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
