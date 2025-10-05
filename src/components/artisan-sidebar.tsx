@@ -389,18 +389,20 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
 
     return (
         <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-            <SheetHeader className="relative flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
+            <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
-                <SheetClose asChild>
-                    <Button variant="ghost" size="icon">
-                        <X className="h-5 w-5" />
-                        <span className="sr-only">Close</span>
-                    </Button>
-                </SheetClose>
-            </SheetHeader>
+                {closeSheet && (
+                    <SheetClose asChild>
+                        <Button variant="ghost" size="icon">
+                            <X className="h-5 w-5" />
+                            <span className="sr-only">Close</span>
+                        </Button>
+                    </SheetClose>
+                )}
+            </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
                 <ul className="space-y-1">
                     {navItems.map((item) => (
@@ -489,20 +491,24 @@ export default function ArtisanSidebar() {
       <aside className="hidden w-64 flex-col border-r bg-sidebar md:flex h-full sticky top-0">
         <NavContent />
       </aside>
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
-                <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-[300px] p-0 z-[101]">
-              <NavContent closeSheet={() => setIsSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
-        <HeaderActions />
-      </header>
+      <div className="md:hidden">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4">
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button size="icon" variant="outline">
+                  <PanelLeft className="h-5 w-5" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full max-w-[300px] p-0 z-[101]">
+                <NavContent closeSheet={() => setIsSheetOpen(false)} />
+              </SheetContent>
+            </Sheet>
+          <HeaderActions />
+        </header>
+      </div>
     </>
   );
 }
+
+    
