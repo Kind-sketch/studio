@@ -16,7 +16,7 @@ import {
   ShoppingBag,
   Bookmark,
   LogOut,
-  LayoutDashboard,
+  Bell,
   ChevronLeft,
 } from 'lucide-react';
 import {
@@ -26,6 +26,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
@@ -36,11 +44,13 @@ import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
 import MainHeader from './main-header';
 import SupportDialog from './support-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Badge } from './ui/badge';
 
 
 const baseNavItems = [
   { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: LayoutDashboard, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
+  { href: '/artisan/dashboard', label: 'Revenue', icon: BarChart3, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
   { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
@@ -50,6 +60,14 @@ const bottomNavItems: any[] = [
     // Settings removed
 ];
 
+interface Notification {
+    id: string;
+    title: string;
+    description: string;
+    read: boolean;
+    createdAt: Date;
+}
+
 export function HeaderActions() {
     const { toast, dismiss } = useToast();
     const router = useRouter();
@@ -57,6 +75,23 @@ export function HeaderActions() {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
     const toastIdRef = useRef<string | null>(null);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const hasUnread = notifications.some(n => !n.read);
+
+    useEffect(() => {
+        // Mock notifications
+        const mockNotifications: Notification[] = [
+            { id: '1', title: 'New Order Request', description: 'You have a new request for "Ceramic Dawn Vase".', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 5) },
+            { id: '2', title: 'New Sponsor', description: 'ArtLover22 wants to sponsor you!', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2) },
+            { id: '3', title: 'Milestone Reached', description: 'Congrats! You\'ve reached 100 sales.', read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
+        ];
+        setNotifications(mockNotifications);
+    }, []);
+
+    const markAsRead = (id: string) => {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    }
+
 
     const navKeywords: { [key: string]: string[] } = {
         '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'],
@@ -196,6 +231,39 @@ export function HeaderActions() {
 
     return (
         <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Notifications"
+                        className="relative"
+                    >
+                        <Bell className="h-5 w-5" />
+                        {hasUnread && (
+                            <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-red-500" />
+                        )}
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                    <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {notifications.length > 0 ? (
+                        notifications.map((n) => (
+                            <DropdownMenuItem key={n.id} onClick={() => markAsRead(n.id)} className={cn("flex items-start gap-2", !n.read && "bg-accent/50")}>
+                                {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
+                                <div className={cn(!n.read && 'pl-1')}>
+                                    <p className="font-semibold">{n.title}</p>
+                                    <p className="text-xs text-muted-foreground">{n.description}</p>
+                                </div>
+                            </DropdownMenuItem>
+                        ))
+                    ) : (
+                        <p className="p-4 text-center text-sm text-muted-foreground">No new notifications</p>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu>
+
             <SupportDialog>
               <Button
                   variant="ghost"
@@ -402,7 +470,6 @@ function NavContent() {
 
 export default function ArtisanSidebar() {
   const router = useRouter();
-  const pathname = usePathname();
 
   return (
     <>
@@ -410,7 +477,6 @@ export default function ArtisanSidebar() {
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
-        {pathname !== '/artisan/add-product' && (
           <Sheet>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline">
@@ -425,7 +491,6 @@ export default function ArtisanSidebar() {
               <NavContent />
             </SheetContent>
           </Sheet>
-        )}
         <div className="ml-auto">
             <MainHeader isArtisanFlow={true}/>
         </div>
@@ -433,3 +498,5 @@ export default function ArtisanSidebar() {
     </>
   );
 }
+
+    

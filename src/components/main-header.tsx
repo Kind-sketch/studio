@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
-import { Mic, MessageCircleQuestion } from 'lucide-react';
+import { Mic, MessageCircleQuestion, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import SupportDialog from '@/components/support-dialog';
+import { HeaderActions } from '@/components/artisan-sidebar';
 
 
 const navKeywords: { [key: string]: string[] } = {
@@ -78,7 +79,7 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
                   const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
                   const translatedCommand = translatedTexts[0];
                   if (translatedCommand) {
-                    commandFound = handleVoiceCommand(translatedCommand.toLowerCase());
+                    commandFound = handleVoiceCommand(translatedCommand.toLowerCase()) || handleVoiceCommand(lowerCaseSpokenText);
                   } else {
                      throw new Error('Translation failed to return text.');
                   }
@@ -166,6 +167,10 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
 
   const isSponsorPage = pathname.startsWith('/sponsor/');
   const shouldHideOnDesktop = isSponsorPage && !isArtisanFlow;
+  
+  if (isArtisanFlow) {
+      return <HeaderActions />;
+  }
 
 
   return (
@@ -191,3 +196,5 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
       </div>
   );
 }
+
+    
