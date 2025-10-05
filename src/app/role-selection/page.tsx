@@ -40,9 +40,6 @@ export default function RoleSelectionPage() {
   const [translatedContent, setTranslatedContent] = useState({
     welcome: 'Welcome to Artistry Havens',
     joinCommunity: 'How would you like to join our community?',
-    artisanPrefix: 'I am an',
-    buyerPrefix: 'I am a',
-    sponsorPrefix: 'I am a',
     footer: 'For artisans, the first step will be to register.',
   });
   const [roles, setRoles] = useState(baseRoles);
@@ -53,9 +50,6 @@ export default function RoleSelectionPage() {
         const textsToTranslate = [
           'Welcome to Artistry Havens',
           'How would you like to join our community?',
-          'I am an',
-          'I am a',
-          'I am a',
           'For artisans, the first step will be to register.',
           ...baseRoles.map(r => r.name),
           ...baseRoles.map(r => r.description),
@@ -69,25 +63,19 @@ export default function RoleSelectionPage() {
         setTranslatedContent({
           welcome: translatedTexts[0],
           joinCommunity: translatedTexts[1],
-          artisanPrefix: translatedTexts[2],
-          buyerPrefix: translatedTexts[3],
-          sponsorPrefix: translatedTexts[4],
-          footer: translatedTexts[5],
+          footer: translatedTexts[2],
         });
 
         const translatedRoles = baseRoles.map((role, index) => ({
           ...role,
-          name: translatedTexts[6 + index],
-          description: translatedTexts[6 + baseRoles.length + index],
+          name: translatedTexts[3 + index],
+          description: translatedTexts[3 + baseRoles.length + index],
         }));
         setRoles(translatedRoles);
       } else {
         setTranslatedContent({
             welcome: 'Welcome to Artistry Havens',
             joinCommunity: 'How would you like to join our community?',
-            artisanPrefix: 'I am an',
-            buyerPrefix: 'I am a',
-            sponsorPrefix: 'I am a',
             footer: 'For artisans, the first step will be to register.',
         });
         setRoles(baseRoles);
@@ -95,17 +83,6 @@ export default function RoleSelectionPage() {
     };
     translateContent();
   }, [language]);
-
-  const getPrefix = (roleIndex: number) => {
-    // We use the index to reliably know which original role we're dealing with
-    const originalRoleName = baseRoles[roleIndex].name;
-    switch (originalRoleName) {
-        case 'Artisan': return translatedContent.artisanPrefix;
-        case 'Buyer': return translatedContent.buyerPrefix;
-        case 'Sponsor': return translatedContent.sponsorPrefix;
-        default: return translatedContent.buyerPrefix;
-    }
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
@@ -128,8 +105,8 @@ export default function RoleSelectionPage() {
                 <CardHeader className="flex flex-row items-center gap-4 p-4">
                   <role.icon className="h-8 w-8 text-primary" />
                   <div>
-                    <CardTitle className="font-headline text-base">
-                      {getPrefix(index)} {role.name}
+                    <CardTitle className="font-headline text-lg">
+                      {role.name}
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {role.description}
