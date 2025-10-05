@@ -5,6 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ShoppingBag, Heart, Users, HandCoins } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { products } from "@/lib/data";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+
+const sponsoredProducts = [
+  {
+    ...products[0],
+    sponsor: { name: 'CreativeFund' },
+    sharedAmount: 75,
+    sponsorShare: '15%',
+  },
+  {
+    ...products[2],
+    sponsor: { name: 'ArtLover22' },
+    sharedAmount: 90,
+    sponsorShare: '20%',
+  },
+];
+
 
 export default function ArtisanDashboard() {
   
@@ -42,7 +62,7 @@ export default function ArtisanDashboard() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₹500.00</div>
+                        <div className="text-2xl font-bold">₹165.00</div>
                         <p className="text-xs text-muted-foreground">From 2 active sponsorships</p>
                     </CardContent>
                     </Card>
@@ -74,6 +94,47 @@ export default function ArtisanDashboard() {
           </CardContent>
         </Card>
       </div>
+
+       <Card>
+          <CardHeader>
+            <CardTitle>Shared with Sponsors</CardTitle>
+            <CardDescription>
+              Revenue shared with sponsors from your successful sales.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Product</TableHead>
+                  <TableHead>Sponsor</TableHead>
+                  <TableHead>Sponsor's Share</TableHead>
+                  <TableHead className="text-right">Shared Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sponsoredProducts.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                       <Image
+                        src={item.image.url}
+                        alt={item.name}
+                        width={64}
+                        height={64}
+                        className="rounded-md object-cover aspect-square"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{item.sponsor.name}</TableCell>
+                    <TableCell>
+                        <Badge variant="secondary">{item.sponsorShare}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
     </div>
   )
