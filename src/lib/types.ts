@@ -9,6 +9,7 @@ export type Product = {
   };
   category: string;
   description: string;
+  story?: string;
   likes: number;
   sales: number;
   createdAt?: string; // Add this line

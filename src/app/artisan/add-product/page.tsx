@@ -249,6 +249,7 @@ export default function AddProductPage() {
         },
         category: values.productCategory,
         description: values.productDescription,
+        story: values.productStory,
         likes: 0,
         sales: 0,
         createdAt: new Date().toISOString(),
@@ -299,6 +300,7 @@ export default function AddProductPage() {
     },
     category: formValues.productCategory || 'Category',
     description: formValues.productDescription || 'Description',
+    story: formValues.productStory || 'Your story about this product...',
     likes: 0,
     sales: 0
   };

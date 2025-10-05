@@ -2,12 +2,13 @@
 'use client';
 
 import Image from 'next/image';
-import { Heart, Bookmark } from 'lucide-react';
+import { Heart, Bookmark, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/types';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ProductCardProps {
   product: Product;
@@ -63,6 +64,23 @@ export default function ProductCard({ product, onSave, showSaveButton }: Product
           <p className="mt-1 sm:mt-2 font-semibold text-md sm:text-lg">₹{product.price.toFixed(2)}</p>
         </div>
       </CardContent>
+      {product.story && (
+        <Collapsible>
+            <CardContent className="px-2 sm:px-4 pb-2">
+                <CollapsibleTrigger asChild>
+                    <Button variant="link" className="p-0 h-auto text-xs text-muted-foreground flex items-center gap-1">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Read the story</span>
+                    </Button>
+                </CollapsibleTrigger>
+            </CardContent>
+            <CollapsibleContent>
+                <CardContent className="px-4 pb-4">
+                    <p className="text-xs text-muted-foreground italic">"{product.story}"</p>
+                </CardContent>
+            </CollapsibleContent>
+        </Collapsible>
+      )}
     </Card>
   );
 }
