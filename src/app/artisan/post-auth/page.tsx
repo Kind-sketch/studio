@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Upload, Home } from 'lucide-react';
+import { Upload, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useState, useEffect } from 'react';
@@ -15,10 +15,10 @@ const baseOptions = [
     icon: Upload,
   },
   {
-    name: 'Visit My Page',
-    description: 'Go to your personalized artisan homepage.',
-    href: '/artisan/home',
-    icon: Home,
+    name: 'Go to Dashboard',
+    description: 'View your sales, trends, and statistics.',
+    href: '/artisan/dashboard',
+    icon: LayoutDashboard,
   },
 ];
 
