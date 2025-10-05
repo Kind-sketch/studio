@@ -2,6 +2,9 @@
 
 import ArtisanSidebar from '@/components/artisan-sidebar';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default function ArtisanLayout({
   children,
@@ -18,7 +21,14 @@ export default function ArtisanLayout({
   return (
     <div className="flex h-screen flex-col md:flex-row">
       <ArtisanSidebar />
-      <main className="flex-1 overflow-y-auto bg-secondary/30">{children}</main>
+      <main className="flex-1 overflow-y-auto bg-secondary/30">
+        {children}
+        <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-50">
+            <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
+                <Plus className="h-6 w-6" />
+            </Button>
+        </Link>
+      </main>
     </div>
   );
 }

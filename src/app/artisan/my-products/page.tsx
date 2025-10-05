@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Plus } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
@@ -28,7 +28,7 @@ export default function MyProductsPage() {
       </header>
 
       {myProducts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {myProducts.map(product => (
             <Card key={product.id} className="overflow-hidden">
               <CardContent className="p-0">
@@ -72,11 +72,6 @@ export default function MyProductsPage() {
           </Button>
         </Card>
       )}
-       <Link href="/artisan/add-product" className="fixed bottom-8 right-8">
-        <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
-          <Plus className="h-6 w-6" />
-        </Button>
-      </Link>
     </div>
   );
 }
