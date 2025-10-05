@@ -17,10 +17,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
-  aadharNumber: z.string().regex(/^\d{12}$/, 'Please enter a valid 12-digit Aadhar number.'),
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
-  recoveryNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit recovery number.').optional().or(z.literal('')),
-  otp: z.string().length(6, 'OTP must be 6 digits.'),
+  otp: z.string().length(5, 'OTP must be 5 digits.'),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions.',
   }),
@@ -45,36 +43,39 @@ export default function ArtisanRegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aadharNumber: '',
       mobileNumber: '',
-      recoveryNumber: '',
       otp: '',
       agreeToTerms: false,
     },
   });
 
   function handleSendOtp() {
-    const { aadharNumber, mobileNumber } = form.getValues();
-    const aadharResult = z.string().regex(/^\d{12}$/).safeParse(aadharNumber);
+    const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
-    if (!aadharResult.success) {
-      form.setError('aadharNumber', { message: 'Please enter a valid 12-digit Aadhar number.' });
-      return;
-    }
      if (!mobileResult.success) {
       form.setError('mobileNumber', { message: 'Please enter a valid 10-digit mobile number.' });
       return;
     }
 
     setIsLoading(true);
+    // Mock check if number exists. In a real app, this would be a backend call.
+    const existingUsers = JSON.parse(localStorage.getItem('artisanUsers') || '{}');
+    const isExistingUser = Object.values(existingUsers).some((user: any) => user.phone === mobileNumber || user.recovery === mobileNumber);
+    localStorage.setItem('tempPhone', mobileNumber);
+
+
     setTimeout(() => {
-      setOtpSent(true);
-      setIsLoading(false);
-      toast({
-        title: 'OTP Sent',
-        description: 'An OTP has been sent to your mobile number.',
-      });
+      if (!isExistingUser) {
+          router.push('/artisan/register-recovery');
+      } else {
+        setOtpSent(true);
+        setIsLoading(false);
+        toast({
+            title: 'OTP Sent',
+            description: 'An OTP has been sent to your mobile number.',
+        });
+      }
     }, 1000);
   }
 
@@ -83,12 +84,12 @@ export default function ArtisanRegisterPage() {
     setTimeout(() => {
       setIsLoading(false);
       // Mock OTP verification
-      if (values.otp === '123456') {
+      if (values.otp === '12345') {
         toast({
           title: 'Verification Successful',
-          description: 'Redirecting to your profile setup...',
+          description: 'Welcome back!',
         });
-        router.push('/artisan/profile');
+        router.push('/artisan/dashboard');
       } else {
         toast({
           variant: 'destructive',
@@ -106,56 +107,28 @@ export default function ArtisanRegisterPage() {
             <div className="flex justify-center mb-4">
                 <Logo className="h-12 w-12 text-primary" />
             </div>
-          <CardTitle className="font-headline text-3xl">Artisan Registration</CardTitle>
+          <CardTitle className="font-headline text-3xl">Artisan Login</CardTitle>
           <CardDescription>
-            {otpSent ? 'Enter the OTP sent to your mobile.' : 'Create your artisan account.'}
+            {otpSent ? 'Enter the OTP sent to your mobile.' : 'Enter your mobile number to login or register.'}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
               {!otpSent && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="aadharNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Aadhar Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="12-digit Aadhar number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
+                <FormField
                     control={form.control}
                     name="mobileNumber"
                     render={({ field }) => (
-                      <FormItem>
+                    <FormItem>
                         <FormLabel>Mobile Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="10-digit mobile number" {...field} />
+                        <Input placeholder="10-digit mobile number" {...field} />
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
+                    </FormItem>
                     )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="recoveryNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Recovery Mobile Number (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="10-digit recovery number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
+                />
               )}
               {otpSent && (
                 <FormField
@@ -165,7 +138,7 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                       <FormLabel>One-Time Password (OTP)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter 6-digit OTP" {...field} />
+                        <Input placeholder="Enter 5-digit OTP" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -173,33 +146,6 @@ export default function ArtisanRegisterPage() {
                 />
               )}
 
-              {!otpSent && (
-                <div className="space-y-2">
-                    <FormLabel>Terms and Conditions</FormLabel>
-                    <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
-                        <ul className="list-disc pl-5 space-y-1">
-                            {termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
-                        </ul>
-                    </ScrollArea>
-                     <FormField
-                        control={form.control}
-                        name="agreeToTerms"
-                        render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-1">
-                            <FormControl>
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                            <FormLabel>
-                                I agree to the terms and conditions.
-                            </FormLabel>
-                            <FormMessage />
-                            </div>
-                        </FormItem>
-                        )}
-                    />
-                </div>
-              )}
             </CardContent>
             <CardContent>
               {otpSent ? (
@@ -208,7 +154,7 @@ export default function ArtisanRegisterPage() {
                   Verify & Continue
                 </Button>
               ) : (
-                <Button type="button" className="w-full" onClick={form.handleSubmit(handleSendOtp)} disabled={isLoading}>
+                <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Send OTP
                 </Button>

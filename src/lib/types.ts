@@ -19,6 +19,7 @@ export type Artisan = {
     url: string;
     hint: string;
   };
+  crafts?: string[];
 };
 
 export type Category = {
@@ -39,4 +40,10 @@ export type SponsorRequest = {
     avatarUrl: string;
     contributionAmount: number;
     message: string;
+}
+
+export type SavedCollection = {
+    id: string;
+    name: string;
+    productIds: string[];
 }

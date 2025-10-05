@@ -11,11 +11,11 @@ const getImage = (id: string) => {
 };
 
 export const artisans: Artisan[] = [
-  { id: '1', name: 'Elena Vance', avatar: getImage('artisan-1') },
-  { id: '2', name: 'Marcus Stone', avatar: getImage('artisan-2') },
-  { id: '3', name: 'Aria Wu', avatar: getImage('artisan-3') },
-  { id: '4', name: 'Leo Rivera', avatar: getImage('artisan-4') },
-  { id: '5', name: 'Nia Patel', avatar: getImage('artisan-5') },
+  { id: '1', name: 'Elena Vance', avatar: getImage('artisan-1'), crafts: ['Ceramics', 'Glasswork'] },
+  { id: '2', name: 'Marcus Stone', avatar: getImage('artisan-2'), crafts: ['Woodwork', 'Leatherwork']},
+  { id: '3', name: 'Aria Wu', avatar: getImage('artisan-3'), crafts: ['Textiles'] },
+  { id: '4', name: 'Leo Rivera', avatar: getImage('artisan-4'), crafts: ['Painting'] },
+  { id: '5', name: 'Nia Patel', avatar: getImage('artisan-5'), crafts: ['Jewelry'] },
 ];
 
 export const products: Product[] = [

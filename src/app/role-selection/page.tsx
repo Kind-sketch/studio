@@ -20,13 +20,13 @@ const roles = [
   {
     name: 'Buyer',
     description: 'Discover and purchase unique handmade goods.',
-    href: '/buyer/home',
+    href: '/auth',
     icon: ShoppingBag,
   },
   {
     name: 'Sponsor',
     description: 'Support artisans and the creative community.',
-    href: '/sponsor/dashboard',
+    href: '/auth',
     icon: HeartHandshake,
   },
 ];

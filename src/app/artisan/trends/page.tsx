@@ -12,21 +12,40 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { Loader2, Sparkles, Lightbulb, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Input } from '@/components/ui/input';
+import type { SavedCollection, Product } from '@/lib/types';
+
 
 const formSchema = z.object({
   productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
 });
 
+const collectionSchema = z.object({
+  collectionName: z.string().min(2, 'Collection name must be at least 2 characters.'),
+});
+
 export default function TrendsPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<{
-    aiReview: string;
-  } | null>(null);
+  const [result, setResult] = useState<{ aiReview: string; } | null>(null);
+  const [collections, setCollections] = useState<SavedCollection[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const { toast } = useToast();
 
   const bestSelling = [...products].sort((a, b) => b.sales - a.sales);
@@ -34,9 +53,12 @@ export default function TrendsPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      productDescription: '',
-    },
+    defaultValues: { productDescription: '' },
+  });
+
+  const collectionForm = useForm<z.infer<typeof collectionSchema>>({
+    resolver: zodResolver(collectionSchema),
+    defaultValues: { collectionName: '' },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -44,7 +66,7 @@ export default function TrendsPage() {
     setResult(null);
     try {
       const response = await getCommunityTrendInsights({
-        artisanId: 'artisan-123', // Mock artisan ID
+        artisanId: 'artisan-123',
         productDescription: values.productDescription,
       });
       setResult(response);
@@ -64,6 +86,34 @@ export default function TrendsPage() {
     }
   }
 
+  function onSaveToCollection(collectionId: string) {
+    if (!selectedProduct) return;
+
+    setCollections(prev => prev.map(c => 
+        c.id === collectionId ? { ...c, productIds: [...c.productIds, selectedProduct.id] } : c
+    ));
+    toast({
+        title: `Saved to ${collections.find(c => c.id === collectionId)?.name}`,
+    });
+    setSelectedProduct(null);
+  }
+
+  function onCreateCollection(values: z.infer<typeof collectionSchema>) {
+    const newCollection: SavedCollection = {
+        id: `coll-${Date.now()}`,
+        name: values.collectionName,
+        productIds: selectedProduct ? [selectedProduct.id] : [],
+    };
+    setCollections(prev => [...prev, newCollection]);
+    toast({
+        title: "Collection Created",
+        description: `Successfully created and saved to "${values.collectionName}".`
+    });
+    collectionForm.reset();
+    setSelectedProduct(null);
+  }
+
+
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-md">
       <header className="mb-8">
@@ -73,14 +123,11 @@ export default function TrendsPage() {
       
       <section className="mb-12">
         <h2 className="font-headline text-2xl font-semibold mb-4">Best-Selling Crafts</h2>
-        <Carousel
-          opts={{ align: 'start', loop: true }}
-          plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
-        >
+        <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
           <CarouselContent>
             {bestSelling.map((product) => (
               <CarouselItem key={product.id} className="basis-1/2">
-                <ProductCard product={product} />
+                <ProductCard product={product} onSave={() => setSelectedProduct(product)} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -89,14 +136,11 @@ export default function TrendsPage() {
 
       <section className="mb-12">
         <h2 className="font-headline text-2xl font-semibold mb-4">Frequently Viewed</h2>
-        <Carousel
-          opts={{ align: 'start', loop: true, direction: 'rtl' }}
-          plugins={[Autoplay({ delay: 3000, stopOnInteraction: false, playOnInit: true })]}
-        >
+        <Carousel opts={{ align: 'start', loop: true, direction: 'rtl' }} plugins={[Autoplay({ delay: 3000 })]}>
           <CarouselContent>
             {frequentlyBought.map((product) => (
               <CarouselItem key={product.id} className="basis-1/2">
-                 <ProductCard product={product} />
+                 <ProductCard product={product} onSave={() => setSelectedProduct(product)} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -161,6 +205,53 @@ export default function TrendsPage() {
              </Card>
         </div>
       </section>
+
+      <AlertDialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Save to Collection</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Save "{selectedProduct?.name}" to an existing collection or create a new one.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-4 py-4">
+                {collections.length > 0 && (
+                     <div className="space-y-2">
+                        <h4 className="font-medium text-sm">Existing Collections</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                            {collections.map(c => (
+                                <Button key={c.id} variant="outline" onClick={() => onSaveToCollection(c.id)}>
+                                    {c.name}
+                                </Button>
+                            ))}
+                        </div>
+                     </div>
+                )}
+                <Form {...collectionForm}>
+                    <form onSubmit={collectionForm.handleSubmit(onCreateCollection)} className="space-y-2">
+                        <h4 className="font-medium text-sm">Create New Collection</h4>
+                         <FormField
+                            control={collectionForm.control}
+                            name="collectionName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="e.g., 'Inspiration', 'Next Project'" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit" className="w-full">Create and Save</Button>
+                    </form>
+                </Form>
+            </div>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }
