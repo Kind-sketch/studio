@@ -39,7 +39,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased flex items-center justify-center min-h-screen bg-zinc-200 dark:bg-zinc-800" suppressHydrationWarning>
         <LanguageProvider>
-          <div className="relative w-full max-w-[420px] h-[860px] max-h-[90vh] bg-background shadow-2xl rounded-3xl overflow-hidden">
+          <div className="relative w-full max-w-[420px] h-[926px] max-h-[95vh] bg-background shadow-2xl rounded-3xl overflow-hidden">
             <div className="h-full w-full overflow-y-auto">
               {children}
             </div>
