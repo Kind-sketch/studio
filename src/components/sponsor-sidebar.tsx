@@ -32,12 +32,21 @@ const baseNavItems = [
   { href: '/sponsor/profile', label: 'Account', icon: User },
 ];
 
-function NavContent() {
+function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     const pathname = usePathname();
     const { toast } = useToast();
     const { language } = useLanguage();
     const [navItems, setNavItems] = useState(baseNavItems);
     const [translatedLogout, setTranslatedLogout] = useState('Logout');
+    const router = useRouter();
+
+    const handleLinkClick = (href: string) => {
+        router.push(href);
+        if (closeSheet) {
+          closeSheet();
+        }
+    };
+
 
     useEffect(() => {
         const translateNav = async () => {
@@ -66,15 +75,14 @@ function NavContent() {
             title: "Logged Out",
             description: "You have been successfully logged out."
         });
-        // In a real app, you would handle actual logout logic here.
-        // For now, we can just navigate to a public page.
+        if (closeSheet) closeSheet();
         window.location.href = '/'; 
     };
 
     return (
         <div className="flex h-full flex-col bg-card">
             <SheetHeader className="flex h-16 shrink-0 items-center border-b px-4">
-                <Link href="/sponsor/dashboard" className="flex items-center gap-2 font-semibold">
+                <Link href="/sponsor/dashboard" onClick={closeSheet} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
@@ -83,29 +91,28 @@ function NavContent() {
                 <ul className="space-y-1">
                     {navItems.map((item) => (
                     <li key={item.label}>
-                        <Link
-                        href={item.href}
-                        className={cn(
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                            pathname === item.href && 'bg-accent text-primary font-semibold'
-                        )}
+                        <button
+                            onClick={() => handleLinkClick(item.href)}
+                            className={cn(
+                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
+                                pathname === item.href && 'bg-accent text-primary font-semibold'
+                            )}
                         >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                        </Link>
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
+                        </button>
                     </li>
                     ))}
                 </ul>
             </nav>
             <div className="mt-auto border-t p-4 space-y-2">
-                <Link
-                    href="#"
+                <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent"
+                    className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent"
                 >
                     <LogOut className="h-4 w-4" />
                     {translatedLogout}
-                </Link>
+                </button>
                  <div className="flex justify-center pt-4">
                     <Logo className="h-10 w-10 text-muted-foreground" />
                 </div>
@@ -115,13 +122,15 @@ function NavContent() {
 }
 
 export default function SponsorSidebar() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   return (
     <>
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0">
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
               <PanelLeft className="h-5 w-5" />
@@ -129,11 +138,7 @@ export default function SponsorSidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0 z-[101]">
-            <NavContent />
-             <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-            </SheetClose>
+            <NavContent closeSheet={() => setIsSheetOpen(false)} />
           </SheetContent>
         </Sheet>
         <div className="ml-auto">
@@ -143,5 +148,3 @@ export default function SponsorSidebar() {
     </>
   );
 }
-
-    

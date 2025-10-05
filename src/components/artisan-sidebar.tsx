@@ -27,6 +27,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetClose,
+  SheetTrigger,
 } from '@/components/ui/sheet';
 import {
     DropdownMenu,
@@ -289,7 +290,7 @@ export function HeaderActions() {
 }
 
 
-function NavContent() {
+function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     const pathname = usePathname();
     const { toast } = useToast();
     const { language } = useLanguage();
@@ -301,6 +302,14 @@ function NavContent() {
     const [translatedLogout, setTranslatedLogout] = useState('Logout');
     const [logoutToastTitle, setLogoutToastTitle] = useState('Logged Out');
     const [logoutToastDesc, setLogoutToastDesc] = useState('You have been successfully logged out.');
+    const router = useRouter();
+
+    const handleLinkClick = (href: string) => {
+        router.push(href);
+        if (closeSheet) {
+          closeSheet();
+        }
+    };
 
     useEffect(() => {
         const translateNav = async () => {
@@ -384,7 +393,7 @@ function NavContent() {
     return (
         <div className="flex h-full flex-col bg-sidebar">
             <SheetHeader className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
-                <Link href="/artisan/home" className="flex items-center gap-2 font-semibold">
+                <Link href="/artisan/home" onClick={closeSheet} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
@@ -393,77 +402,76 @@ function NavContent() {
                 <ul className="space-y-1">
                     {navItems.map((item) => (
                     <li key={item.label}>
-                        <Link
-                        href={item.href}
-                        className={cn(
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                            isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
-                        )}
+                        <button
+                            onClick={() => handleLinkClick(item.href)}
+                            className={cn(
+                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
+                            )}
                         >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                        </Link>
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
+                        </button>
                     </li>
                     ))}
                 </ul>
                 <Separator className="my-4" />
                 <div className="px-3 py-2">
-                    <Link
-                    href={'/artisan/orders'}
-                    className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                        isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
-                    )}
+                    <button
+                        onClick={() => handleLinkClick('/artisan/orders')}
+                        className={cn(
+                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                            isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
+                        )}
                     >
-                    <Package className="h-4 w-4" />
-                    {translatedOrders}
-                    </Link>
+                        <Package className="h-4 w-4" />
+                        {translatedOrders}
+                    </button>
                 </div>
                 <div className="px-3 py-2">
-                    <Link
-                    href={'/artisan/sponsors'}
-                    className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                        isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
-                    )}
+                    <button
+                        onClick={() => handleLinkClick('/artisan/sponsors')}
+                        className={cn(
+                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                            isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
+                        )}
                     >
-                    <HeartHandshake className="h-4 w-4" />
-                    {translatedSponsors}
-                    </Link>
+                        <HeartHandshake className="h-4 w-4" />
+                        {translatedSponsors}
+                    </button>
                 </div>
                 <div className="px-3 py-2">
-                    <Link
-                    href={'/artisan/saved-collection'}
-                    className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                        isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
-                    )}
+                    <button
+                        onClick={() => handleLinkClick('/artisan/saved-collection')}
+                        className={cn(
+                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                            isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
+                        )}
                     >
-                    <Bookmark className="h-4 w-4" />
-                    {translatedSavedCollection}
-                    </Link>
+                        <Bookmark className="h-4 w-4" />
+                        {translatedSavedCollection}
+                    </button>
                 </div>
             </nav>
             <div className="mt-auto border-t border-sidebar-border p-4 space-y-2">
                 {translatedBottomNav.map(item => (
-                     <Link
+                     <button
                         key={item.href}
-                        href={item.href}
-                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
+                        onClick={() => handleLinkClick(item.href)}
+                        className={cn("w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
                         >
                         <item.icon className="h-4 w-4" />
                         {item.label}
-                    </Link>
+                    </button>
                 ))}
                 <Separator />
-                <Link
-                    href="#"
+                <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent"
+                    className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent"
                 >
                     <LogOut className="h-4 w-4" />
                     {translatedLogout}
-                </Link>
+                </button>
             </div>
         </div>
     );
@@ -471,7 +479,7 @@ function NavContent() {
 
 
 export default function ArtisanSidebar() {
-  const router = useRouter();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
     <>
@@ -479,7 +487,7 @@ export default function ArtisanSidebar() {
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline">
                 <PanelLeft className="h-5 w-5" />
@@ -487,11 +495,7 @@ export default function ArtisanSidebar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0 z-[101]">
-              <NavContent />
-               <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Close</span>
-                </SheetClose>
+              <NavContent closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
         <div className="ml-auto">
@@ -501,5 +505,3 @@ export default function ArtisanSidebar() {
     </>
   );
 }
-
-    
