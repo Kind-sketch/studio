@@ -1,3 +1,4 @@
+
 import type { Product, Artisan, Category, Language } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 import { Palette, Gem, Brush, Hammer, Scissors, ShoppingBag, VenetianMask, SprayCan } from 'lucide-react';
@@ -36,6 +37,7 @@ export const products: Product[] = [
     price: 45.0,
     image: getImage('product-1'),
     category: 'Ceramics',
+    description: 'A beautiful hand-thrown ceramic vase with a warm, gradient glaze reminiscent of a sunrise. Perfect for holding fresh flowers or as a standalone decorative piece. Each vase is unique, with slight variations that add to its charm.',
     likes: 120,
     sales: 30,
   },
@@ -46,6 +48,7 @@ export const products: Product[] = [
     price: 75.0,
     image: getImage('product-2'),
     category: 'Textiles',
+    description: 'A large, hand-woven wall hanging that brings a touch of bohemian warmth to any room. Made with natural cotton and wool fibers, it features intricate macrame knots and a beautiful, flowing fringe.',
     likes: 250,
     sales: 45,
   },
@@ -56,6 +59,7 @@ export const products: Product[] = [
     price: 60.0,
     image: getImage('product-3'),
     category: 'Woodwork',
+    description: 'A handcrafted serving bowl made from sustainable acacia wood. Its rich, natural grain makes each piece one-of-a-kind. Ideal for salads, fruits, or as a stunning centerpiece on your dining table.',
     likes: 95,
     sales: 22,
   },
@@ -66,6 +70,7 @@ export const products: Product[] = [
     price: 120.0,
     image: getImage('product-4'),
     category: 'Jewelry',
+    description: 'An elegant silver necklace featuring a stunning azure-blue gemstone. The delicate chain and minimalist design make it a versatile piece for both everyday wear and special occasions. Hand-finished to perfection.',
     likes: 310,
     sales: 60,
   },
@@ -76,6 +81,7 @@ export const products: Product[] = [
     price: 250.0,
     image: getImage('product-5'),
     category: 'Painting',
+    description: 'A vibrant abstract painting on a large canvas. This piece is a burst of color and energy, designed to be a focal point in any modern space. The artist uses a mixed-media approach, adding texture and depth to the work.',
     likes: 450,
     sales: 15,
   },
@@ -86,6 +92,7 @@ export const products: Product[] = [
     price: 35.0,
     image: getImage('product-6'),
     category: 'Leatherwork',
+    description: 'A rustic, hand-stitched leather journal perfect for capturing your thoughts, sketches, or travel memories. The durable leather cover will develop a beautiful patina over time, making it uniquely yours.',
     likes: 180,
     sales: 80,
   },
@@ -96,6 +103,7 @@ export const products: Product[] = [
     price: 180.0,
     image: getImage('product-7'),
     category: 'Glasswork',
+    description: 'A delicate, hand-blown glass sculpture that captures the movement of an ocean wave. The swirling blues and greens create a mesmerizing effect as they catch the light. A true statement piece for any art collector.',
     likes: 210,
     sales: 25,
   },
@@ -106,6 +114,7 @@ export const products: Product[] = [
     price: 55.0,
     image: getImage('product-8'),
     category: 'Textiles',
+    description: 'A soft, lightweight silk scarf featuring a hand-embroidered floral design in shades of crimson and gold. This versatile accessory adds a pop of color and elegance to any outfit, whether draped over the shoulders or tied around the neck.',
     likes: 140,
     sales: 50,
   },
@@ -137,7 +146,7 @@ export const languages: Language[] = [
     { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
     { code: 'mr', name: 'Marathi', nativeName: 'मराठी' },
     { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
-    { code: 'es', name: 'Spanish', nativeName: 'Español' },
+    { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
 ];
 
 export const statsData = {
