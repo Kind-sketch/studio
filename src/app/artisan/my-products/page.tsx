@@ -33,11 +33,11 @@ export default function MyProductsPage() {
       </header>
 
       {myProducts.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {myProducts.map(product => (
             <Card key={product.id} className="overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative aspect-square w-full">
+                <div className="relative aspect-[3/4] w-full">
                   <Image
                     src={product.image.url}
                     alt={product.name}
@@ -46,18 +46,18 @@ export default function MyProductsPage() {
                   />
                 </div>
               </CardContent>
-              <CardHeader className="p-4">
-                <CardTitle className="font-headline text-lg truncate">{product.name}</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-3">
+                <CardTitle className="font-headline text-base truncate">{product.name}</CardTitle>
+                <CardDescription className="text-xs">
                   {product.createdAt ? 
                     `Added ${formatDistanceToNow(new Date(product.createdAt))} ago` :
                     'Just added'
                   }
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-4 pt-0">
+              <CardContent className="p-3 pt-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-xl font-semibold">₹{product.price.toFixed(2)}</p>
+                  <p className="text-md font-semibold">₹{product.price.toFixed(2)}</p>
                   <Button variant="outline" size="sm">Edit</Button>
                 </div>
               </CardContent>
