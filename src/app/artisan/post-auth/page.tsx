@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,7 +18,7 @@ const baseOptions = [
   {
     name: 'Visit My Page',
     description: 'View your sales, trends, and statistics.',
-    href: '/artisan/dashboard',
+    href: '/artisan/home',
     icon: LayoutDashboard,
   },
 ];
