@@ -37,10 +37,9 @@ import { useEffect, useState, useRef } from 'react';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start'] },
+  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular'] },
   { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded'] },
-  { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics'] },
   { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me'] },
 ];
