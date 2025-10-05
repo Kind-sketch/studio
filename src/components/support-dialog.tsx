@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 
 const baseQuestions = [
   "I'm having trouble uploading a product.",
@@ -122,26 +121,17 @@ export default function SupportDialog({ children }: { children: React.ReactNode 
           <DialogTitle>{translatedContent.title}</DialogTitle>
           <DialogDescription>{translatedContent.description}</DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-            <Carousel opts={{ align: "start" }} className="w-full">
-              <CarouselContent>
-                {translatedContent.questions.map((question, index) => (
-                  <CarouselItem key={index} className="basis-full">
-                    <div className="p-1">
-                      <Button
-                        variant={selectedQuestion === question ? 'default' : 'outline'}
-                        className="w-full justify-center text-center h-auto py-4 min-h-[100px] flex items-center whitespace-normal"
-                        onClick={() => setSelectedQuestion(question)}
-                      >
-                        {question}
-                      </Button>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-              <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-            </Carousel>
+        <div className="py-4 space-y-2">
+            {translatedContent.questions.map((question, index) => (
+                <Button
+                key={index}
+                variant={selectedQuestion === question ? 'default' : 'outline'}
+                className="w-full justify-start text-left h-auto py-2 whitespace-normal"
+                onClick={() => setSelectedQuestion(question)}
+                >
+                {question}
+                </Button>
+            ))}
         </div>
         <DialogFooter>
           <DialogClose asChild>
