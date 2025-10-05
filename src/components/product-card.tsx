@@ -16,16 +16,15 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <Card className="overflow-hidden shadow-md transition-shadow hover:shadow-xl">
-      <CardContent className="p-0">
-        <div className="relative">
+    <Card className="overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col">
+      <CardContent className="p-0 flex-grow">
+        <div className="relative aspect-[4/5] w-full">
           <Image
             src={product.image.url}
             alt={product.name}
             data-ai-hint={product.image.hint}
-            width={400}
-            height={500}
-            className="aspect-[4/5] w-full object-cover"
+            fill
+            className="object-cover"
           />
           <Button
             size="icon"

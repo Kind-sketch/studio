@@ -53,33 +53,25 @@ export default function ArtisanDashboard() {
         <div className="lg:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
-              <CardDescription>A list of your most recent product sales.</CardDescription>
+              <CardTitle>Product Breakdown</CardTitle>
+              <CardDescription>Performance of your individual products.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentSales.map(product => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                           <Image src={product.image.url} alt={product.name} width={40} height={40} className="rounded-md object-cover"/>
-                           <span className="font-medium">{product.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>${product.price.toFixed(2)}</TableCell>
-                      <TableCell>2024-05-2{Math.floor(Math.random()*9)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="space-y-4">
+                {recentSales.map(product => (
+                  <div key={product.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted">
+                     <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-md object-cover aspect-square"/>
+                     <div className="flex-1 text-sm">
+                       <p className="font-medium">{product.name}</p>
+                       <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
+                     </div>
+                     <div className="text-right text-sm">
+                        <p className="font-medium">{product.sales} sales</p>
+                        <p className="text-muted-foreground flex items-center justify-end gap-1"><Heart className="h-3 w-3"/>{product.likes}</p>
+                     </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>

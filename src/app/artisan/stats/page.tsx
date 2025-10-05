@@ -6,6 +6,7 @@ import StatsChart from '@/components/stats-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { statsData } from '@/lib/data';
 import type { ChartConfig } from '@/components/ui/chart';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const chartConfig = {
   likes: {
@@ -56,7 +57,12 @@ export default function StatsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="w-[800px] h-[400px] pr-4">
+              <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

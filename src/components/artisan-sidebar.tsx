@@ -77,7 +77,7 @@ function NavContent() {
 export default function ArtisanSidebar() {
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r bg-card md:flex">
+      <aside className="hidden w-64 flex-col border-r bg-card md:flex md:sticky md:top-0 md:h-screen">
         <NavContent />
       </aside>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">

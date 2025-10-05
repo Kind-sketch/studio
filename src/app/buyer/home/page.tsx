@@ -1,10 +1,13 @@
+'use client';
+
 import { products, categories } from '@/lib/data';
 import ProductCard from '@/components/product-card';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function BuyerHomePage() {
-  const trendingProducts = [...products].sort((a, b) => b.likes - a.likes).slice(0, 4);
+  const trendingProducts = [...products].sort((a, b) => b.likes - a.likes);
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -42,11 +45,18 @@ export default function BuyerHomePage() {
         <h2 className="mb-4 font-headline text-2xl font-semibold">
           Trending Now
         </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {trendingProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <Carousel
+          opts={{ align: 'start', loop: true }}
+          plugins={[Autoplay({ delay: 2500, stopOnInteraction: false })]}
+        >
+          <CarouselContent>
+            {trendingProducts.map((product) => (
+              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                <ProductCard product={product} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </section>
 
       {/* Main Product Feed */}

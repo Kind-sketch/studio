@@ -9,12 +9,14 @@ import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { products } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 const formSchema = z.object({
   productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -28,8 +30,8 @@ export default function TrendsPage() {
   } | null>(null);
   const { toast } = useToast();
 
-  const bestSelling = [...products].sort((a, b) => b.sales - a.sales).slice(0, 4);
-  const frequentlyBought = [...products].sort((a, b) => b.likes - a.likes).slice(0, 4);
+  const bestSelling = [...products].sort((a, b) => b.sales - a.sales);
+  const frequentlyBought = [...products].sort((a, b) => b.likes - a.likes);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,20 +74,34 @@ export default function TrendsPage() {
       
       <section className="mb-12">
         <h2 className="font-headline text-2xl font-semibold mb-4">Best-Selling Crafts</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {bestSelling.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <Carousel
+          opts={{ align: 'start', loop: true }}
+          plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
+        >
+          <CarouselContent>
+            {bestSelling.map((product) => (
+              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                <ProductCard product={product} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </section>
 
       <section className="mb-12">
         <h2 className="font-headline text-2xl font-semibold mb-4">Frequently Viewed</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {frequentlyBought.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <Carousel
+          opts={{ align: 'start', loop: true, direction: 'rtl' }}
+          plugins={[Autoplay({ delay: 3000, stopOnInteraction: false, playOnInit: true })]}
+        >
+          <CarouselContent>
+            {frequentlyBought.map((product) => (
+              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                 <ProductCard product={product} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </section>
 
       <section>
