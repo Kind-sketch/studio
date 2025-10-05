@@ -5,14 +5,14 @@ export default function SplashScreen() {
   const splashImage = PlaceHolderImages.find((p) => p.id === 'splash-screen');
 
   return (
-    <div className="relative flex h-screen w-screen flex-col items-center justify-center bg-background">
+    <div className="relative flex h-screen w-full flex-col items-center justify-center bg-black">
       {splashImage && (
         <Image
           src={splashImage.imageUrl}
           alt={splashImage.description}
           data-ai-hint={splashImage.imageHint}
           fill
-          className="object-cover"
+          className="object-contain"
           priority
         />
       )}
