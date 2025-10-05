@@ -10,11 +10,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -24,21 +24,75 @@ const formSchema = z.object({
   }),
 });
 
-const termsAndConditions = [
-    "You agree to provide accurate and complete information during registration.",
-    "You are responsible for maintaining the confidentiality of your account and password.",
-    "You will only list handmade products that you have created yourself.",
-    "You agree not to engage in any fraudulent or deceptive practices.",
-    "We reserve the right to suspend or terminate your account for any violation of these terms.",
-    "All disputes are subject to the jurisdiction of the local courts.",
-];
-
-
 export default function ArtisanRegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { language } = useLanguage();
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Artisan Login',
+    description: 'Enter your mobile number to login or register.',
+    mobileLabel: 'Mobile Number',
+    mobilePlaceholder: '10-digit mobile number',
+    sendOtpButton: 'Send OTP',
+    otpDescription: 'Enter the OTP sent to your mobile.',
+    otpLabel: 'One-Time Password (OTP)',
+    otpPlaceholder: 'Enter 5-digit OTP',
+    verifyButton: 'Verify & Continue',
+    otpSentToast: 'OTP Sent',
+    otpSentToastDesc: 'An OTP has been sent to your mobile number.',
+    invalidOtpToast: 'Invalid OTP',
+    invalidOtpToastDesc: 'The OTP you entered is incorrect. Please try again.',
+    welcomeBackToast: 'Verification Successful',
+    welcomeBackToastDesc: 'Welcome back!',
+    invalidNumber: 'Please enter a valid 10-digit mobile number.'
+  });
+
+  useEffect(() => {
+    const translateContent = async () => {
+      if (language !== 'en') {
+        const textsToTranslate = [
+          'Artisan Login',
+          'Enter your mobile number to login or register.',
+          'Mobile Number',
+          '10-digit mobile number',
+          'Send OTP',
+          'Enter the OTP sent to your mobile.',
+          'One-Time Password (OTP)',
+          'Enter 5-digit OTP',
+          'Verify & Continue',
+          'OTP Sent',
+          'An OTP has been sent to your mobile number.',
+          'Invalid OTP',
+          'The OTP you entered is incorrect. Please try again.',
+          'Verification Successful',
+          'Welcome back!',
+          'Please enter a valid 10-digit mobile number.'
+        ];
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+        setTranslatedContent({
+          title: translatedTexts[0],
+          description: translatedTexts[1],
+          mobileLabel: translatedTexts[2],
+          mobilePlaceholder: translatedTexts[3],
+          sendOtpButton: translatedTexts[4],
+          otpDescription: translatedTexts[5],
+          otpLabel: translatedTexts[6],
+          otpPlaceholder: translatedTexts[7],
+          verifyButton: translatedTexts[8],
+          otpSentToast: translatedTexts[9],
+          otpSentToastDesc: translatedTexts[10],
+          invalidOtpToast: translatedTexts[11],
+          invalidOtpToastDesc: translatedTexts[12],
+          welcomeBackToast: translatedTexts[13],
+          welcomeBackToastDesc: translatedTexts[14],
+          invalidNumber: translatedTexts[15],
+        });
+      }
+    };
+    translateContent();
+  }, [language]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,7 +108,7 @@ export default function ArtisanRegisterPage() {
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
      if (!mobileResult.success) {
-      form.setError('mobileNumber', { message: 'Please enter a valid 10-digit mobile number.' });
+      form.setError('mobileNumber', { message: translatedContent.invalidNumber });
       return;
     }
 
@@ -64,7 +118,6 @@ export default function ArtisanRegisterPage() {
     const isExistingUser = Object.values(existingUsers).some((user: any) => user.phone === mobileNumber || user.recovery === mobileNumber);
     localStorage.setItem('tempPhone', mobileNumber);
 
-
     setTimeout(() => {
       if (!isExistingUser) {
           router.push('/artisan/register-recovery');
@@ -72,8 +125,8 @@ export default function ArtisanRegisterPage() {
         setOtpSent(true);
         setIsLoading(false);
         toast({
-            title: 'OTP Sent',
-            description: 'An OTP has been sent to your mobile number.',
+            title: translatedContent.otpSentToast,
+            description: translatedContent.otpSentToastDesc,
         });
       }
     }, 1000);
@@ -86,15 +139,15 @@ export default function ArtisanRegisterPage() {
       // Mock OTP verification
       if (values.otp === '12345') {
         toast({
-          title: 'Verification Successful',
-          description: 'Welcome back!',
+          title: translatedContent.welcomeBackToast,
+          description: translatedContent.welcomeBackToastDesc,
         });
         router.push('/artisan/dashboard');
       } else {
         toast({
           variant: 'destructive',
-          title: 'Invalid OTP',
-          description: 'The OTP you entered is incorrect. Please try again.',
+          title: translatedContent.invalidOtpToast,
+          description: translatedContent.invalidOtpToastDesc,
         });
       }
     }, 1000);
@@ -107,9 +160,9 @@ export default function ArtisanRegisterPage() {
             <div className="flex justify-center mb-4">
                 <Logo className="h-12 w-12 text-primary" />
             </div>
-          <CardTitle className="font-headline text-3xl">Artisan Login</CardTitle>
+          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>
-            {otpSent ? 'Enter the OTP sent to your mobile.' : 'Enter your mobile number to login or register.'}
+            {otpSent ? translatedContent.otpDescription : translatedContent.description}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -121,9 +174,9 @@ export default function ArtisanRegisterPage() {
                     name="mobileNumber"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Mobile Number</FormLabel>
+                        <FormLabel>{translatedContent.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder="10-digit mobile number" {...field} />
+                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -136,9 +189,9 @@ export default function ArtisanRegisterPage() {
                   name="otp"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>One-Time Password (OTP)</FormLabel>
+                      <FormLabel>{translatedContent.otpLabel}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter 5-digit OTP" {...field} />
+                        <Input placeholder={translatedContent.otpPlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,12 +204,12 @@ export default function ArtisanRegisterPage() {
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Verify & Continue
+                  {translatedContent.verifyButton}
                 </Button>
               ) : (
                 <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Send OTP
+                  {translatedContent.sendOtpButton}
                 </Button>
               )}
             </CardContent>

@@ -10,12 +10,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -30,7 +32,7 @@ const registerSchema = z.object({
   }),
 });
 
-const termsAndConditions = [
+const baseTerms = [
   "You agree to provide accurate and complete information during registration.",
   "You are responsible for maintaining the confidentiality of your account and password.",
   "You agree not to engage in any fraudulent or deceptive practices.",
@@ -43,6 +45,72 @@ export default function AuthPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
+  const { language } = useLanguage();
+  const [termsAndConditions, setTermsAndConditions] = useState(baseTerms);
+
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Welcome',
+    description: 'Join as a Buyer or Sponsor',
+    buyerTab: 'Buyer',
+    sponsorTab: 'Sponsor',
+    loginTab: 'Login',
+    signUpTab: 'Sign Up',
+    emailLabel: 'Email',
+    emailPlaceholder: 'you@example.com',
+    passwordLabel: 'Password',
+    loginPasswordPlaceholder: '••••••••',
+    registerPasswordPlaceholder: 'Create a strong password',
+    loginButton: 'Login',
+    createAccountButton: 'Create Account',
+    termsLabel: 'Terms and Conditions',
+    agreeToTermsLabel: 'I agree to the terms and conditions.',
+    loginSuccessToast: 'Login Successful',
+    loginSuccessToastDesc: 'Welcome back!',
+    registerSuccessToast: 'Registration Successful',
+    registerSuccessToastDesc: "You're all set! Welcome to Artistry Havens.",
+  });
+
+  useEffect(() => {
+    const translateContent = async () => {
+      if (language !== 'en') {
+        const textsToTranslate = [
+          'Welcome', 'Join as a Buyer or Sponsor', 'Buyer', 'Sponsor',
+          'Login', 'Sign Up', 'Email', 'you@example.com', 'Password',
+          '••••••••', 'Create a strong password', 'Login', 'Create Account',
+          'Terms and Conditions', 'I agree to the terms and conditions.',
+          'Login Successful', 'Welcome back!', 'Registration Successful',
+          "You're all set! Welcome to Artistry Havens.",
+          ...baseTerms
+        ];
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+        setTranslatedContent({
+          title: translatedTexts[0],
+          description: translatedTexts[1],
+          buyerTab: translatedTexts[2],
+          sponsorTab: translatedTexts[3],
+          loginTab: translatedTexts[4],
+          signUpTab: translatedTexts[5],
+          emailLabel: translatedTexts[6],
+          emailPlaceholder: translatedTexts[7],
+          passwordLabel: translatedTexts[8],
+          loginPasswordPlaceholder: translatedTexts[9],
+          registerPasswordPlaceholder: translatedTexts[10],
+          loginButton: translatedTexts[11],
+          createAccountButton: translatedTexts[12],
+          termsLabel: translatedTexts[13],
+          agreeToTermsLabel: translatedTexts[14],
+          loginSuccessToast: translatedTexts[15],
+          loginSuccessToastDesc: translatedTexts[16],
+          registerSuccessToast: translatedTexts[17],
+          registerSuccessToastDesc: translatedTexts[18],
+        });
+        setTermsAndConditions(translatedTexts.slice(19));
+      } else {
+        setTermsAndConditions(baseTerms);
+      }
+    };
+    translateContent();
+  }, [language]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -59,8 +127,8 @@ export default function AuthPage() {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: 'Login Successful',
-        description: 'Welcome back!',
+        title: translatedContent.loginSuccessToast,
+        description: translatedContent.loginSuccessToastDesc,
       });
       const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
       router.push(redirectPath);
@@ -72,8 +140,8 @@ export default function AuthPage() {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: 'Registration Successful',
-        description: "You're all set! Welcome to Artistry Havens.",
+        title: translatedContent.registerSuccessToast,
+        description: translatedContent.registerSuccessToastDesc,
       });
       const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
       router.push(redirectPath);
@@ -87,23 +155,23 @@ export default function AuthPage() {
           <div className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Welcome</CardTitle>
+          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>
-            Join as a Buyer or Sponsor
+            {translatedContent.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="buyer" onValueChange={setUserType} className="w-full mb-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="buyer">Buyer</TabsTrigger>
-              <TabsTrigger value="sponsor">Sponsor</TabsTrigger>
+              <TabsTrigger value="buyer">{translatedContent.buyerTab}</TabsTrigger>
+              <TabsTrigger value="sponsor">{translatedContent.sponsorTab}</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Sign Up</TabsTrigger>
+              <TabsTrigger value="login">{translatedContent.loginTab}</TabsTrigger>
+              <TabsTrigger value="register">{translatedContent.signUpTab}</TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <Form {...loginForm}>
@@ -113,8 +181,8 @@ export default function AuthPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
+                        <FormLabel>{translatedContent.emailLabel}</FormLabel>
+                        <FormControl><Input placeholder={translatedContent.emailPlaceholder} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -124,15 +192,15 @@ export default function AuthPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                        <FormLabel>{translatedContent.passwordLabel}</FormLabel>
+                        <FormControl><Input type="password" placeholder={translatedContent.loginPasswordPlaceholder} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Login
+                    {translatedContent.loginButton}
                   </Button>
                 </form>
               </Form>
@@ -145,8 +213,8 @@ export default function AuthPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
+                        <FormLabel>{translatedContent.emailLabel}</FormLabel>
+                        <FormControl><Input placeholder={translatedContent.emailPlaceholder} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -156,14 +224,14 @@ export default function AuthPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl><Input type="password" placeholder="Create a strong password" {...field} /></FormControl>
+                        <FormLabel>{translatedContent.passwordLabel}</FormLabel>
+                        <FormControl><Input type="password" placeholder={translatedContent.registerPasswordPlaceholder} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <div className="space-y-2">
-                      <FormLabel>Terms and Conditions</FormLabel>
+                      <FormLabel>{translatedContent.termsLabel}</FormLabel>
                       <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
                           <ul className="list-disc pl-5 space-y-1">
                               {termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
@@ -179,7 +247,7 @@ export default function AuthPage() {
                               </FormControl>
                               <div className="space-y-1 leading-none">
                               <FormLabel>
-                                  I agree to the terms and conditions.
+                                  {translatedContent.agreeToTermsLabel}
                               </FormLabel>
                               <FormMessage />
                               </div>
@@ -189,7 +257,7 @@ export default function AuthPage() {
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Account
+                    {translatedContent.createAccountButton}
                   </Button>
                 </form>
               </Form>

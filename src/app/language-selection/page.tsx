@@ -5,17 +5,37 @@ import { Button } from '@/components/ui/button';
 import { languages } from '@/lib/data';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
+import { useState, useEffect } from 'react';
 
 export default function LanguageSelectionPage() {
-  const { setLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
+  const [title, setTitle] = useState('Choose Your Language');
+
+  useEffect(() => {
+    const translateTitle = async () => {
+      if (language !== 'en' && language) {
+        // We only translate the title of the page to the selected language
+        // not the language names themselves.
+        const { translatedTexts } = await translateText({
+          texts: ['Choose Your Language'],
+          targetLanguage: language,
+        });
+        setTitle(translatedTexts[0]);
+      } else {
+        setTitle('Choose Your Language');
+      }
+    };
+    translateTitle();
+  }, [language]);
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary/50 p-4">
-      <Card className="w-full max-w-md shadow-2xl">
+      <Card className="w-full shadow-2xl">
         <CardHeader className="items-center text-center">
             <Logo className="mb-2 h-12 w-12 text-primary"/>
           <CardTitle className="font-headline text-3xl">
-            Choose Your Language
+            {title}
           </CardTitle>
         </CardHeader>
         <CardContent>

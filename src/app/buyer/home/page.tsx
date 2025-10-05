@@ -1,30 +1,80 @@
-
 'use client';
 
-import { products, categories } from '@/lib/data';
+import { products, categories as baseCategories } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/ai/flows/translate-text';
+import { useState, useEffect } from 'react';
 
 export default function BuyerHomePage() {
   const trendingProducts = [...products].sort((a, b) => b.likes - a.likes);
+  const { language } = useLanguage();
+  const [categories, setCategories] = useState(baseCategories);
+  const [translatedContent, setTranslatedContent] = useState({
+    title: 'Discover Handcrafted Wonders',
+    description: 'Explore unique creations from artisans around the world.',
+    categoriesTitle: 'Categories',
+    trendingTitle: 'Trending Now',
+    allProductsTitle: 'All Products',
+  });
+
+  useEffect(() => {
+    const translateContent = async () => {
+      if (language !== 'en') {
+        const categoryNames = baseCategories.map(c => c.name);
+        const textsToTranslate = [
+          'Discover Handcrafted Wonders',
+          'Explore unique creations from artisans around the world.',
+          'Categories',
+          'Trending Now',
+          'All Products',
+          ...categoryNames,
+        ];
+        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
+        setTranslatedContent({
+          title: translatedTexts[0],
+          description: translatedTexts[1],
+          categoriesTitle: translatedTexts[2],
+          trendingTitle: translatedTexts[3],
+          allProductsTitle: translatedTexts[4],
+        });
+        const translatedCategories = baseCategories.map((cat, index) => ({
+          ...cat,
+          name: translatedTexts[5 + index],
+        }));
+        setCategories(translatedCategories);
+      } else {
+        setCategories(baseCategories);
+        setTranslatedContent({
+          title: 'Discover Handcrafted Wonders',
+          description: 'Explore unique creations from artisans around the world.',
+          categoriesTitle: 'Categories',
+          trendingTitle: 'Trending Now',
+          allProductsTitle: 'All Products',
+        });
+      }
+    };
+    translateContent();
+  }, [language]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight">
-          Discover Handcrafted Wonders
+          {translatedContent.title}
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Explore unique creations from artisans around the world.
+          {translatedContent.description}
         </p>
       </header>
 
       {/* Categories Section */}
       <section className="mb-12">
         <h2 className="mb-4 font-headline text-2xl font-semibold">
-          Categories
+          {translatedContent.categoriesTitle}
         </h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
           {categories.map((category) => (
@@ -44,7 +94,7 @@ export default function BuyerHomePage() {
       {/* Trending Products Section */}
       <section className="mb-12">
         <h2 className="mb-4 font-headline text-2xl font-semibold">
-          Trending Now
+          {translatedContent.trendingTitle}
         </h2>
         <Carousel
           opts={{ align: 'start', loop: true }}
@@ -63,7 +113,7 @@ export default function BuyerHomePage() {
       {/* Main Product Feed */}
       <section>
         <h2 className="mb-4 font-headline text-2xl font-semibold">
-          All Products
+          {translatedContent.allProductsTitle}
         </h2>
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
