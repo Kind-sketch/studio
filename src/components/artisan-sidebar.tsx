@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -40,6 +41,7 @@ const baseNavItems = [
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery'] },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics'] },
+  { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me'] },
 ];
 
 const bottomNavItems = [
@@ -212,16 +214,19 @@ function NavContent() {
         if (href === '/artisan/sponsors') {
             return pathname.startsWith('/artisan/sponsors');
         }
+         if (href === '/artisan/profile') {
+            return pathname === '/artisan/profile';
+        }
         return pathname === href;
     };
 
     return (
         <div className="flex h-full flex-col bg-sidebar">
             <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Logo className="h-8 w-8 text-primary" />
-                <span className="font-headline text-xl">Artistry Havens</span>
-            </Link>
+                <div className="flex items-center gap-2 font-semibold">
+                    <Logo className="h-8 w-8 text-primary" />
+                    <span className="font-headline text-xl">Artistry Havens</span>
+                </div>
             </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2">
             <ul className="space-y-1">
@@ -230,7 +235,7 @@ function NavContent() {
                     <Link
                     href={item.href}
                     className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                         isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
                     )}
                     >
@@ -245,7 +250,7 @@ function NavContent() {
                 <Link
                 href={'/artisan/orders'}
                 className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                     isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
                 )}
                 >
@@ -257,7 +262,7 @@ function NavContent() {
                 <Link
                 href={'/artisan/sponsors'}
                 className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                     isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
                 )}
                 >
@@ -269,7 +274,7 @@ function NavContent() {
                 <Link
                 href={'/artisan/saved-collection'}
                 className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent',
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                     isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
                 )}
                 >
@@ -283,7 +288,7 @@ function NavContent() {
                      <Link
                         key={item.href}
                         href={item.href}
-                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
+                        className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
                         >
                         <item.icon className="h-4 w-4" />
                         {item.label}

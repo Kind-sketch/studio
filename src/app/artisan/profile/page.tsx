@@ -1,0 +1,221 @@
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useForm, zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Edit, Save, Star, Eye, EyeOff } from 'lucide-react';
+import { artisans } from '@/lib/data';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+
+const profileSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters.'),
+  companyName: z.string().optional(),
+  address: z.string().optional(),
+  phone: z.string().optional(),
+});
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
+
+export default function ProfilePage() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  
+  // Mocking current user and data
+  const [artisan, setArtisan] = useState({
+      ...artisans[0],
+      companyName: 'Elena\'s Ceramics',
+      rating: 4.8,
+      address: '123 Clay Street, Pottery Town, 45678',
+      phone: '987-654-3210'
+  });
+
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: artisan.name,
+      companyName: artisan.companyName,
+      address: artisan.address,
+      phone: artisan.phone,
+    },
+  });
+
+  useEffect(() => {
+    // In a real app, you would fetch user data here.
+    // For now, we load from our mock state.
+    const storedProfile = localStorage.getItem('artisanProfile');
+    if (storedProfile) {
+        const data = JSON.parse(storedProfile);
+        setArtisan(prev => ({...prev, ...data}));
+        form.reset(data);
+    } else {
+        form.reset({
+            name: artisan.name,
+            companyName: artisan.companyName,
+            address: artisan.address,
+            phone: artisan.phone,
+        });
+    }
+  }, [form, artisan.name, artisan.companyName, artisan.address, artisan.phone]);
+
+
+  const onSubmit = (data: ProfileFormValues) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setArtisan(prev => ({ ...prev, ...data }));
+      localStorage.setItem('artisanProfile', JSON.stringify(data));
+      setIsLoading(false);
+      setIsEditing(false);
+      toast({
+        title: 'Profile Updated',
+        description: 'Your details have been successfully saved.',
+      });
+    }, 1000);
+  };
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Star
+          key={i}
+          className={`h-6 w-6 ${
+            i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+          }`}
+        />
+      );
+    }
+    return stars;
+  };
+
+  return (
+    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="font-headline text-4xl font-bold">My Profile</h1>
+          <p className="text-muted-foreground">Manage your artisan profile details.</p>
+        </div>
+        {!isEditing && (
+            <Button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Profile
+            </Button>
+        )}
+      </header>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Card>
+            <CardHeader className="flex flex-col md:flex-row items-start gap-6">
+              <Avatar className="h-24 w-24 border-4 border-primary">
+                <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
+                <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="w-full">
+                {isEditing ? (
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="text-2xl font-bold font-headline" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <h2 className="font-headline text-3xl font-bold">{artisan.name}</h2>
+                )}
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center">{renderStars(artisan.rating)}</div>
+                  <span className="text-muted-foreground font-bold">{artisan.rating.toFixed(1)}</span>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="space-y-8">
+                <Separator />
+                
+                {/* Professional Details */}
+                <div>
+                    <h3 className="font-headline text-xl font-semibold">Professional Details</h3>
+                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><Eye className="h-4 w-4"/>Visible to all buyers and sponsors.</p>
+                    <div className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="companyName"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Company / Brand Name</FormLabel>
+                                <FormControl>
+                                <Input {...field} disabled={!isEditing} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                <Separator />
+
+                {/* Personal Details */}
+                <div>
+                    <h3 className="font-headline text-xl font-semibold">Personal Details</h3>
+                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><EyeOff className="h-4 w-4"/>Visible only to your sponsors.</p>
+                    <div className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="address"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Your Address</FormLabel>
+                                <FormControl>
+                                <Input {...field} disabled={!isEditing} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Phone Number</FormLabel>
+                                <FormControl>
+                                <Input {...field} disabled={!isEditing} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                {isEditing && (
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>Cancel</Button>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Save Changes
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </form>
+      </Form>
+    </div>
+  );
+}
