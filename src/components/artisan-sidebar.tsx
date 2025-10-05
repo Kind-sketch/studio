@@ -10,7 +10,6 @@ import {
   TrendingUp,
   BarChart3,
   User,
-  Settings,
   PanelLeft,
   Package,
   HeartHandshake,
@@ -52,10 +51,11 @@ const bottomNavItems = [
 ];
 
 function HeaderActions() {
-    const { toast } = useToast();
+    const { toast, dismiss } = useToast();
     const router = useRouter();
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const toastIdRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -68,41 +68,54 @@ function HeaderActions() {
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = (event: any) => {
-                    const command = event.results[0][0].transcript.toLowerCase();
-                    handleVoiceCommand(command);
+                    const command = event.results[0][0].transcript;
+                    if (toastIdRef.current) {
+                        toast({
+                            id: toastIdRef.current,
+                            title: 'Processing Command...',
+                            description: `"${command}"`,
+                        });
+                    }
+                    handleVoiceCommand(command.toLowerCase());
                 };
 
                 recognition.onerror = (event: any) => {
                     console.error('Speech recognition error', event.error);
-                    toast({
-                        variant: 'destructive',
-                        title: 'Voice Error',
-                        description: 'Could not recognize your voice. Please try again.',
-                    });
+                    if (toastIdRef.current) {
+                        toast({
+                            id: toastIdRef.current,
+                            variant: 'destructive',
+                            title: 'Voice Error',
+                            description: 'Could not recognize your voice. Please try again.',
+                        });
+                    }
                     setIsListening(false);
                 };
 
                 recognition.onend = () => {
                     setIsListening(false);
+                    setTimeout(() => {
+                        if(toastIdRef.current) dismiss(toastIdRef.current);
+                    }, 2000);
                 };
 
                 recognitionRef.current = recognition;
             }
         }
-    }, [toast]);
+    }, [toast, dismiss]);
 
     const handleMicClick = () => {
         if (isListening) {
             recognitionRef.current?.stop();
-            setIsListening(false);
         } else {
             if (recognitionRef.current) {
                 recognitionRef.current.start();
                 setIsListening(true);
-                toast({
+                const { id } = toast({
                     title: 'Listening...',
                     description: 'Please say a command.',
                 });
+                toastIdRef.current = id;
             } else {
                  toast({
                     variant: 'destructive',
@@ -136,11 +149,14 @@ function HeaderActions() {
             }
         }
 
-        toast({
-            variant: 'destructive',
-            title: 'Command Not Recognized',
-            description: `Could not find a page for "${command}".`,
-        });
+        if (toastIdRef.current) {
+            toast({
+                id: toastIdRef.current,
+                variant: 'destructive',
+                title: 'Command Not Recognized',
+                description: `Could not find a page for "${command}".`,
+            });
+        }
     };
 
     return (
