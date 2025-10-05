@@ -50,6 +50,11 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async input => {
+    if (!process.env.GEMINI_API_KEY) {
+        console.error("FATAL: GEMINI_API_KEY is not configured. Translation will not work.");
+        return { translatedTexts: input.texts };
+    }
+      
     if (input.targetLanguage === 'en') {
       return { translatedTexts: input.texts };
     }
