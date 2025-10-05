@@ -65,10 +65,10 @@ const translateTextFlow = ai.defineFlow(
     if (textsToTranslate.length > 0) {
       try {
         const sourceTexts = textsToTranslate.map(t => t.text);
-        const translatedTexts = await translate(sourceTexts, targetLanguage);
+        const translatedTextsFromApi = await translate(sourceTexts, targetLanguage);
         
         // Store new translations in cache and populate the results array
-        translatedTexts.forEach((translatedText, i) => {
+        translatedTextsFromApi.forEach((translatedText, i) => {
           const originalIndex = textsToTranslate[i].index;
           const originalText = textsToTranslate[i].text;
           const cacheKey = `${targetLanguage}:${originalText}`;
