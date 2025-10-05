@@ -12,6 +12,8 @@ import {
   PanelLeft,
   Package,
   HeartHandshake,
+  Mic,
+  MessageCircleQuestion
 } from 'lucide-react';
 import {
   Sheet,
@@ -27,7 +29,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
+import { useToast } from '@/hooks/use-toast';
 
 
 const navItems = [
@@ -57,77 +60,117 @@ const secondaryNav = [
     }
 ]
 
+function HeaderActions() {
+    const { toast } = useToast();
+
+    const handleMicClick = () => {
+        toast({
+        title: 'Voice Input',
+        description: 'Voice command functionality is not yet implemented.',
+        });
+    };
+    
+    const handleSupportClick = () => {
+        toast({
+        title: 'Support',
+        description: 'Support functionality is not yet implemented.',
+        });
+    };
+
+    return (
+        <div className="ml-auto flex items-center gap-2">
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleMicClick}
+                aria-label="Use Voice Command"
+            >
+                <Mic className="h-5 w-5" />
+            </Button>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSupportClick}
+                aria-label="Support"
+            >
+                <MessageCircleQuestion className="h-5 w-5" />
+            </Button>
+        </div>
+    )
+}
+
+
 function NavContent() {
     const pathname = usePathname();
     
     const isLinkActive = (href: string) => pathname === href;
 
     return (
-        <div className="flex h-full flex-col">
-        <div className="flex h-16 shrink-0 items-center border-b px-4">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="font-headline text-xl">Artistry Havens</span>
-          </Link>
-        </div>
-        <nav className="flex-1 overflow-y-auto py-4 px-2">
-          <ul className="space-y-1">
-            {navItems.map((item) => (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                    isLinkActive(item.href) && 'bg-accent text-primary font-semibold'
-                  )}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Separator className="my-4" />
-           <Accordion type="multiple" defaultValue={secondaryNav.map(item => item.title)} className="w-full">
-            {secondaryNav.map(nav => (
-              <AccordionItem key={nav.title} value={nav.title} className="border-b-0">
-                <AccordionTrigger className="px-3 py-2 text-muted-foreground hover:no-underline hover:text-primary hover:bg-accent rounded-lg [&[data-state=open]]:text-primary [&[data-state=open]]:bg-accent [&[data-state=open]]:font-semibold">
-                   <div className="flex items-center gap-3">
-                     <nav.icon className="h-4 w-4" />
-                     <span>{nav.title}</span>
-                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="pt-1">
-                  <ul className="space-y-1 pl-7">
-                    {nav.items.map(item => (
-                       <li key={item.label}>
-                         <Link
-                           href={item.href}
-                           className={cn(
-                             'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:text-primary hover:bg-accent/80',
-                             isLinkActive(item.href) && 'bg-accent/50 text-primary font-medium'
-                           )}
-                         >
-                           {item.label}
-                         </Link>
-                       </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </nav>
-        <div className="mt-auto border-t p-2">
-            <Link
-                href="/artisan/settings"
-                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/settings") && "bg-accent text-primary font-semibold" )}
-                >
-                <Settings className="h-4 w-4" />
-                Settings
+        <div className="flex h-full flex-col bg-card">
+            <div className="flex h-16 shrink-0 items-center border-b px-4">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+                <Logo className="h-8 w-8 text-primary" />
+                <span className="font-headline text-xl">Artistry Havens</span>
             </Link>
+            </div>
+            <nav className="flex-1 overflow-y-auto py-4 px-2">
+            <ul className="space-y-1">
+                {navItems.map((item) => (
+                <li key={item.label}>
+                    <Link
+                    href={item.href}
+                    className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
+                        isLinkActive(item.href) && 'bg-accent text-primary font-semibold'
+                    )}
+                    >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                    </Link>
+                </li>
+                ))}
+            </ul>
+            <Separator className="my-4" />
+            <Accordion type="multiple" defaultValue={secondaryNav.map(item => item.title)} className="w-full">
+                {secondaryNav.map(nav => (
+                <AccordionItem key={nav.title} value={nav.title} className="border-b-0">
+                    <AccordionTrigger className="px-3 py-2 text-muted-foreground hover:no-underline hover:text-primary hover:bg-accent rounded-lg [&[data-state=open]]:text-primary [&[data-state=open]]:bg-accent [&[data-state=open]]:font-semibold">
+                    <div className="flex items-center gap-3">
+                        <nav.icon className="h-4 w-4" />
+                        <span>{nav.title}</span>
+                    </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-1">
+                    <ul className="space-y-1 pl-7">
+                        {nav.items.map(item => (
+                        <li key={item.label}>
+                            <Link
+                            href={item.href}
+                            className={cn(
+                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:text-primary hover:bg-accent/80',
+                                isLinkActive(item.href) && 'bg-accent/50 text-primary font-medium'
+                            )}
+                            >
+                            {item.label}
+                            </Link>
+                        </li>
+                        ))}
+                    </ul>
+                    </AccordionContent>
+                </AccordionItem>
+                ))}
+            </Accordion>
+            </nav>
+            <div className="mt-auto border-t p-2">
+                <Link
+                    href="/artisan/settings"
+                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/settings") && "bg-accent text-primary font-semibold" )}
+                    >
+                    <Settings className="h-4 w-4" />
+                    Settings
+                </Link>
+            </div>
         </div>
-      </div>
     );
 }
 
@@ -135,7 +178,7 @@ function NavContent() {
 export default function ArtisanSidebar() {
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r bg-card md:flex h-screen sticky top-0">
+      <aside className="hidden w-64 flex-col border-r md:flex h-screen sticky top-0">
         <NavContent />
       </aside>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 md:hidden">
@@ -150,6 +193,7 @@ export default function ArtisanSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
+        <HeaderActions />
       </header>
     </>
   );

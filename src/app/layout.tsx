@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import FloatingMic from '@/components/floating-mic';
+import MainHeader from '@/components/main-header';
 
 export const metadata: Metadata = {
   title: 'Artistry Havens',
@@ -28,9 +28,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
+        <MainHeader />
         {children}
         <Toaster />
-        <FloatingMic />
       </body>
     </html>
   );
