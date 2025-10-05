@@ -61,30 +61,30 @@ export default function BuyerHomePage() {
   }, [language]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 text-center px-4">
+    <div className="container mx-auto px-4 py-6">
+      <header className="mb-6 text-center px-4">
         <h1 className="font-headline text-3xl font-bold tracking-tight">
           {translatedContent.title}
         </h1>
-        <p className="mt-2 text-md text-muted-foreground">
+        <p className="mt-1 text-md text-muted-foreground">
           {translatedContent.description}
         </p>
       </header>
 
       {/* Categories Section */}
-      <section className="mb-12">
-        <h2 className="mb-4 font-headline text-2xl font-semibold">
+      <section className="mb-8">
+        <h2 className="mb-4 font-headline text-xl font-semibold">
           {translatedContent.categoriesTitle}
         </h2>
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 md:grid-cols-5">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-4 md:grid-cols-5">
           {categories.map((category) => (
             <Card
               key={category.id}
               className="group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1"
             >
-              <CardContent className="flex flex-col items-center justify-center p-3 md:p-6">
-                <category.icon className="mb-2 h-6 w-6 md:h-8 md:w-8 text-primary transition-colors group-hover:text-accent-foreground" />
-                <span className="font-semibold text-xs md:text-sm text-foreground group-hover:text-accent-foreground text-center">{category.name}</span>
+              <CardContent className="flex flex-col items-center justify-center p-2 sm:p-3 md:p-4">
+                <category.icon className="mb-1 h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary transition-colors group-hover:text-accent-foreground" />
+                <span className="font-semibold text-[10px] sm:text-xs md:text-sm text-foreground group-hover:text-accent-foreground text-center">{category.name}</span>
               </CardContent>
             </Card>
           ))}
@@ -92,17 +92,18 @@ export default function BuyerHomePage() {
       </section>
 
       {/* Trending Products Section */}
-      <section className="mb-12">
-        <h2 className="mb-4 font-headline text-2xl font-semibold">
+      <section className="mb-10">
+        <h2 className="mb-4 font-headline text-xl font-semibold">
           {translatedContent.trendingTitle}
         </h2>
         <Carousel
           opts={{ align: 'start', loop: true }}
           plugins={[Autoplay({ delay: 2500, stopOnInteraction: false })]}
+          className="-mx-2"
         >
-          <CarouselContent>
+          <CarouselContent className="ml-2">
             {trendingProducts.map((product) => (
-              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
                 <ProductCard product={product} />
               </CarouselItem>
             ))}
@@ -112,10 +113,10 @@ export default function BuyerHomePage() {
 
       {/* Main Product Feed */}
       <section>
-        <h2 className="mb-4 font-headline text-2xl font-semibold">
+        <h2 className="mb-4 font-headline text-xl font-semibold">
           {translatedContent.allProductsTitle}
         </h2>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

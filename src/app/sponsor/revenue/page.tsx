@@ -82,13 +82,13 @@ export default function RevenuePage() {
 
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{translatedContent.mainTitle}</h1>
-        <p className="text-lg text-muted-foreground">{translatedContent.mainDescription}</p>
+    <div className="container mx-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">{translatedContent.mainTitle}</h1>
+        <p className="text-md text-muted-foreground">{translatedContent.mainDescription}</p>
       </header>
 
-      <div className="grid gap-8">
+      <div className="grid gap-6">
         <Card>
           <CardHeader>
             <CardTitle>{translatedContent.myRevenueTitle}</CardTitle>
@@ -100,7 +100,7 @@ export default function RevenuePage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">{translatedContent.productHeader}</TableHead>
+                  <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
                   <TableHead>{translatedContent.nameHeader}</TableHead>
                   <TableHead className="text-right">{translatedContent.revenueHeader}</TableHead>
                 </TableRow>
@@ -137,7 +137,7 @@ export default function RevenuePage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">{translatedContent.productHeader}</TableHead>
+                  <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
                   <TableHead>{translatedContent.artisanHeader}</TableHead>
                   <TableHead>{translatedContent.artisanShareHeader}</TableHead>
                   <TableHead className="text-right">{translatedContent.sharedAmountHeader}</TableHead>

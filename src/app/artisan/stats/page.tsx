@@ -74,10 +74,10 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Your Performance</h1>
-        <p className="text-muted-foreground">Analyze your sales and engagement over time.</p>
+    <div className="container mx-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">Your Performance</h1>
+        <p className="text-sm text-muted-foreground">Analyze your sales and engagement over time.</p>
       </header>
 
       <Card className="mb-8">
@@ -90,7 +90,7 @@ export default function StatsPage() {
               </CardDescription>
             </div>
             <Tabs defaultValue={period} onValueChange={onPeriodChange} className="w-full sm:w-auto">
-              <TabsList className="grid w-full grid-cols-3 sm:w-auto">
+              <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs">
                 <TabsTrigger value="weekly">Weekly</TabsTrigger>
                 <TabsTrigger value="monthly">Monthly</TabsTrigger>
                 <TabsTrigger value="yearly">Yearly</TabsTrigger>
@@ -115,21 +115,21 @@ export default function StatsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             {products.map(product => (
-                <div key={product.id} className="flex items-center gap-4 p-2 rounded-lg border">
+                <div key={product.id} className="flex items-center gap-2 sm:gap-4 p-2 rounded-lg border">
                      <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-md object-cover aspect-square bg-muted"/>
                      <div className="flex-1 text-sm">
-                       <p className="font-medium">{product.name}</p>
+                       <p className="font-medium truncate">{product.name}</p>
                        <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                      </div>
-                     <div className="text-right text-sm space-y-1">
+                     <div className="text-right text-xs sm:text-sm space-y-1">
                         <p className="font-medium">{product.sales} sales</p>
                         <p className="text-muted-foreground flex items-center justify-end gap-1"><Heart className="h-3 w-3"/>{product.likes}</p>
                      </div>
                      <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="outline" size="sm" onClick={() => handleAiReview(product)}>
-                                <Lightbulb className="mr-2 h-4 w-4" />
-                                AI Review
+                                <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">AI Review</span>
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="max-w-2xl">

@@ -29,13 +29,13 @@ const sponsoredProducts = [
 export default function ArtisanDashboard() {
   
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Welcome back, Artisan!</h1>
-        <p className="text-muted-foreground">Here's a snapshot of your creative haven.</p>
+    <div className="container mx-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">Welcome back, Artisan!</h1>
+        <p className="text-sm text-muted-foreground">Here's a snapshot of your creative haven.</p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
         
         <Carousel
             opts={{ loop: true }}
@@ -68,8 +68,8 @@ export default function ArtisanDashboard() {
                     </Card>
                 </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2" />
-            <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2" />
+            <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
         </Carousel>
 
 
@@ -106,7 +106,7 @@ export default function ArtisanDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Product</TableHead>
+                  <TableHead className="w-[80px] sm:w-[100px]">Product</TableHead>
                   <TableHead>Sponsor</TableHead>
                   <TableHead>Sponsor's Share</TableHead>
                   <TableHead className="text-right">Shared Amount</TableHead>

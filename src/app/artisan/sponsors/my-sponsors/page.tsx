@@ -48,10 +48,10 @@ export default function MySponsorsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">My Sponsors</h1>
-        <p className="text-muted-foreground">Manage your current sponsorships.</p>
+    <div className="container mx-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">My Sponsors</h1>
+        <p className="text-sm text-muted-foreground">Manage your current sponsorships.</p>
       </header>
 
       {mySponsors.length > 0 ? (

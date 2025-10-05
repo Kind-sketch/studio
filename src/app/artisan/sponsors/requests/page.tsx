@@ -203,10 +203,10 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Manage Sponsors</h1>
-        <p className="text-muted-foreground">Review sponsorship offers and manage current partners.</p>
+    <div className="container mx-auto p-4 max-w-4xl">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">Manage Sponsors</h1>
+        <p className="text-sm text-muted-foreground">Review sponsorship offers and manage current partners.</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">

@@ -19,16 +19,16 @@ export default function MyProductsPage() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8 flex items-center justify-between">
+    <div className="container mx-auto p-4">
+      <header className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-4xl font-bold">My Products</h1>
-          <p className="text-muted-foreground">Here is a list of all your creations.</p>
+          <h1 className="font-headline text-3xl font-bold">My Products</h1>
+          <p className="text-sm text-muted-foreground">Here is a list of all your creations.</p>
         </div>
       </header>
 
       {myProducts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {myProducts.map(product => (
             <Card key={product.id} className="overflow-hidden">
               <CardContent className="p-0">
@@ -41,8 +41,8 @@ export default function MyProductsPage() {
                   />
                 </div>
               </CardContent>
-              <CardHeader className="p-3">
-                <CardTitle className="font-headline text-base truncate">{product.name}</CardTitle>
+              <CardHeader className="p-2 sm:p-3">
+                <CardTitle className="font-headline text-sm sm:text-base truncate">{product.name}</CardTitle>
                 <CardDescription className="text-xs">
                   {product.createdAt ? 
                     `Added ${formatDistanceToNow(new Date(product.createdAt))} ago` :
@@ -50,9 +50,9 @@ export default function MyProductsPage() {
                   }
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-3 pt-0">
+              <CardContent className="p-2 sm:p-3 pt-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-md font-semibold">₹{product.price.toFixed(2)}</p>
+                  <p className="text-sm sm:text-md font-semibold">₹{product.price.toFixed(2)}</p>
                   <Button variant="outline" size="sm">Edit</Button>
                 </div>
               </CardContent>

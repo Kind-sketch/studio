@@ -179,20 +179,20 @@ export default function BuyerCustomizePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 text-center">
-        <h1 className="font-headline text-4xl font-bold">
+    <div className="container mx-auto px-4 py-6">
+      <header className="mb-6 text-center">
+        <h1 className="font-headline text-3xl font-bold">
           {translatedContent.mainTitle}
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <p className="mt-1 text-md text-muted-foreground">
           {translatedContent.mainDescription}
         </p>
       </header>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">
+            <CardTitle className="font-headline text-xl">
               {translatedContent.cardTitle}
             </CardTitle>
             <CardDescription>
@@ -201,7 +201,7 @@ export default function BuyerCustomizePage() {
           </CardHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
                   name="image"
@@ -210,10 +210,10 @@ export default function BuyerCustomizePage() {
                       <FormLabel>{translatedContent.uploadLabel}</FormLabel>
                       <FormControl>
                         <div className="flex items-center justify-center w-full">
-                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-secondary hover:bg-muted">
+                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-secondary hover:bg-muted">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     {preview ? (
-                                        <Image src={preview} alt="Image preview" width={100} height={100} className="object-contain h-32"/>
+                                        <Image src={preview} alt="Image preview" width={100} height={100} className="object-contain h-24"/>
                                     ) : (
                                         <>
                                         <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
@@ -240,6 +240,7 @@ export default function BuyerCustomizePage() {
                         <Textarea
                           placeholder={translatedContent.promptPlaceholder}
                           {...field}
+                          className="h-24"
                         />
                       </FormControl>
                       <FormMessage />

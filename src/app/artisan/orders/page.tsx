@@ -116,8 +116,8 @@ export default function OrdersPage() {
       <div className="space-y-4">
         {filteredOrders.map(order => (
           <Card key={order.id} className="overflow-hidden">
-            <CardContent className="p-4 flex flex-col sm:flex-row items-start gap-4">
-               <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+            <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
+               <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
@@ -127,15 +127,15 @@ export default function OrdersPage() {
                 />
                </div>
               <div className="flex-1 space-y-1">
-                <CardTitle className="text-lg font-headline leading-tight">{order.name}</CardTitle>
-                <div className="text-sm text-muted-foreground space-y-0.5">
+                <CardTitle className="text-md sm:text-lg font-headline leading-tight">{order.name}</CardTitle>
+                <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
                     <p>Quantity: <span className="font-medium">{order.quantity}</span></p>
                     <p>Order Date: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
                     <p>Expected Delivery: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2 w-full sm:w-auto self-end sm:self-center">
-                <p className="font-bold text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
+                <p className="font-bold text-md sm:text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <Button onClick={() => handleUpdate(order.id)} size="sm">Update Status</Button>
               </div>
             </CardContent>
@@ -161,8 +161,8 @@ export default function OrdersPage() {
       <div className="space-y-4">
         {orderRequests.map((order) => (
           <Card key={order.id} className="overflow-hidden">
-            <CardContent className="p-4 flex flex-col sm:flex-row items-start gap-4">
-              <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+            <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
+              <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
@@ -172,9 +172,9 @@ export default function OrdersPage() {
                 />
                </div>
               <div className="flex-1">
-                <CardTitle className="text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
+                <CardTitle className="text-md sm:text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">From: {order.buyerName}</p>
-                <p className="font-bold text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
+                <p className="font-bold text-md sm:text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <p className="text-sm">Quantity: <span className="font-medium">{order.quantity}</span></p>
               </div>
               <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
@@ -193,10 +193,10 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-3xl md:text-4xl font-bold">Manage Orders</h1>
-        <p className="text-muted-foreground">Review requests and track ongoing orders.</p>
+    <div className="container mx-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">Manage Orders</h1>
+        <p className="text-sm text-muted-foreground">Review requests and track ongoing orders.</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">

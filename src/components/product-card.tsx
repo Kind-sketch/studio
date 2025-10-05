@@ -32,12 +32,12 @@ export default function ProductCard({ product, onSave, showSaveButton }: Product
             <Button
               size="icon"
               variant="ghost"
-              className="h-10 w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
               onClick={() => setIsLiked(!isLiked)}
             >
               <Heart
                 className={cn(
-                  'h-5 w-5 text-slate-700',
+                  'h-4 w-4 sm:h-5 sm:w-5 text-slate-700',
                   isLiked && 'fill-red-500 text-red-500'
                 )}
               />
@@ -46,20 +46,20 @@ export default function ProductCard({ product, onSave, showSaveButton }: Product
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-10 w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
+                    className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
                     onClick={onSave}
                 >
-                    <Bookmark className='h-5 w-5 text-slate-700' />
+                    <Bookmark className='h-4 w-4 sm:h-5 sm:w-5 text-slate-700' />
                 </Button>
             )}
           </div>
         </div>
-        <div className="p-4">
-          <h3 className="font-headline text-lg font-semibold truncate">{product.name}</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className="p-2 sm:p-4">
+          <h3 className="font-headline text-base sm:text-lg font-semibold truncate">{product.name}</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             by {product.artisan.name}
           </p>
-          <p className="mt-2 font-semibold text-lg">₹{product.price.toFixed(2)}</p>
+          <p className="mt-1 sm:mt-2 font-semibold text-md sm:text-lg">₹{product.price.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>

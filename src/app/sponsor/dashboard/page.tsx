@@ -87,17 +87,17 @@ export default function SponsorDashboardPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-3xl md:text-4xl font-bold">{translatedContent.title}</h1>
-        <p className="text-md md:text-lg text-muted-foreground">{translatedContent.description}</p>
+    <div className="flex-1 overflow-y-auto p-4">
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
+        <p className="text-md text-muted-foreground">{translatedContent.description}</p>
       </header>
 
-      <div className="space-y-12">
+      <div className="space-y-10">
         {categories.map((category) => (
           <section key={category.id}>
-            <h2 className="font-headline text-2xl font-semibold mb-4">{category.name}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="font-headline text-xl font-semibold mb-4">{category.name}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.filter(p => p.category === category.name || baseCategories.find(bc => bc.id === category.id)?.name === p.category).map(product => (
                 <Card key={product.id} className="overflow-hidden group">
                   <CardContent className="p-0">
@@ -109,14 +109,14 @@ export default function SponsorDashboardPage() {
                         className="object-cover transition-transform group-hover:scale-105"
                        />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
-                       <div className="absolute bottom-0 left-0 p-4">
-                        <h3 className="font-bold text-lg text-white font-headline">{product.name}</h3>
+                       <div className="absolute bottom-0 left-0 p-3">
+                        <h3 className="font-bold text-md text-white font-headline">{product.name}</h3>
                         <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
                        </div>
                     </div>
                   </CardContent>
-                  <CardContent className="p-4">
-                     <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">
+                  <CardContent className="p-3">
+                     <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
                         {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
                      </p>
                     <Button className="w-full" onClick={() => handleSponsor(product)}>{translatedContent.sponsorButton}</Button>
