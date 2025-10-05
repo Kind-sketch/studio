@@ -388,7 +388,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     };
 
     return (
-        <div className="flex h-full flex-col bg-sidebar">
+        <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
             <SheetHeader className="relative flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
@@ -480,7 +480,7 @@ export default function ArtisanSidebar() {
 
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
+      <aside className="hidden w-64 flex-col border-r bg-sidebar md:flex h-full sticky top-0">
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
