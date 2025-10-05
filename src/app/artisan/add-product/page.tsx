@@ -19,10 +19,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Camera, Sparkles, ChevronLeft } from 'lucide-react';
+import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import ProductCard from '@/components/product-card';
+
 
 const formSchema = z.object({
   productName: z.string().min(3, 'Product name is required.'),
@@ -78,6 +81,9 @@ export default function AddProductPage() {
     cameraAccessDeniedDesc: 'Please enable camera permissions in your browser settings to use this app.',
     uploadPlaceholder: 'Click "Upload Photo" or "Use Camera"',
     backButton: 'Back',
+    previewButton: 'Preview',
+    previewTitle: 'Product Preview',
+    previewDescription: "This is how your product will look to buyers.",
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -90,6 +96,8 @@ export default function AddProductPage() {
       price: 0,
     },
   });
+
+  const formValues = form.watch();
 
   useEffect(() => {
     const translate = async () => {
@@ -275,6 +283,21 @@ export default function AddProductPage() {
     }
   };
 
+  const previewProduct: Product = {
+    id: 'preview',
+    name: formValues.productName || 'Product Name',
+    artisan: artisans[0], // Mocking artisan
+    price: formValues.price || 0,
+    image: {
+        url: imagePreview || `https://picsum.photos/seed/placeholder/400/500`,
+        hint: 'product preview'
+    },
+    category: formValues.productCategory || 'Category',
+    description: formValues.productDescription || 'Description',
+    likes: 0,
+    sales: 0
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 sm:p-4">
       <Card className="w-full max-w-xl shadow-lg">
@@ -394,7 +417,28 @@ export default function AddProductPage() {
                 </FormItem>
               )}/>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col sm:flex-row gap-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Eye className="mr-2 h-4 w-4" />
+                    {translatedContent.previewButton}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xs">
+                  <DialogHeader>
+                    <DialogTitle>{translatedContent.previewTitle}</DialogTitle>
+                    <DialogDescription>
+                      {translatedContent.previewDescription}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-center">
+                    <div className="w-64">
+                       <ProductCard product={previewProduct} />
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? translatedContent.savingProductButton : translatedContent.saveProductButton}
@@ -406,5 +450,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    
