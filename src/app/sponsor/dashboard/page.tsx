@@ -90,34 +90,46 @@ export default function SponsorDashboardPage() {
 
       <section className="my-10">
         <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map(product => (
-                <Card key={product.id} className="overflow-hidden group">
-                <CardContent className="p-0">
-                    <div className="relative aspect-square">
-                    <Image
-                        src={product.image.url}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
-                    <div className="absolute bottom-0 left-0 p-3">
-                        <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
-                        <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
-                    </div>
-                    </div>
-                </CardContent>
-                <CardContent className="p-3">
-                    <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
-                        {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
-                    </p>
-                    <Link href={`/sponsor/product/${product.id}`} passHref>
-                      <Button className="w-full">{translatedContent.viewArtisanButton}</Button>
-                    </Link>
-                </CardContent>
-                </Card>
-            ))}
+        <div className="space-y-8">
+          {baseCategories.map((category, index) => {
+            const categoryProducts = productsByCategory(category.name);
+            if (categoryProducts.length === 0) return null;
+
+            return (
+              <div key={category.id}>
+                <h3 className="font-headline text-xl font-semibold mb-4">{categories[index]?.name || category.name}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {categoryProducts.map(product => (
+                    <Card key={product.id} className="overflow-hidden group">
+                      <CardContent className="p-0">
+                        <div className="relative aspect-square">
+                          <Image
+                            src={product.image.url}
+                            alt={product.name}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
+                          <div className="absolute bottom-0 left-0 p-3">
+                            <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
+                            <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardContent className="p-3">
+                        <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
+                          {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
+                        </p>
+                        <Link href={`/sponsor/product/${product.id}`} passHref>
+                          <Button className="w-full">{translatedContent.viewArtisanButton}</Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>
