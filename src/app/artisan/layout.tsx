@@ -9,18 +9,16 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/profile', '/artisan/post-auth'];
+  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/profile', '/artisan/post-auth', '/artisan/register-recovery'];
 
   if (noSidebarRoutes.includes(pathname)) {
     return <main>{children}</main>;
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <ArtisanSidebar />
-        <main className="flex-1 overflow-y-auto bg-secondary/30">{children}</main>
-      </div>
+    <div className="flex h-screen flex-col md:flex-row">
+      <ArtisanSidebar />
+      <main className="flex-1 overflow-y-auto bg-secondary/30">{children}</main>
     </div>
   );
 }
