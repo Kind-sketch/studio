@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -15,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
+import Link from 'next/link';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -150,9 +152,9 @@ export default function ArtisanRegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
+            <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
-            </div>
+            </Link>
           <CardTitle className="font-headline text-xl">{translatedContent.title}</CardTitle>
           <CardDescription className="text-sm">
             {translatedContent.description}
@@ -212,3 +214,5 @@ export default function ArtisanRegisterPage() {
     </div>
   );
 }
+
+    

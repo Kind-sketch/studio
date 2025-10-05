@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -56,7 +57,7 @@ export default function MainHeader() {
         recognitionRef.current = recognition;
       }
     }
-  }, [toast]);
+  }, [toast, router]);
 
   const handleMicClick = () => {
      if (isListening) {
@@ -142,3 +143,5 @@ export default function MainHeader() {
       </header>
    )
 }
+
+    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -15,6 +16,8 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -24,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
+import { ScrollArea } from './ui/scroll-area';
 
 const baseNavItems = [
   { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main'] },
@@ -69,7 +73,7 @@ function HeaderActions() {
                 recognitionRef.current = recognition;
             }
         }
-    }, [toast]);
+    }, [toast, router]);
 
     const handleMicClick = () => {
         if (isListening) {
@@ -180,12 +184,13 @@ function NavContent() {
     return (
         <div className="flex h-full flex-col bg-card">
             <div className="flex h-16 shrink-0 items-center border-b px-4">
-            <div className="flex items-center gap-2 font-semibold">
+            <Link href="/sponsor/dashboard" className="flex items-center gap-2 font-semibold">
                 <Logo className="h-8 w-8 text-primary" />
                 <span className="font-headline text-xl">Artistry Havens</span>
+            </Link>
             </div>
-            </div>
-            <nav className="flex-1 overflow-y-auto py-4 px-2">
+            <ScrollArea className='flex-1'>
+            <nav className="py-4 px-2">
                 <ul className="space-y-1">
                     {navItems.map((item) => (
                     <li key={item.label}>
@@ -203,6 +208,7 @@ function NavContent() {
                     ))}
                 </ul>
             </nav>
+            </ScrollArea>
             <div className="mt-auto border-t p-4 space-y-2">
                 <Link
                     href="/"
@@ -235,6 +241,9 @@ export default function SponsorSidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
+             <SheetHeader className='p-4'>
+              <SheetTitle className='sr-only'>Menu</SheetTitle>
+            </SheetHeader>
             <NavContent />
           </SheetContent>
         </Sheet>
@@ -243,3 +252,5 @@ export default function SponsorSidebar() {
     </>
   );
 }
+
+    

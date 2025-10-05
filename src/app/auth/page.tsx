@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import { Logo } from '@/components/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
+import Link from 'next/link';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -108,9 +110,9 @@ export default function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
+          <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
-          </div>
+          </Link>
           <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>
             {translatedContent.description}
@@ -171,3 +173,5 @@ export default function AuthPage() {
     </div>
   );
 }
+
+    
