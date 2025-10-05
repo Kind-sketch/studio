@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -104,7 +105,7 @@ export default function CategorySelectionPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-sm shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>

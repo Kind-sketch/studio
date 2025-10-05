@@ -90,12 +90,12 @@ export default function RoleSelectionPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <div className="w-full max-w-sm text-center">
+      <div className="w-full max-w-xs text-center">
         <div className="mb-8 flex flex-col items-center">
           <div className="mb-4">
             <Logo className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="font-headline text-2xl font-bold">
+          <h1 className="font-headline text-xl font-bold">
             {translatedContent.welcome}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -128,5 +128,3 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
-
-    

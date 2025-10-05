@@ -150,7 +150,7 @@ export default function ArtisanRegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full max-w-sm shadow-lg">
+      <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />

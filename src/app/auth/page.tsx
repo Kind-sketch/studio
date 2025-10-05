@@ -108,12 +108,12 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
-      <Card className="w-full max-w-sm shadow-lg">
+      <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>
             {translatedContent.description}
           </CardDescription>

@@ -264,8 +264,8 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 md:p-4">
-      <Card className="w-full max-w-2xl shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 sm:p-4">
+      <Card className="w-full max-w-xl shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
           <CardDescription>{translatedContent.description}</CardDescription>
