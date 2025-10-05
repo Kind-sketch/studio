@@ -72,22 +72,30 @@ const translateTextFlow = ai.defineFlow(
 
     // If there are any texts that need translation, call the AI
     if (textsToTranslate.length > 0) {
-      const { output } = await prompt({ texts: textsToTranslate, targetLanguage });
+      try {
+        const { output } = await prompt({ texts: textsToTranslate, targetLanguage });
 
-      if (output && output.translatedTexts) {
-        // Store new translations in cache and populate the results array
-        output.translatedTexts.forEach((translatedText, i) => {
-          const originalIndex = indicesToTranslate[i];
-          const originalText = textsToTranslate[i];
-          const cacheKey = `${targetLanguage}:${originalText}`;
-          
-          translationCache.set(cacheKey, translatedText);
-          finalTranslations[originalIndex] = translatedText;
+        if (output && output.translatedTexts) {
+          // Store new translations in cache and populate the results array
+          output.translatedTexts.forEach((translatedText, i) => {
+            const originalIndex = indicesToTranslate[i];
+            const originalText = textsToTranslate[i];
+            const cacheKey = `${targetLanguage}:${originalText}`;
+            
+            translationCache.set(cacheKey, translatedText);
+            finalTranslations[originalIndex] = translatedText;
+          });
+        }
+      } catch (error) {
+        console.error("AI translation failed, using original texts as fallback:", error);
+        // On error, fill missing translations with original text
+        indicesToTranslate.forEach((originalIndex, i) => {
+           finalTranslations[originalIndex] = textsToTranslate[i];
         });
       }
     }
     
-    // As a fallback, if any translation is missing (e.g., AI failed for an item),
+    // As a final fallback, if any translation is missing (e.g., AI failed for an item),
     // fill it with the original text.
     for(let i = 0; i < finalTranslations.length; i++) {
         if (finalTranslations[i] === undefined) {
