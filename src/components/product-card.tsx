@@ -7,14 +7,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/types';
-import { AlertDialog, AlertDialogTrigger } from './ui/alert-dialog';
 
 interface ProductCardProps {
   product: Product;
   onSave?: () => void;
+  showSaveButton?: boolean;
 }
 
-export default function ProductCard({ product, onSave }: ProductCardProps) {
+export default function ProductCard({ product, onSave, showSaveButton }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
@@ -42,8 +42,7 @@ export default function ProductCard({ product, onSave }: ProductCardProps) {
                 )}
               />
             </Button>
-            {onSave && (
-              <AlertDialogTrigger asChild>
+            {showSaveButton && onSave && (
                 <Button
                     size="icon"
                     variant="ghost"
@@ -52,7 +51,6 @@ export default function ProductCard({ product, onSave }: ProductCardProps) {
                 >
                     <Bookmark className='h-5 w-5 text-slate-700' />
                 </Button>
-              </AlertDialogTrigger>
             )}
           </div>
         </div>
