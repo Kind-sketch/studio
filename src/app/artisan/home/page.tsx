@@ -59,26 +59,11 @@ export default function ArtisanHomePage() {
         const textsToTranslate = Object.values(translatedContent);
         const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
 
-        setTranslatedContent({
-            pageTitle: translatedTexts[0],
-            pageDescription: translatedTexts[1],
-            myProductsTitle: translatedTexts[2],
-            aiReviewTitle: translatedTexts[3],
-            aiReviewDescription: translatedTexts[4],
-            productDescriptionLabel: translatedTexts[5],
-            productDescriptionPlaceholder: translatedTexts[6],
-            getReviewButton: translatedTexts[7],
-            analyzingButton: translatedTexts[8],
-            insightsGeneratedToast: translatedTexts[9],
-            insightsGeneratedToastDesc: translatedTexts[10],
-            insightGenerationFailedToast: translatedTexts[11],
-            insightGenerationFailedToastDesc: translatedTexts[12],
-            aiGeneratedInsightsTitle: translatedTexts[13],
-            aiGeneratedInsightsDescription: translatedTexts[14],
-            aiReviewAnalysisTitle: translatedTexts[15],
-            aiPlaceholder: translatedTexts[16],
-            savedToCollectionToast: translatedTexts[17],
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
         });
+        setTranslatedContent(newContent);
       }
     };
     translateContent();
