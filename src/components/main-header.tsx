@@ -102,13 +102,6 @@ export default function MainHeader() {
     });
   };
 
-  const hiddenPaths = ['/', '/language-selection', '/role-selection'];
-  if (hiddenPaths.includes(pathname)) {
-    return null;
-  }
-  
-  // Specific check for artisan/sponsor pages to avoid duplicating headers on mobile.
-  // The sidebars provide their own header on mobile.
   const isArtisanPage = pathname.startsWith('/artisan/');
   const isSponsorPage = pathname.startsWith('/sponsor/');
 
@@ -143,5 +136,3 @@ export default function MainHeader() {
       </header>
    )
 }
-
-    

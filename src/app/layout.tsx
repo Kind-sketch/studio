@@ -1,10 +1,15 @@
+
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/main-header';
 import { LanguageProvider } from '@/context/language-context';
+import { usePathname } from 'next/navigation';
 
-export const metadata: Metadata = {
+
+const metadata: Metadata = {
   title: 'Artistry Havens',
   description: 'A marketplace for artisans, buyers, and sponsors.',
 };
@@ -14,6 +19,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const noHeaderPaths = ['/', '/language-selection', '/role-selection'];
+  const showHeader = !noHeaderPaths.includes(pathname);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -30,7 +39,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <LanguageProvider>
-          <MainHeader />
+          {showHeader && <MainHeader />}
           {children}
           <Toaster />
         </LanguageProvider>
