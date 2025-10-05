@@ -23,16 +23,25 @@ export default function ArtisanLayout({
   return (
     <div className="flex h-full flex-col md:flex-row">
       <ArtisanSidebar />
-      <main className="flex-1 overflow-y-auto bg-secondary/30">
-        {children}
-        {pathname !== '/artisan/add-product' && (
+      <div className="flex flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
+          {/* This is a placeholder for the SheetTrigger in ArtisanSidebar */}
+          <div className="w-10"></div>
+          <div className="ml-auto">
+            <MainHeader isArtisanFlow={true} />
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto bg-secondary/30">
+          {children}
+          {pathname !== '/artisan/add-product' && (
             <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
-                <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
-                    <Plus className="h-6 w-6" />
-                </Button>
+              <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
+                <Plus className="h-6 w-6" />
+              </Button>
             </Link>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   LogOut,
   PanelLeft,
   X,
+  DollarSign,
 } from 'lucide-react';
 import {
   Sheet,
@@ -29,6 +30,7 @@ import MainHeader from './main-header';
 
 const baseNavItems = [
   { href: '/sponsor/dashboard', label: 'Home', icon: Home },
+  { href: '/sponsor/revenue', label: 'Revenue', icon: DollarSign },
   { href: '/sponsor/profile', label: 'Account', icon: User },
 ];
 
@@ -82,7 +84,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     return (
         <div className="flex h-full flex-col bg-card">
             <SheetHeader className="relative flex h-16 shrink-0 items-center border-b px-4">
-                <Link href="/sponsor/dashboard" onClick={closeSheet} className="flex items-center gap-2 font-semibold">
+                <Link href="/sponsor/dashboard" onClick={() => handleLinkClick('/sponsor/dashboard')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>

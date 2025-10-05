@@ -394,7 +394,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     return (
         <div className="flex h-full flex-col bg-sidebar">
             <SheetHeader className="relative flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
-                <Link href="/artisan/home" onClick={closeSheet} className="flex items-center gap-2 font-semibold">
+                <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-8 w-8 text-primary" />
                     <span className="font-headline text-xl">Artistry Havens</span>
                 </Link>
@@ -487,7 +487,7 @@ export default function ArtisanSidebar() {
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
+      <div className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline">
@@ -502,7 +502,7 @@ export default function ArtisanSidebar() {
         <div className="ml-auto">
             <MainHeader isArtisanFlow={true}/>
         </div>
-      </header>
+      </div>
     </>
   );
 }
