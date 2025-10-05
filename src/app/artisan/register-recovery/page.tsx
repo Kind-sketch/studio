@@ -57,7 +57,7 @@ export default function ArtisanRegisterRecoveryPage() {
       otpSentToast: 'OTPs Sent',
       otpSentToastDesc: 'OTPs have been sent to both primary and recovery numbers.',
       verificationSuccessToast: 'Verification Successful',
-      verificationSuccessToastDesc: "Let's set up your profile.",
+      verificationSuccessToastDesc: "Let's get you started.",
       invalidOtpToast: 'Invalid OTP',
       invalidOtpToastDesc: 'One or both of the OTPs entered are incorrect. Please try again.',
   });
@@ -89,7 +89,7 @@ export default function ArtisanRegisterRecoveryPage() {
             'OTPs Sent',
             'OTPs have been sent to both primary and recovery numbers.',
             'Verification Successful',
-            "Let's set up your profile.",
+            "Let's get you started.",
             'Invalid OTP',
             'One or both of the OTPs entered are incorrect. Please try again.',
             ...baseTerms,
@@ -159,7 +159,7 @@ export default function ArtisanRegisterRecoveryPage() {
           title: translatedContent.verificationSuccessToast,
           description: translatedContent.verificationSuccessToastDesc,
         });
-        router.push('/artisan/category-selection');
+        router.push('/artisan/post-auth');
       } else {
         setIsLoading(false);
         toast({

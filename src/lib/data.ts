@@ -1,6 +1,7 @@
 import type { Product, Artisan, Category, Language } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 import { Palette, Gem, Brush, Hammer, Scissors } from 'lucide-react';
+import { productCategories as aiProductCategories } from '@/ai/flows/generate-product-details';
 
 const getImage = (id: string) => {
   const img = PlaceHolderImages.find((p) => p.id === id);
@@ -107,6 +108,10 @@ export const categories: Category[] = [
   { id: '3', name: 'Jewelry', icon: Gem },
   { id: '4', name: 'Textiles', icon: Scissors },
   { id: '5', name: 'Woodwork', icon: Hammer },
+  // Adding new categories from AI flow
+  ...aiProductCategories
+    .filter(cat => !['Painting', 'Ceramics', 'Jewelry', 'Textiles', 'Woodwork'].includes(cat))
+    .map((cat, i) => ({ id: (i + 6).toString(), name: cat, icon: Gem })) // Gem is a placeholder
 ];
 
 export const languages: Language[] = [

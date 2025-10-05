@@ -151,7 +151,7 @@ export default function ArtisanRegisterPage() {
           title: translatedContent.welcomeBackToast,
           description: translatedContent.welcomeBackToastDesc,
         });
-        router.push('/artisan/home');
+        router.push('/artisan/post-auth');
       } else {
         toast({
           variant: 'destructive',
@@ -191,7 +191,7 @@ export default function ArtisanRegisterPage() {
                     )}
                 />
               
-                <FormField
+              {otpSent && <FormField
                   control={form.control}
                   name="otp"
                   render={({ field }) => (
@@ -203,7 +203,7 @@ export default function ArtisanRegisterPage() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />}
 
             </CardContent>
             <CardContent>
