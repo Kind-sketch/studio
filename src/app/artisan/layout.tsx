@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import MainHeader from '@/components/main-header';
 
 export default function ArtisanLayout({
   children,
@@ -24,13 +23,6 @@ export default function ArtisanLayout({
     <div className="flex h-full flex-col md:flex-row">
       <ArtisanSidebar />
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
-          {/* This is a placeholder for the SheetTrigger in ArtisanSidebar */}
-          <div className="w-10"></div>
-          <div className="ml-auto">
-            <MainHeader isArtisanFlow={true} />
-          </div>
-        </header>
         <main className="flex-1 overflow-y-auto bg-secondary/30">
           {children}
           {pathname !== '/artisan/add-product' && (

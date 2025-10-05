@@ -368,14 +368,11 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (closeSheet) closeSheet();
+        handleLinkClick('/');
         toast({
             title: logoutToastTitle,
             description: logoutToastDesc
         });
-        // In a real app, you would handle actual logout logic here.
-        // For now, we can just navigate to a public page.
-        window.location.href = '/'; 
     };
     
     const isLinkActive = (href: string) => {
@@ -487,7 +484,7 @@ export default function ArtisanSidebar() {
       <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0 bg-sidebar">
         <NavContent />
       </aside>
-      <div className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline">
@@ -502,7 +499,7 @@ export default function ArtisanSidebar() {
         <div className="ml-auto">
             <MainHeader isArtisanFlow={true}/>
         </div>
-      </div>
+      </header>
     </>
   );
 }
