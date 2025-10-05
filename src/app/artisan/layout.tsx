@@ -26,11 +26,13 @@ export default function ArtisanLayout({
       <main className="flex-1 overflow-y-auto bg-secondary/30">
         <MainHeader />
         {children}
-        <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
-            <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
-                <Plus className="h-6 w-6" />
-            </Button>
-        </Link>
+        {pathname !== '/artisan/add-product' && (
+            <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
+                <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
+                    <Plus className="h-6 w-6" />
+                </Button>
+            </Link>
+        )}
       </main>
     </div>
   );
