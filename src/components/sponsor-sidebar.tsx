@@ -30,9 +30,9 @@ import { useEffect, useState, useRef } from 'react';
 import MainHeader from './main-header';
 
 const baseNavItems = [
-  { href: '/sponsor/dashboard', label: 'Dashboard', keywords: ['dashboard', 'home', 'main', 'discover'] },
-  { href: '/sponsor/revenue', label: 'Revenue Generated', keywords: ['revenue', 'generated', 'money', 'earnings', 'returns', 'investment'] },
-  { href: '/sponsor/requests', label: 'Requests', keywords: ['requests', 'offers', 'sent', 'pending'] },
+  { href: '/sponsor/dashboard', label: 'Dashboard', icon: Home, keywords: ['dashboard', 'home', 'main', 'discover'] },
+  { href: '/sponsor/revenue', label: 'Revenue Generated', icon: DollarSign, keywords: ['revenue', 'generated', 'money', 'earnings', 'returns', 'investment'] },
+  { href: '/sponsor/requests', label: 'Requests', icon: FileText, keywords: ['requests', 'offers', 'sent', 'pending'] },
 ];
 
 function NavContent() {
