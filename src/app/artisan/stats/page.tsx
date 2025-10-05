@@ -191,7 +191,11 @@ export default function StatsPage() {
                             <TableCell className="text-right">
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="outline" size="sm" onClick={() => handleAiReview(product)}>
+                                        <Button 
+                                            size="sm" 
+                                            onClick={() => handleAiReview(product)}
+                                            className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700"
+                                        >
                                             <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
                                             <span className="hidden sm:inline">Review</span>
                                         </Button>
