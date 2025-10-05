@@ -7,7 +7,7 @@ config();
 if (!process.env.GEMINI_API_KEY) {
     console.warn(
       'WARNING: GEMINI_API_KEY is not set. \n' +
-      'AI-powered translations will not work. \n' +
+      'AI-powered features may not work. \n' +
       'Please add your API key to a .env.local file in the root of your project.\n' +
       'Example: GEMINI_API_KEY=your_api_key_here'
     );

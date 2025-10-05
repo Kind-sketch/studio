@@ -3,6 +3,7 @@
 
 import {TranslationServiceClient} from '@google-cloud/translate';
 
+// This is authenticated through Application Default Credentials
 const translationClient = new TranslationServiceClient();
 
 /**
@@ -14,7 +15,8 @@ const translationClient = new TranslationServiceClient();
 export async function translateTexts(texts: string[], targetLanguageCode: string): Promise<string[]> {
   const projectId = process.env.GOOGLE_CLOUD_PROJECT;
   if (!projectId) {
-    throw new Error("GOOGLE_CLOUD_PROJECT environment variable not set.");
+    console.error("GOOGLE_CLOUD_PROJECT environment variable not set. Using fallback (no translation).");
+    return texts;
   }
   
   const location = 'global'; 
