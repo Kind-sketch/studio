@@ -129,28 +129,20 @@ export default function ArtisanRegisterPage() {
       return;
     }
     
-    if (!values.otp || values.otp.length !== 5) {
-      form.setError('otp', { message: 'OTP must be 5 digits.' });
+    if (!values.otp || values.otp.length < 5) {
+      form.setError('otp', { message: 'OTP must be at least 5 digits.' });
       return;
     }
 
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      // Mock OTP verification
-      if (values.otp === '12345') {
-        toast({
-          title: translatedContent.welcomeBackToast,
-          description: translatedContent.welcomeBackToastDesc,
-        });
-        router.push('/artisan/category-selection');
-      } else {
-        toast({
-          variant: 'destructive',
-          title: translatedContent.invalidOtpToast,
-          description: translatedContent.invalidOtpToastDesc,
-        });
-      }
+      // Mock OTP verification - accept any OTP
+      toast({
+        title: translatedContent.welcomeBackToast,
+        description: translatedContent.welcomeBackToastDesc,
+      });
+      router.push('/artisan/category-selection');
     }, 1000);
   }
 

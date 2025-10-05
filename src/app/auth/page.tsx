@@ -86,28 +86,21 @@ export default function AuthPage() {
       return;
     }
 
-    if (!values.otp || values.otp.length !== 5) {
-      form.setError('otp', { message: 'OTP must be 5 digits.' });
+    if (!values.otp || values.otp.length < 5) {
+      form.setError('otp', { message: 'OTP must be at least 5 digits.' });
       return;
     }
 
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      if (values.otp === '12345') {
-        toast({
-          title: translatedContent.loginSuccessToast,
-          description: translatedContent.loginSuccessToastDesc,
-        });
-        const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
-        router.push(redirectPath);
-      } else {
-        toast({
-            variant: 'destructive',
-            title: translatedContent.invalidOtpToast,
-            description: translatedContent.invalidOtpToastDesc
-        });
-      }
+      // Mock OTP verification - accept any OTP
+      toast({
+        title: translatedContent.loginSuccessToast,
+        description: translatedContent.loginSuccessToastDesc,
+      });
+      const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
+      router.push(redirectPath);
     }, 1000);
   }
 
