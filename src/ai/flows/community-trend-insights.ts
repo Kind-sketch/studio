@@ -4,8 +4,8 @@
  * @fileOverview A flow for artisans to view trending crafts and AI-powered reviews of their products.
  *
  * - getCommunityTrendInsights - A function that retrieves trending crafts and AI-powered reviews.
- * - CommunityTrendInsightsInput - The input type for the getCommunityTrendInsights function.
- * - CommunityTrendInsightsOutput - The return type for the getCommunityTrendInsights function.
+ * - CommunityTrendInsightsInput - The input type for a getCommunityTrendInsights function.
+ * - CommunityTrendInsightsOutput - The return type for a getCommunityTrendInsights function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -19,7 +19,7 @@ export type CommunityTrendInsightsInput = z.infer<typeof CommunityTrendInsightsI
 
 const CommunityTrendInsightsOutputSchema = z.object({
   trendingCrafts: z.array(z.string()).describe('A list of trending crafts.'),
-  aiReview: z.string().describe('An AI-powered review of the product, targeting audience insights and revenue metrics.'),
+  aiReview: z.string().describe('An AI-powered review of the product, including an opinion on the idea, income potential, target audience, and suggestions for improvement.'),
 });
 export type CommunityTrendInsightsOutput = z.infer<typeof CommunityTrendInsightsOutputSchema>;
 
@@ -31,16 +31,29 @@ const prompt = ai.definePrompt({
   name: 'communityTrendInsightsPrompt',
   input: {schema: CommunityTrendInsightsInputSchema},
   output: {schema: CommunityTrendInsightsOutputSchema},
-  prompt: `You are an AI assistant providing insights to artisans on trending crafts and AI-powered reviews for their products.
+  prompt: `You are an expert AI business consultant for artisans. Your goal is to provide insightful, honest, and actionable feedback on their product ideas.
 
-  Given the artisan ID: {{{artisanId}}} and product description: {{{productDescription}}}.
+  An artisan has submitted the following product idea for your review:
+  Product Description: {{{productDescription}}}
 
-  Provide a list of trending crafts and an AI-powered review of the product, targeting audience insights and revenue metrics.
+  Your task is to provide a comprehensive review and a list of currently trending crafts.
 
-  Format the output as a JSON object with \"trendingCrafts\" (an array of strings) and \"aiReview\" (a string).
-  trendingCrafts should be a comma separated list of trending crafts
-  aiReview should be a detailed report with audience insights and revenue metrics
-  \n`,
+  Your response must be in a JSON object with two keys: "trendingCrafts" and "aiReview".
+
+  1.  **trendingCrafts**: Provide a list of 5-7 currently trending crafts in the artisan market.
+  2.  **aiReview**: Structure your review as a string with the following four sections, clearly marked with markdown headers:
+
+      ### Opinion on the Idea
+      Provide your honest opinion on the viability and potential of this product idea. Is it a strong concept? What are its strengths and weaknesses?
+
+      ### Target Audience
+      Describe the ideal target audience for this product. Be specific about demographics, interests, and psychographics.
+
+      ### Income Potential
+      Analyze the potential for income generation. Consider market demand, pricing strategies, and competition. Provide a rough estimation if possible, but qualify it as an estimate.
+
+      ### Suggested Improvements
+      Offer specific, actionable suggestions for improvement. This could include design modifications, marketing angles, or different materials.`,
 });
 
 const communityTrendInsightsFlow = ai.defineFlow(
