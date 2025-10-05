@@ -40,13 +40,13 @@ import { ScrollArea } from './ui/scroll-area';
 const baseNavItems = [
   { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start'] },
   { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
-  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery'] },
+  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded'] },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics'] },
   { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me'] },
 ];
 
-const bottomNavItems = [
+const bottomNavItems: any[] = [
     // Settings removed
 ];
 
@@ -145,6 +145,13 @@ function HeaderActions() {
         for (const item of allNavItems) {
             if (item.keywords.some(keyword => command.includes(keyword))) {
                 router.push(item.href);
+                 if (toastIdRef.current) {
+                    toast({
+                        id: toastIdRef.current,
+                        title: 'Navigating...',
+                        description: `"${command}"`,
+                    });
+                }
                 return;
             }
         }
@@ -337,7 +344,7 @@ export default function ArtisanSidebar() {
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
              <SheetHeader className='p-4'>
-              <SheetTitle className='sr-only'>Menu</SheetTitle>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>
             <NavContent />
           </SheetContent>
