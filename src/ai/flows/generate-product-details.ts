@@ -9,16 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-
-export const productCategories = [
-    'Textiles',
-    'Sculpture',
-    'Woodwork',
-    'Metalwork',
-    'Paintings',
-    'Pottery',
-    'Jewelry',
-];
+import { productCategories } from '@/lib/data';
 
 const GenerateProductDetailsInputSchema = z.object({
   photoDataUri: z
