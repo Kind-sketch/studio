@@ -49,7 +49,7 @@ const bottomNavItems: any[] = [
     // Settings removed
 ];
 
-function HeaderActions() {
+export function HeaderActions() {
     const { toast, dismiss } = useToast();
     const router = useRouter();
     const { language } = useLanguage();

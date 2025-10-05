@@ -7,6 +7,7 @@ import { Upload, User, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useState, useEffect } from 'react';
+import { HeaderActions } from '@/components/artisan-sidebar';
 
 const baseOptions = [
   {
@@ -58,6 +59,10 @@ export default function ArtisanPostAuthPage() {
   }, [language]);
 
   return (
+    <>
+    <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden sticky top-0 z-40">
+        <HeaderActions />
+    </header>
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <div className="w-full max-w-xs text-center">
         <h1 className="font-headline text-2xl font-bold mb-8">{translatedTitle}</h1>
@@ -82,5 +87,6 @@ export default function ArtisanPostAuthPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
