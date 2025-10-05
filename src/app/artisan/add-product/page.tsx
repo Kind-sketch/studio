@@ -51,6 +51,8 @@ export default function AddProductPage() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [productCategories, setProductCategories] = useState(baseProductCategories);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+
 
   const [translatedContent, setTranslatedContent] = useState({
     title: 'Add a New Product',
@@ -289,23 +291,45 @@ export default function AddProductPage() {
       stopCamera();
     }
   };
+  
+  const handlePreview = async () => {
+    const { productName, productDescription, productStory, productCategory, price } = form.getValues();
+    
+    let translatedProduct = {
+      name: productName,
+      description: productDescription,
+      story: productStory,
+    };
+    
+    if (language !== 'en') {
+      const { translatedTexts } = await translateText({
+        texts: [productName, productDescription, productStory],
+        targetLanguage: language
+      });
+      translatedProduct = {
+        name: translatedTexts[0],
+        description: translatedTexts[1],
+        story: translatedTexts[2],
+      };
+    }
 
-  const previewProduct: Product = {
-    id: 'preview',
-    name: formValues.productName || 'Product Name',
-    artisan: artisans[0], // Mocking artisan
-    price: formValues.price || 0,
-    image: {
+    setPreviewProduct({
+      id: 'preview',
+      name: translatedProduct.name || 'Product Name',
+      artisan: artisans[0],
+      price: price || 0,
+      image: {
         url: imagePreview || `https://picsum.photos/seed/placeholder/400/500`,
         hint: 'product preview'
-    },
-    category: formValues.productCategory || 'Category',
-    description: formValues.productDescription || 'Description',
-    story: formValues.productStory || 'Your story about this product...',
-    likes: 0,
-    sales: 0
+      },
+      category: productCategory || 'Category',
+      description: translatedProduct.description || 'Description',
+      story: translatedProduct.story || 'Your story about this product...',
+      likes: 0,
+      sales: 0
+    });
   };
-  
+
   const getCategoryDisplayValue = (value: string) => {
     const index = baseProductCategories.findIndex(c => c === value);
     if (index !== -1 && productCategories.length > index) {
@@ -441,7 +465,7 @@ export default function AddProductPage() {
             <CardFooter className="flex flex-col sm:flex-row gap-2">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={handlePreview}>
                     <Eye className="mr-2 h-4 w-4" />
                     {translatedContent.previewButton}
                   </Button>
@@ -456,7 +480,7 @@ export default function AddProductPage() {
                          </DialogClose>
                     </div>
                   <div className="flex-1 overflow-y-auto">
-                     <ProductPreview product={previewProduct} />
+                     {previewProduct && <ProductPreview product={previewProduct} />}
                   </div>
                 </DialogContent>
               </Dialog>
@@ -471,3 +495,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
