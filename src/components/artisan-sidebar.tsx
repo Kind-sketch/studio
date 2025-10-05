@@ -38,7 +38,7 @@ import { ScrollArea } from './ui/scroll-area';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', keywords: ['home', 'main', 'start'] },
+  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start'] },
   { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
   { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded'] },
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
@@ -381,6 +381,3 @@ export default function ArtisanSidebar() {
     </>
   );
 }
-
-    
-    
