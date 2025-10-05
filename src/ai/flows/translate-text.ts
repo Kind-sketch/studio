@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview A flow for translating text into different languages using the Google Cloud Translation API.
+ * @fileOverview A flow for translating text into different languages using a generative model.
  *
  * - translateText - A function that handles text translation.
  * - TranslateTextInput - The input type for the translateText function.
@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
-import { translateTexts } from '@/services/translation-service';
 
 const TranslateTextInputSchema = z.object({
   texts: z.array(z.string()).describe('An array of texts to be translated.'),
@@ -29,6 +28,21 @@ export async function translateText(input: TranslateTextInput): Promise<Translat
 
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
+
+const prompt = ai.definePrompt({
+    name: 'translateTextPrompt',
+    input: { schema: TranslateTextInputSchema },
+    output: { schema: TranslateTextOutputSchema },
+    prompt: `Translate the following array of JSON strings from English to the language with code '{{targetLanguage}}'. 
+    
+    Return a JSON object with a single key "translatedTexts" that contains an array of the translated strings. The order of the translated strings in the array must exactly match the order of the original strings.
+    
+    Original Texts:
+    {{jsonStringify texts}}
+    
+    Your response MUST be a valid JSON object.
+    `,
+});
 
 const translateTextFlow = ai.defineFlow(
   {
@@ -54,15 +68,19 @@ const translateTextFlow = ai.defineFlow(
     }
 
     try {
-        const translatedTexts = await translateTexts(texts, targetLanguage);
+        const { output } = await prompt(input);
         
-        // Cache the successful translation
-        translationCache.set(cacheKey, translatedTexts);
-
-        return { translatedTexts };
+        if (output?.translatedTexts && output.translatedTexts.length === texts.length) {
+            // Cache the successful translation
+            translationCache.set(cacheKey, output.translatedTexts);
+            return { translatedTexts: output.translatedTexts };
+        } else {
+            console.warn("Translation returned incorrect number of items, returning original texts.");
+            return { translatedTexts: texts };
+        }
 
     } catch (error) {
-        console.error("Cloud Translation API failed, returning original texts as fallback:", error);
+        console.error("Generative AI translation failed, returning original texts as fallback:", error);
         // On failure, return the original texts
         return { translatedTexts: texts };
     }
