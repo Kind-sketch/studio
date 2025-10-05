@@ -112,22 +112,14 @@ export default function ArtisanRegisterPage() {
     }
 
     setIsLoading(true);
-    // Mock check if number exists. In a real app, this would be a backend call.
-    const existingUsers = JSON.parse(localStorage.getItem('artisanUsers') || '{}');
-    const isExistingUser = Object.values(existingUsers).some((user: any) => user.phone === mobileNumber || user.recovery === mobileNumber);
-    localStorage.setItem('tempPhone', mobileNumber);
-
+    
     setTimeout(() => {
       setIsLoading(false);
-      if (!isExistingUser) {
-          router.push('/artisan/register-recovery');
-      } else {
-        setOtpSent(true);
-        toast({
-            title: translatedContent.otpSentToast,
-            description: translatedContent.otpSentToastDesc,
-        });
-      }
+      setOtpSent(true);
+      toast({
+          title: translatedContent.otpSentToast,
+          description: translatedContent.otpSentToastDesc,
+      });
     }, 1000);
   }
 
@@ -151,7 +143,7 @@ export default function ArtisanRegisterPage() {
           title: translatedContent.welcomeBackToast,
           description: translatedContent.welcomeBackToastDesc,
         });
-        router.push('/artisan/post-auth');
+        router.push('/artisan/category-selection');
       } else {
         toast({
           variant: 'destructive',

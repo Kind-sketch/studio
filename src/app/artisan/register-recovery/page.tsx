@@ -159,7 +159,7 @@ export default function ArtisanRegisterRecoveryPage() {
           title: translatedContent.verificationSuccessToast,
           description: translatedContent.verificationSuccessToastDesc,
         });
-        router.push('/artisan/post-auth');
+        router.push('/artisan/category-selection');
       } else {
         setIsLoading(false);
         toast({
