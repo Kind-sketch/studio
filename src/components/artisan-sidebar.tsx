@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
 import {
   Home,
-  TrendingUp,
   BarChart3,
   User,
   PanelLeft,
@@ -34,6 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
+import MainHeader from './main-header';
 
 
 const baseNavItems = [
@@ -139,6 +139,7 @@ export function HeaderActions() {
                 const { id } = toast({
                     title: 'Listening...',
                     description: 'Please say a command.',
+                    duration: 5000,
                 });
                 toastIdRef.current = id;
             } else {
@@ -417,7 +418,9 @@ export default function ArtisanSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
-        <HeaderActions />
+        <div className="ml-auto">
+            <MainHeader />
+        </div>
       </header>
     </>
   );

@@ -27,168 +27,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useEffect, useState, useRef } from 'react';
+import MainHeader from './main-header';
 
 const baseNavItems = [
   { href: '/sponsor/dashboard', label: 'Dashboard', keywords: ['dashboard', 'home', 'main', 'discover'] },
   { href: '/sponsor/revenue', label: 'Revenue Generated', keywords: ['revenue', 'generated', 'money', 'earnings', 'returns', 'investment'] },
   { href: '/sponsor/requests', label: 'Requests', keywords: ['requests', 'offers', 'sent', 'pending'] },
 ];
-
-function HeaderActions() {
-    const { toast, dismiss } = useToast();
-    const router = useRouter();
-    const { language } = useLanguage();
-    const [isListening, setIsListening] = useState(false);
-    const recognitionRef = useRef<any>(null);
-    const toastIdRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                const recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.lang = language;
-                recognition.interimResults = true;
-                recognition.maxAlternatives = 1;
-
-                recognition.onresult = async (event: any) => {
-                    const spokenText = event.results[0][0].transcript;
-                     if (toastIdRef.current) {
-                        const { id } = toast({
-                            id: toastIdRef.current,
-                            title: 'Processing Command...',
-                            description: `"${spokenText}"`,
-                        });
-                        toastIdRef.current = id;
-                    }
-                    if (event.results[0].isFinal) {
-                        if (language === 'en') {
-                            handleVoiceCommand(spokenText.toLowerCase());
-                        } else {
-                            try {
-                                const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
-                                const translatedCommand = translatedTexts[0];
-                                if (translatedCommand) {
-                                    handleVoiceCommand(translatedCommand.toLowerCase());
-                                } else {
-                                    throw new Error('Translation failed');
-                                }
-                            } catch (e) {
-                                if (toastIdRef.current) {
-                                    toast({
-                                        id: toastIdRef.current,
-                                        variant: 'destructive',
-                                        title: 'Translation Error',
-                                        description: 'Could not translate your command.',
-                                    });
-                                }
-                            }
-                        }
-                    }
-                };
-
-                recognition.onerror = (event: any) => {
-                    console.error('Speech recognition error', event.error);
-                     if (toastIdRef.current) {
-                        toast({
-                            id: toastIdRef.current,
-                            variant: 'destructive',
-                            title: 'Voice Error',
-                            description: 'Could not recognize your voice. Please try again.',
-                        });
-                    }
-                    setIsListening(false);
-                };
-
-                recognition.onend = () => {
-                    setIsListening(false);
-                     setTimeout(() => {
-                        if(toastIdRef.current) dismiss(toastIdRef.current);
-                    }, 5000);
-                };
-
-                recognitionRef.current = recognition;
-            }
-        }
-    }, [language, toast, router, dismiss]);
-
-    const handleMicClick = () => {
-        if (isListening) {
-            recognitionRef.current?.stop();
-        } else {
-            if (recognitionRef.current) {
-                recognitionRef.current.lang = language;
-                recognitionRef.current.start();
-                setIsListening(true);
-                const { id } = toast({
-                    title: 'Listening...',
-                    description: 'Please say a command.',
-                });
-                toastIdRef.current = id;
-            } else {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Not Supported',
-                    description: 'Voice command is not supported on your browser.',
-                });
-            }
-        }
-    };
-
-    const handleSupportClick = () => {
-        toast({
-        title: 'Support',
-        description: 'Support functionality is not yet implemented.',
-        });
-    };
-
-    const handleVoiceCommand = (command: string) => {
-        for (const item of baseNavItems) {
-            if (item.keywords.some(keyword => command.includes(keyword))) {
-                router.push(item.href);
-                 if (toastIdRef.current) {
-                    toast({
-                        id: toastIdRef.current,
-                        title: 'Navigating...',
-                        description: `Taking you to ${item.label}.`,
-                    });
-                }
-                return;
-            }
-        }
-        if (toastIdRef.current) {
-            toast({
-                id: toastIdRef.current,
-                variant: 'destructive',
-                title: 'Command Not Recognized',
-                description: `Could not find a page for "${command}".`,
-            });
-        }
-    };
-
-    return (
-        <div className="ml-auto flex items-center gap-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSupportClick}
-                aria-label="Support"
-            >
-                <MessageCircleQuestion className="h-5 w-5" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleMicClick}
-                aria-label="Use Voice Command"
-                className={cn("rounded-full bg-primary/10 text-primary hover:bg-primary/20", isListening && "animate-pulse")}
-            >
-                <Mic className="h-5 w-5" />
-            </Button>
-        </div>
-    )
-}
 
 function NavContent() {
     const pathname = usePathname();
@@ -293,10 +138,10 @@ export default function SponsorSidebar() {
             <NavContent />
           </SheetContent>
         </Sheet>
-        <HeaderActions />
+        <div className="ml-auto">
+            <MainHeader />
+        </div>
       </header>
     </>
   );
 }
-
-    
