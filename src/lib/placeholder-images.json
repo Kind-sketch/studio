@@ -57,20 +57,20 @@
     {
       "id": "product-9",
       "description": "Bronze leaf sculpture",
-      "imageUrl": "https://images.unsplash.com/photo-1620051973434-d9763d592732?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxicm9uemUlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzU5NzEwMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "bronze sculpture"
+      "imageUrl": "https://images.unsplash.com/photo-1617463228912-a4a34b3e8a7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnQlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzYwMjExNDI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "art sculpture"
     },
     {
       "id": "product-10",
       "description": "Forged iron candlesticks",
-      "imageUrl": "https://images.unsplash.com/photo-1616615340156-d767bdb4446e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmb3JnZWQlMjBpcm9ufGVufDB8fHx8MTc1OTcxMDA1OHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "forged iron"
+      "imageUrl": "https://images.unsplash.com/photo-1596181636294-f82b7f0951a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYW5kbGVzdGlja3N8ZW58MHx8fHwxNzYwMjExNDc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "candlesticks"
     },
     {
       "id": "product-11",
       "description": "Earthenware pitcher set",
-      "imageUrl": "https://images.unsplash.com/photo-1620492243283-9b6573c21345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlYXJ0aGVud2FyZXxlbnwwfHx8fDE3NTk3MTAxMDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "earthenware pitcher"
+      "imageUrl": "https://images.unsplash.com/photo-1605335133649-02ab55c65f29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwYXN0ZWwlMjBwb3R0ZXJ5fGVufDB8fHx8MTc2MDIxMTUwOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pastel pottery"
     },
     {
       "id": "artisan-1",
