@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Camera, Sparkles } from 'lucide-react';
+import { Loader2, Upload, Camera, Sparkles, ChevronLeft } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -77,6 +77,7 @@ export default function AddProductPage() {
     cameraAccessDenied: 'Camera Access Denied',
     cameraAccessDeniedDesc: 'Please enable camera permissions in your browser settings to use this app.',
     uploadPlaceholder: 'Click "Upload Photo" or "Use Camera"',
+    backButton: 'Back',
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -278,8 +279,15 @@ export default function AddProductPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-2 sm:p-4">
       <Card className="w-full max-w-xl shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
-          <CardDescription>{translatedContent.description}</CardDescription>
+          <div className="relative flex items-center justify-center">
+            <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.back()} aria-label={translatedContent.backButton}>
+                <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <div className="text-center">
+                <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
+                <CardDescription>{translatedContent.description}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent>
@@ -398,3 +406,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
