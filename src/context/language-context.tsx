@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -10,16 +11,22 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState('en');
-  const [isInitialized, setIsInitialized] = useState(false);
+  // Initialize state directly from localStorage if available, otherwise default to 'en'
+  const [language, setLanguageState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
+  });
 
   useEffect(() => {
+    // This effect ensures that if the component re-mounts on the client,
+    // it re-reads from localStorage. This is a fallback.
     const storedLanguage = localStorage.getItem('language');
-    if (storedLanguage) {
+    if (storedLanguage && storedLanguage !== language) {
       setLanguageState(storedLanguage);
     }
-    setIsInitialized(true);
-  }, []);
+  }, [language]);
 
   const setLanguage = (lang: string) => {
     setLanguageState(lang);
@@ -27,10 +34,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('language', lang);
     }
   };
-  
-  if (!isInitialized) {
-    return null; 
-  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>

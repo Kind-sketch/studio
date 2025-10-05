@@ -17,7 +17,8 @@ import {
   MessageCircleQuestion,
   DollarSign,
   ShoppingBag,
-  Bookmark
+  Bookmark,
+  LogOut
 } from 'lucide-react';
 import {
   Sheet,
@@ -217,19 +218,35 @@ function HeaderActions() {
 
 function NavContent() {
     const pathname = usePathname();
+    const { toast } = useToast();
     const { language } = useLanguage();
     const [navItems, setNavItems] = useState(baseNavItems);
     const [translatedBottomNav, setTranslatedBottomNav] = useState(bottomNavItems);
     const [translatedOrders, setTranslatedOrders] = useState('Orders');
     const [translatedSponsors, setTranslatedSponsors] = useState('Sponsors');
     const [translatedSavedCollection, setTranslatedSavedCollection] = useState('Saved Collection');
+    const [translatedLogout, setTranslatedLogout] = useState('Logout');
+    const [logoutToastTitle, setLogoutToastTitle] = useState('Logged Out');
+    const [logoutToastDesc, setLogoutToastDesc] = useState('You have been successfully logged out.');
 
     useEffect(() => {
         const translateNav = async () => {
             if (language !== 'en') {
                 const labels = baseNavItems.map(item => item.label);
                 const bottomLabels = bottomNavItems.map(item => item.label);
-                const { translatedTexts } = await translateText({ texts: [...labels, 'Orders', 'Sponsors', 'Saved Collection', ...bottomLabels], targetLanguage: language });
+                const { translatedTexts } = await translateText({ 
+                    texts: [
+                        ...labels, 
+                        'Orders', 
+                        'Sponsors', 
+                        'Saved Collection', 
+                        ...bottomLabels, 
+                        'Logout',
+                        'Logged Out',
+                        'You have been successfully logged out.'
+                    ], 
+                    targetLanguage: language 
+                });
                 
                 const translatedNavItems = baseNavItems.map((item, index) => ({
                     ...item,
@@ -237,15 +254,21 @@ function NavContent() {
                 }));
                 setNavItems(translatedNavItems);
 
-                setTranslatedOrders(translatedTexts[labels.length]);
-                setTranslatedSponsors(translatedTexts[labels.length + 1]);
-                setTranslatedSavedCollection(translatedTexts[labels.length + 2]);
+                let offset = labels.length;
+                setTranslatedOrders(translatedTexts[offset]);
+                setTranslatedSponsors(translatedTexts[offset + 1]);
+                setTranslatedSavedCollection(translatedTexts[offset + 2]);
 
                 const newBottomNav = bottomNavItems.map((item, index) => ({
                     ...item,
-                    label: translatedTexts[labels.length + 3 + index],
+                    label: translatedTexts[offset + 3 + index],
                 }));
                 setTranslatedBottomNav(newBottomNav);
+
+                offset += 3 + bottomLabels.length;
+                setTranslatedLogout(translatedTexts[offset]);
+                setLogoutToastTitle(translatedTexts[offset + 1]);
+                setLogoutToastDesc(translatedTexts[offset + 2]);
 
             } else {
                 setNavItems(baseNavItems);
@@ -253,10 +276,24 @@ function NavContent() {
                 setTranslatedOrders('Orders');
                 setTranslatedSponsors('Sponsors');
                 setTranslatedSavedCollection('Saved Collection');
+                setTranslatedLogout('Logout');
+                setLogoutToastTitle('Logged Out');
+                setLogoutToastDesc('You have been successfully logged out.');
             }
         };
         translateNav();
     }, [language]);
+
+    const handleLogout = (e: React.MouseEvent) => {
+        e.preventDefault();
+        toast({
+            title: logoutToastTitle,
+            description: logoutToastDesc
+        });
+        // In a real app, you would handle actual logout logic here.
+        // For now, we can just navigate to a public page.
+        window.location.href = '/'; 
+    };
     
     const isLinkActive = (href: string) => {
         if (href === '/artisan/orders') {
@@ -345,6 +382,15 @@ function NavContent() {
                         {item.label}
                     </Link>
                 ))}
+                <Separator />
+                <Link
+                    href="#"
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent"
+                >
+                    <LogOut className="h-4 w-4" />
+                    {translatedLogout}
+                </Link>
             </div>
         </div>
     );
