@@ -24,6 +24,7 @@ export default function SponsorDashboardPage() {
     title: 'Welcome, Sponsor!',
     description: "Invest in culture, empower creators, and share in the success of India's finest artisans.",
     discoverTitle: 'Discover Artisans to Sponsor',
+    allProductsTitle: 'All Products',
     viewArtisanButton: 'View Artisan',
     by: 'by',
     specializesIn: 'specializes in',
@@ -38,7 +39,6 @@ export default function SponsorDashboardPage() {
   useEffect(() => {
     const translateContent = async () => {
       if (language !== 'en') {
-        const categoryNames = baseCategories.map(c => c.name);
         const textsToTranslate = Object.values(translatedContent);
         const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
         
@@ -47,18 +47,10 @@ export default function SponsorDashboardPage() {
           newContent[key] = translatedTexts[index];
         });
         setTranslatedContent(newContent);
-
-        const translatedCategories = baseCategories.map((cat, index) => ({
-          ...cat,
-          name: translatedTexts[Object.values(translatedContent).length + index],
-        }));
-        setCategories(translatedCategories);
-      } else {
-        setCategories(baseCategories);
       }
     };
     translateContent();
-  }, [language]);
+  }, [language, translatedContent]);
 
   const handleSponsor = (artisanName: string) => {
     const description = translatedContent.toastDescription.replace('{artisanName}', artisanName);
@@ -81,69 +73,65 @@ export default function SponsorDashboardPage() {
 
       <section className="my-10">
         <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
-        <div className="space-y-10">
-          {categories.map((category) => (
-            <section key={category.id}>
-              <h3 className="font-headline text-xl font-semibold mb-4">{category.name}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.filter(p => p.category === category.name || baseCategories.find(bc => bc.id === category.id)?.name === p.category).map(product => (
-                  <Card key={product.id} className="overflow-hidden group">
-                    <CardContent className="p-0">
-                      <div className="relative aspect-square">
-                         <Image
-                          src={product.image.url}
-                          alt={product.name}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                         />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
-                         <div className="absolute bottom-0 left-0 p-3">
-                          <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
-                          <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
-                         </div>
-                      </div>
-                    </CardContent>
-                    <CardContent className="p-3">
-                       <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
-                          {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
-                       </p>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button className="w-full" onClick={() => setSelectedArtisan(product.artisan)}>{translatedContent.viewArtisanButton}</Button>
-                        </DialogTrigger>
-                        {selectedArtisan && (
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <div className="flex items-center gap-4 mb-4">
-                                    <Avatar className="h-20 w-20 border-2 border-primary">
-                                        <AvatarImage src={selectedArtisan.avatar.url} alt={selectedArtisan.name} />
-                                        <AvatarFallback>{selectedArtisan.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <DialogTitle className="font-headline text-2xl">{selectedArtisan.name}</DialogTitle>
-                                        <DialogDescription>{translatedContent.specializesIn} {selectedArtisan.crafts?.join(', ')}</DialogDescription>
-                                    </div>
-                                </div>
-                            </DialogHeader>
-                            <div>
-                                <h4 className="font-semibold mb-2">{translatedContent.otherProducts}</h4>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    {allProductsByArtisan(selectedArtisan.id).map(p => (
-                                        <ProductCard key={p.id} product={p} />
-                                    ))}
+        <section>
+            <h3 className="font-headline text-xl font-semibold mb-4">{translatedContent.allProductsTitle}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.map(product => (
+                <Card key={product.id} className="overflow-hidden group">
+                <CardContent className="p-0">
+                    <div className="relative aspect-square">
+                        <Image
+                        src={product.image.url}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
+                        <div className="absolute bottom-0 left-0 p-3">
+                        <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
+                        <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardContent className="p-3">
+                    <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
+                        {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
+                    </p>
+                    <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className="w-full" onClick={() => setSelectedArtisan(product.artisan)}>{translatedContent.viewArtisanButton}</Button>
+                    </DialogTrigger>
+                    {selectedArtisan && (
+                    <DialogContent className="max-w-3xl">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4 mb-4">
+                                <Avatar className="h-20 w-20 border-2 border-primary">
+                                    <AvatarImage src={selectedArtisan.avatar.url} alt={selectedArtisan.name} />
+                                    <AvatarFallback>{selectedArtisan.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <DialogTitle className="font-headline text-2xl">{selectedArtisan.name}</DialogTitle>
+                                    <DialogDescription>{translatedContent.specializesIn} {selectedArtisan.crafts?.join(', ')}</DialogDescription>
                                 </div>
                             </div>
-                            <Button className="w-full mt-4" onClick={() => handleSponsor(selectedArtisan.name)}>{translatedContent.sponsorButton}</Button>
-                        </DialogContent>
-                        )}
-                      </Dialog>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+                        </DialogHeader>
+                        <div>
+                            <h4 className="font-semibold mb-2">{translatedContent.otherProducts}</h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {allProductsByArtisan(selectedArtisan.id).map(p => (
+                                    <ProductCard key={p.id} product={p} />
+                                ))}
+                            </div>
+                        </div>
+                        <Button className="w-full mt-4" onClick={() => handleSponsor(selectedArtisan.name)}>{translatedContent.sponsorButton}</Button>
+                    </DialogContent>
+                    )}
+                    </Dialog>
+                </CardContent>
+                </Card>
+            ))}
+            </div>
+        </section>
       </section>
     </div>
   );
