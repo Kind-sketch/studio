@@ -38,7 +38,6 @@ const navItems = [
   { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
   { href: '/artisan/promote', label: 'AI Promote', icon: Lightbulb },
-  { href: '/artisan/profile', label: 'Profile', icon: User },
 ];
 
 const secondaryNav = [
@@ -50,14 +49,6 @@ const secondaryNav = [
             {href: '/artisan/orders/my-orders', label: 'My Orders'},
         ]
     },
-    {
-        title: 'Sponsors',
-        icon: HeartHandshake,
-        items: [
-            {href: '/artisan/sponsors/requests', label: 'Sponsor Requests'},
-            {href: '/artisan/sponsors/my-sponsors', label: 'My Sponsors'},
-        ]
-    }
 ]
 
 function HeaderActions() {
@@ -103,7 +94,7 @@ function HeaderActions() {
 function NavContent() {
     const pathname = usePathname();
     
-    const isLinkActive = (href: string) => pathname === href;
+    const isLinkActive = (href: string) => pathname.startsWith(href);
 
     return (
         <div className="flex h-full flex-col bg-card">
@@ -131,7 +122,7 @@ function NavContent() {
                 ))}
             </ul>
             <Separator className="my-4" />
-            <Accordion type="multiple" defaultValue={secondaryNav.map(item => item.title)} className="w-full">
+            <Accordion type="multiple" defaultValue={['Orders', 'Sponsors']} className="w-full">
                 {secondaryNav.map(nav => (
                 <AccordionItem key={nav.title} value={nav.title} className="border-b-0">
                     <AccordionTrigger className="px-3 py-2 text-muted-foreground hover:no-underline hover:text-primary hover:bg-accent rounded-lg [&[data-state=open]]:text-primary [&[data-state=open]]:bg-accent [&[data-state=open]]:font-semibold">
@@ -159,9 +150,28 @@ function NavContent() {
                     </AccordionContent>
                 </AccordionItem>
                 ))}
+                 <div className="px-3 py-2">
+                    <Link
+                    href={'/artisan/sponsors'}
+                    className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
+                        isLinkActive('/artisan/sponsors') && 'bg-accent text-primary font-semibold'
+                    )}
+                    >
+                    <HeartHandshake className="h-4 w-4" />
+                    Sponsors
+                    </Link>
+                </div>
             </Accordion>
             </nav>
-            <div className="mt-auto border-t p-2">
+            <div className="mt-auto border-t p-4 space-y-2">
+                <Link
+                    href="/artisan/profile"
+                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/profile") && "bg-accent text-primary font-semibold" )}
+                    >
+                    <User className="h-4 w-4" />
+                    Profile
+                </Link>
                 <Link
                     href="/artisan/settings"
                     className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent", isLinkActive("/artisan/settings") && "bg-accent text-primary font-semibold" )}
