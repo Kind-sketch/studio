@@ -1,22 +1,22 @@
 'use client';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { languages } from '@/lib/data';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
 import { useState, useEffect } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LanguageSelectionPage() {
   const { language, setLanguage } = useLanguage();
+  const router = useRouter();
   const [title, setTitle] = useState('Choose Your Language');
 
   useEffect(() => {
     const translateTitle = async () => {
       if (language !== 'en' && language) {
-        // We only translate the title of the page to the selected language
-        // not the language names themselves.
         const { translatedTexts } = await translateText({
           texts: ['Choose Your Language'],
           targetLanguage: language,
@@ -29,32 +29,34 @@ export default function LanguageSelectionPage() {
     translateTitle();
   }, [language]);
 
+  const handleLanguageSelect = (langCode: string) => {
+    setLanguage(langCode);
+    router.push('/role-selection');
+  };
+
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-secondary/50 p-4">
-      <Card className="w-full shadow-2xl">
-        <CardHeader className="items-center text-center">
-            <Logo className="mb-2 h-12 w-12 text-primary"/>
-          <CardTitle className="font-headline text-3xl">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-secondary/50 p-4">
+       <div className="text-center mb-8">
+            <Logo className="mb-4 h-14 w-14 text-primary inline-block"/>
+          <CardTitle className="font-headline text-2xl sm:text-3xl">
             {title}
           </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        </div>
+      <Card className="w-full max-w-sm shadow-xl border-none">
+        <CardContent className="p-2">
+          <div className="flex flex-col gap-2">
             {languages.map((lang) => (
-              <Button
+              <button
                 key={lang.code}
-                variant="outline"
-                className="h-14 justify-start text-base"
-                asChild
-                onClick={() => setLanguage(lang.code)}
+                onClick={() => handleLanguageSelect(lang.code)}
+                className="flex w-full items-center justify-between rounded-lg p-4 text-left transition-colors hover:bg-accent"
               >
-                <Link href="/role-selection">
-                  <div className="flex w-full items-center justify-between">
-                    <span>{lang.name}</span>
-                    <span className="text-muted-foreground">{lang.nativeName}</span>
-                  </div>
-                </Link>
-              </Button>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-md">{lang.name}</span>
+                  <span className="text-sm text-muted-foreground">{lang.nativeName}</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </button>
             ))}
           </div>
         </CardContent>
