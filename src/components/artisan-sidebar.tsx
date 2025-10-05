@@ -39,17 +39,6 @@ const navItems = [
   { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
 ];
 
-const secondaryNav = [
-    {
-        title: 'Orders',
-        icon: Package,
-        items: [
-            {href: '/artisan/orders/requests', label: 'Order Requests'},
-            {href: '/artisan/orders/my-orders', label: 'My Orders'},
-        ]
-    },
-]
-
 function HeaderActions() {
     const { toast } = useToast();
 
@@ -121,47 +110,30 @@ function NavContent() {
                 ))}
             </ul>
             <Separator className="my-4" />
-            <Accordion type="multiple" defaultValue={['Orders', 'Sponsors']} className="w-full">
-                {secondaryNav.map(nav => (
-                <AccordionItem key={nav.title} value={nav.title} className="border-b-0">
-                    <AccordionTrigger className="px-3 py-2 text-muted-foreground hover:no-underline hover:text-primary hover:bg-accent rounded-lg [&[data-state=open]]:text-primary [&[data-state=open]]:bg-accent [&[data-state=open]]:font-semibold">
-                    <div className="flex items-center gap-3">
-                        <nav.icon className="h-4 w-4" />
-                        <span>{nav.title}</span>
-                    </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-1">
-                    <ul className="space-y-1 pl-7">
-                        {nav.items.map(item => (
-                        <li key={item.label}>
-                            <Link
-                            href={item.href}
-                            className={cn(
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:text-primary hover:bg-accent/80',
-                                isLinkActive(item.href) && 'bg-accent/50 text-primary font-medium'
-                            )}
-                            >
-                            {item.label}
-                            </Link>
-                        </li>
-                        ))}
-                    </ul>
-                    </AccordionContent>
-                </AccordionItem>
-                ))}
-                 <div className="px-3 py-2">
-                    <Link
-                    href={'/artisan/sponsors'}
-                    className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
-                        isLinkActive('/artisan/sponsors') && 'bg-accent text-primary font-semibold'
-                    )}
-                    >
-                    <HeartHandshake className="h-4 w-4" />
-                    Sponsors
-                    </Link>
-                </div>
-            </Accordion>
+             <div className="px-3 py-2">
+                <Link
+                href={'/artisan/orders'}
+                className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
+                    isLinkActive('/artisan/orders') && 'bg-accent text-primary font-semibold'
+                )}
+                >
+                <Package className="h-4 w-4" />
+                Orders
+                </Link>
+            </div>
+             <div className="px-3 py-2">
+                <Link
+                href={'/artisan/sponsors'}
+                className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent',
+                    isLinkActive('/artisan/sponsors') && 'bg-accent text-primary font-semibold'
+                )}
+                >
+                <HeartHandshake className="h-4 w-4" />
+                Sponsors
+                </Link>
+            </div>
             </nav>
             <div className="mt-auto border-t p-4 space-y-2">
                 <Link
