@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import 'regenerator-runtime/runtime';
 import {
   Home,
   LayoutDashboard,
@@ -30,35 +31,110 @@ import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/ai/flows/translate-text';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign },
-  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag },
-  { href: '/artisan/trends', label: 'Trends', icon: TrendingUp },
-  { href: '/artisan/stats', label: 'Statistics', icon: BarChart3 },
+  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start'] },
+  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard'] },
+  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery'] },
+  { href: '/artisan/trends', label: 'Trends', icon: TrendingUp, keywords: ['trends', 'community', 'popular'] },
+  { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics'] },
 ];
 
 const bottomNavItems = [
-    { href: '/artisan/settings', label: 'Settings', icon: Settings },
+    { href: '/artisan/settings', label: 'Settings', icon: Settings, keywords: ['settings', 'configuration', 'profile'] },
 ]
 
 function HeaderActions() {
     const { toast } = useToast();
+    const router = useRouter();
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = (event: any) => {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    handleVoiceCommand(command);
+                };
+
+                recognition.onerror = (event: any) => {
+                    console.error('Speech recognition error', event.error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Voice Error',
+                        description: 'Could not recognize your voice. Please try again.',
+                    });
+                    setIsListening(false);
+                };
+
+                recognition.onend = () => {
+                    setIsListening(false);
+                };
+
+                recognitionRef.current = recognition;
+            }
+        }
+    }, [toast]);
 
     const handleMicClick = () => {
-        toast({
-        title: 'Voice Input',
-        description: 'Voice command functionality is not yet implemented.',
-        });
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+        } else {
+            if (recognitionRef.current) {
+                recognitionRef.current.start();
+                setIsListening(true);
+                toast({
+                    title: 'Listening...',
+                    description: 'Please say a command.',
+                });
+            } else {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Not Supported',
+                    description: 'Voice command is not supported on your browser.',
+                });
+            }
+        }
     };
     
     const handleSupportClick = () => {
         toast({
         title: 'Support',
         description: 'Support functionality is not yet implemented.',
+        });
+    };
+
+    const handleVoiceCommand = (command: string) => {
+        const allNavItems = [
+            ...baseNavItems,
+            ...bottomNavItems,
+            { href: '/artisan/orders', label: 'Orders', keywords: ['orders', 'requests'] },
+            { href: '/artisan/sponsors', label: 'Sponsors', keywords: ['sponsors', 'sponsorships', 'partners'] },
+            { href: '/artisan/saved-collection', label: 'Saved Collection', keywords: ['saved', 'collection', 'bookmarks'] },
+        ];
+
+        for (const item of allNavItems) {
+            if (item.keywords.some(keyword => command.includes(keyword))) {
+                router.push(item.href);
+                return;
+            }
+        }
+
+        toast({
+            variant: 'destructive',
+            title: 'Command Not Recognized',
+            description: `Could not find a page for "${command}".`,
         });
     };
 
@@ -77,7 +153,7 @@ function HeaderActions() {
                 size="icon"
                 onClick={handleMicClick}
                 aria-label="Use Voice Command"
-                className="rounded-full bg-primary/10 text-primary hover:bg-primary/20 animate-pulse"
+                className={cn("rounded-full bg-primary/10 text-primary hover:bg-primary/20", isListening && "animate-pulse")}
             >
                 <Mic className="h-5 w-5" />
             </Button>

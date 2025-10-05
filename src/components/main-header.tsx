@@ -1,21 +1,96 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import 'regenerator-runtime/runtime';
 import { Mic, MessageCircleQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from 'react';
+
+const navKeywords: { [key: string]: string[] } = {
+  '/buyer/home': ['home', 'main', 'start'],
+  '/buyer/categories': ['categories', 'browse', 'sections'],
+  '/buyer/customize': ['customize', 'design', 'create'],
+  '/buyer/profile': ['profile', 'account', 'me'],
+};
 
 export default function MainHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { toast } = useToast();
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event: any) => {
+          const command = event.results[0][0].transcript.toLowerCase();
+          handleVoiceCommand(command);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          toast({
+            variant: 'destructive',
+            title: 'Voice Error',
+            description: 'Could not recognize your voice. Please try again.',
+          });
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, [toast]);
 
   const handleMicClick = () => {
+     if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        toast({
+          title: 'Listening...',
+          description: 'Please say a command.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Not Supported',
+          description: 'Voice command is not supported on your browser.',
+        });
+      }
+    }
+  };
+
+  const handleVoiceCommand = (command: string) => {
+    for (const path in navKeywords) {
+      if (navKeywords[path].some(keyword => command.includes(keyword))) {
+        router.push(path);
+        return;
+      }
+    }
     toast({
-      title: 'Voice Input',
-      description: 'Voice command functionality is not yet implemented.',
+      variant: 'destructive',
+      title: 'Command Not Recognized',
+      description: `Could not find a page for "${command}".`,
     });
   };
   
@@ -59,7 +134,7 @@ export default function MainHeader() {
             size="icon"
             onClick={handleMicClick}
             aria-label="Use Voice Command"
-            className="rounded-full bg-primary/10 text-primary hover:bg-primary/20 animate-pulse"
+            className={cn("rounded-full bg-primary/10 text-primary hover:bg-primary/20", isListening && "animate-pulse")}
           >
             <Mic className="h-5 w-5" />
           </Button>
