@@ -129,25 +129,40 @@ export default function AddProductPage() {
         }
     };
 
-    getCameraPermission();
+    if (useCamera) {
+        getCameraPermission();
+    }
 
     return () => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
     };
-  }, [useCamera]);
+  }, [useCamera, stream, translatedContent.cameraAccessDenied, translatedContent.cameraAccessDeniedDesc, translatedContent.cameraError, toast]);
 
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        setImagePreview(dataUrl);
-        setImageData(dataUrl);
-        stopCamera();
+      reader.onload = (e) => {
+        const img = document.createElement('img');
+        img.onload = () => {
+          const canvas = canvasRef.current;
+          if (canvas) {
+            const context = canvas.getContext('2d');
+            if (context) {
+              canvas.width = img.width;
+              canvas.height = img.height;
+              context.drawImage(img, 0, 0);
+              const dataUrl = canvas.toDataURL('image/png');
+              setImagePreview(dataUrl);
+              setImageData(dataUrl);
+              stopCamera();
+            }
+          }
+        };
+        img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -259,7 +274,7 @@ export default function AddProductPage() {
             {useCamera ? (
               <>
                 <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-                <canvas ref={canvasRef} className="hidden" />
+                
                 {hasCameraPermission === false && (
                   <div className="absolute inset-0 flex items-center justify-center p-4">
                     <Alert variant="destructive">
@@ -279,6 +294,7 @@ export default function AddProductPage() {
                 <p className="text-sm font-semibold">{translatedContent.uploadPlaceholder}</p>
               </div>
             )}
+            <canvas ref={canvasRef} className="hidden" />
           </div>
           <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
         </CardContent>
