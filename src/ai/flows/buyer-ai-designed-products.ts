@@ -64,37 +64,16 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
     outputSchema: BuyerAiDesignedProductsOutputSchema,
   },
   async input => {
-    let model = 'googleai/imagen-4.0-fast-generate-001';
-    if (input.imageUri) {
-      model = 'googleai/gemini-2.5-flash-image-preview';
-    }
     const {output} = await prompt(input);
-    if (input.imageUri) {
-      const {media} = await ai.generate({
-        model: model,
-        prompt: [
-          {media: {url: input.imageUri}},
-          {text: `generate an image of this character in ${input.prompt}`},
-        ],
-        config: {
-          responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE, IMAGE only won't work
-        },
-      });
 
-      return {
-        designedProductImage: media!.url,
-        description: output!.description,
-      };
-    } else {
-      const {media} = await ai.generate({
-        model: model,
-        prompt: input.prompt,
-      });
+    const {media} = await ai.generate({
+      model: 'googleai/imagen-4.0-fast-generate-001',
+      prompt: input.prompt,
+    });
 
-      return {
-        designedProductImage: media!.url,
-        description: output!.description,
-      };
-    }
+    return {
+      designedProductImage: media!.url,
+      description: output!.description,
+    };
   }
 );
