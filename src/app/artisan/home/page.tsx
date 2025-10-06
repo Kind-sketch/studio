@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { Loader2, Sparkles, Lightbulb, Play, Pause, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
@@ -25,13 +25,22 @@ import { translateText } from '@/services/translation-service';
 // Mocking the current artisan as Elena Vance (ID '1')
 const CURRENT_ARTISAN_ID = '1';
 
+interface AiReviewResult {
+    aiReview: string;
+    aiReviewAudio: string;
+}
+
 export default function ArtisanHomePage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<{ aiReview: string; } | null>(null);
+  const [result, setResult] = useState<AiReviewResult | null>(null);
 
   const { toast } = useToast();
   const { language } = useLanguage();
   
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+
   const [translatedContent, setTranslatedContent] = useState({
     pageTitle: "Your Creative Space",
     pageDescription: "Manage your products and get AI-powered feedback.",
@@ -133,6 +142,29 @@ export default function ArtisanHomePage() {
     });
   }
 
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+  };
+
+  const handleRestart = () => {
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
@@ -206,13 +238,24 @@ export default function ArtisanHomePage() {
                     </div>
                     )}
                     {result && (
-                    <div className="space-y-6 flex-1 flex flex-col min-h-0">
-                        <div className="flex-1 flex flex-col min-h-0">
-                            <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.aiReviewAnalysisTitle}</h3>
-                            <ScrollArea className="flex-1 h-96">
-                                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
-                            </ScrollArea>
+                    <div className="space-y-4 flex-1 flex flex-col min-h-0">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-headline text-lg font-semibold">{translatedContent.aiReviewAnalysisTitle}</h3>
+                            {result.aiReviewAudio && (
+                                <div className="flex items-center gap-2">
+                                    <Button size="icon" onClick={handlePlayPause}>
+                                        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                                    </Button>
+                                    <Button size="icon" variant="outline" onClick={handleRestart}>
+                                        <RotateCcw className="h-4 w-4" />
+                                    </Button>
+                                    <audio ref={audioRef} src={result.aiReviewAudio} onEnded={handleAudioEnded} />
+                                </div>
+                            )}
                         </div>
+                        <ScrollArea className="flex-1 h-80">
+                            <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
+                        </ScrollArea>
                     </div>
                     )}
                 </CardContent>
@@ -222,5 +265,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
