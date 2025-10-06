@@ -37,7 +37,7 @@ const translateTextPrompt = ai.definePrompt({
     `,
 });
 
-export const translateTextFlow = ai.defineFlow(
+const translateTextFlow = ai.defineFlow(
   {
     name: 'translateTextFlow',
     inputSchema: TranslateTextInputSchema,
@@ -51,3 +51,8 @@ export const translateTextFlow = ai.defineFlow(
     return output;
   }
 );
+
+
+export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
+    return translateTextFlow(input);
+}

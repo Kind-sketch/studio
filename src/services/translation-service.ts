@@ -8,7 +8,7 @@
  * - TranslateTextOutput - The return type for the translateText function.
  */
 
-import { translateTextFlow, type TranslateTextInput, type TranslateTextOutput } from '@/ai/flows/translate-text';
+import { translateText as translateTextFlow, type TranslateTextInput, type TranslateTextOutput } from '@/ai/flows/translate-text';
 
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
