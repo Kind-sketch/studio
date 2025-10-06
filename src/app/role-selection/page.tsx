@@ -35,22 +35,24 @@ const baseRoles = [
   },
 ];
 
-export default function RoleSelectionPage() {
-  const { language } = useLanguage();
-  const [translatedContent, setTranslatedContent] = useState({
+const initialContent = {
     welcome: 'Welcome to Artistry Havens',
     joinCommunity: 'How would you like to join our community?',
     footer: 'For artisans, the first step will be to register.',
-  });
+};
+
+export default function RoleSelectionPage() {
+  const { language } = useLanguage();
+  const [translatedContent, setTranslatedContent] = useState(initialContent);
   const [roles, setRoles] = useState(baseRoles);
 
   useEffect(() => {
     const translateContent = async () => {
       if (language !== 'en') {
         const textsToTranslate = [
-          'Welcome to Artistry Havens',
-          'How would you like to join our community?',
-          'For artisans, the first step will be to register.',
+          initialContent.welcome,
+          initialContent.joinCommunity,
+          initialContent.footer,
           ...baseRoles.map(r => r.name),
           ...baseRoles.map(r => r.description),
         ];
@@ -73,11 +75,7 @@ export default function RoleSelectionPage() {
         }));
         setRoles(translatedRoles);
       } else {
-        setTranslatedContent({
-            welcome: 'Welcome to Artistry Havens',
-            joinCommunity: 'How would you like to join our community?',
-            footer: 'For artisans, the first step will be to register.',
-        });
+        setTranslatedContent(initialContent);
         setRoles(baseRoles);
       }
     };
@@ -124,5 +122,3 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
-
-    
