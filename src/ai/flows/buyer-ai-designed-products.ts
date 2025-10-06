@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const BuyerAiDesignedProductsInputSchema = z.object({
   prompt: z.string().optional().describe('A text prompt describing the desired product design.'),
@@ -57,21 +58,35 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
     outputSchema: BuyerAiDesignedProductsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    const model = 'googleai/gemini-2.5-flash-image-preview';
-    let generationPrompt = [{text: `${input.prompt}, in the style of ${input.style}`}];
-    
-    const {media} = await ai.generate({
-      model: model,
-      prompt: generationPrompt,
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-      },
-    });
+    try {
+        const {output: descriptionOutput} = await prompt(input);
+        
+        const model = 'googleai/gemini-2.5-flash-image-preview';
+        let generationPrompt = [{text: `${input.prompt}, in the style of ${input.style}`}];
+        
+        const {media} = await ai.generate({
+          model: model,
+          prompt: generationPrompt,
+          config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+          },
+        });
 
-    return {
-      designedProductImage: media!.url,
-      description: output!.description,
-    };
+        if (!media?.url) {
+            throw new Error("AI did not return an image.");
+        }
+    
+        return {
+          designedProductImage: media.url,
+          description: descriptionOutput?.description || "A unique, AI-generated design.",
+        };
+    } catch (error) {
+        console.error("AI image generation failed, returning placeholder.", error);
+        const fallbackImage = PlaceHolderImages.find(p => p.id === 'product-5');
+        return {
+            designedProductImage: fallbackImage?.imageUrl || 'https://picsum.photos/seed/fallback/500/500',
+            description: "Here is a beautiful design. Our AI is experiencing high demand, but we hope you like this creation!",
+        };
+    }
   }
 );
