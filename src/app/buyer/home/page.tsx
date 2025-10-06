@@ -1,34 +1,65 @@
 
 'use client';
 
-import { products, categories as baseCategories } from '@/lib/data';
+import { useState } from 'react';
+import { products, categories as baseCategories, artisans } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import type { Category } from '@/lib/types';
+import type { Category, Product } from '@/lib/types';
+import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function BuyerHomePage() {
-  const trendingProducts = [...products].sort((a, b) => b.likes - a.likes);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const trendingProducts = [...products].sort((a, b) => b.likes - a.likes).slice(0, 8);
+  const bestSellingProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
   const categories: Category[] = baseCategories;
+  
+  const filteredProducts = selectedCategory
+    ? products.filter(p => p.category === selectedCategory)
+    : products;
+
   const translatedContent = {
-    title: 'Discover Handcrafted Wonders',
-    description: 'Explore unique creations from artisans around the world.',
-    categoriesTitle: 'Categories',
+    artisansTitle: 'Meet the Artisans',
+    categoriesTitle: 'Shop by Category',
     trendingTitle: 'Trending Now',
+    bestSellingTitle: 'Best Sellers',
     allProductsTitle: 'All Products',
+    allCategories: 'All',
   };
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-6">
-      <header className="mb-6 text-center px-4">
-        <h1 className="font-headline text-2xl sm:text-3xl font-bold tracking-tight">
-          {translatedContent.title}
-        </h1>
-        <p className="mt-1 text-sm sm:text-md text-muted-foreground">
-          {translatedContent.description}
-        </p>
-      </header>
+      
+      {/* Artisans Showcase Section */}
+      <section className="mb-8">
+        <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
+          {translatedContent.artisansTitle}
+        </h2>
+        <Carousel opts={{ align: 'start' }} className="-mx-2">
+            <CarouselContent className="ml-2">
+                {artisans.map(artisan => (
+                    <CarouselItem key={artisan.id} className="basis-1/2 md:basis-1/3 pl-2">
+                         <Card className="overflow-hidden">
+                             <CardContent className="p-4 text-center">
+                                <Avatar className="w-20 h-20 mx-auto mb-2 border-2 border-primary">
+                                    <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
+                                    <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <h3 className="font-semibold font-headline truncate">{artisan.name}</h3>
+                                <p className="text-xs text-muted-foreground truncate">{artisan.crafts?.join(', ')}</p>
+                             </CardContent>
+                         </Card>
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+             <CarouselPrevious className="absolute left-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            <CarouselNext className="absolute right-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+        </Carousel>
+      </section>
 
       {/* Categories Section */}
       <section className="mb-8">
@@ -36,51 +67,76 @@ export default function BuyerHomePage() {
           {translatedContent.categoriesTitle}
         </h2>
         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+           <Card
+              onClick={() => setSelectedCategory(null)}
+              className={`group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1 ${!selectedCategory ? 'bg-primary text-primary-foreground' : ''}`}
+            >
+              <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                <span className="font-semibold text-xs sm:text-sm">{translatedContent.allCategories}</span>
+              </CardContent>
+            </Card>
           {categories.map((category) => (
             <Card
               key={category.id}
-              className="group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1"
+              onClick={() => setSelectedCategory(category.name)}
+              className={`group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1 ${selectedCategory === category.name ? 'bg-primary text-primary-foreground' : ''}`}
             >
               <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
-                <category.icon className="mb-1 h-5 w-5 sm:h-6 sm:w-6 text-primary transition-colors group-hover:text-accent-foreground" />
-                <span className="font-semibold text-[10px] sm:text-xs text-foreground group-hover:text-accent-foreground text-center">{category.name}</span>
+                <category.icon className={`mb-1 h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedCategory === category.name ? 'text-primary-foreground': 'text-primary group-hover:text-accent-foreground'}`} />
+                <span className={`font-semibold text-[10px] sm:text-xs text-center transition-colors ${selectedCategory === category.name ? 'text-primary-foreground' : 'text-foreground group-hover:text-accent-foreground'}`}>{category.name}</span>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Trending Products Section */}
-      <section className="mb-10">
-        <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-          {translatedContent.trendingTitle}
-        </h2>
-        <Carousel
-          opts={{ align: 'start', loop: true }}
-          plugins={[Autoplay({ delay: 2500, stopOnInteraction: false })]}
-          className="-mx-2"
-        >
-          <CarouselContent className="ml-2">
-            {trendingProducts.map((product) => (
-              <CarouselItem key={product.id} className="basis-full pl-2">
-                <ProductCard product={product} />
-              </CarouselItem>
+      {/* Conditional Rendering based on category selection */}
+      {selectedCategory ? (
+        <section>
+          <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
+            {selectedCategory}
+          </h2>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:grid-cols-3 lg:grid-cols-4">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
-          </CarouselContent>
-        </Carousel>
-      </section>
+          </div>
+        </section>
+      ) : (
+        <>
+          {/* Trending Products Section */}
+          <section className="mb-10">
+            <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
+              {translatedContent.trendingTitle}
+            </h2>
+            <Carousel
+              opts={{ align: 'start', loop: true }}
+              plugins={[Autoplay({ delay: 2500, stopOnInteraction: false })]}
+              className="-mx-2"
+            >
+              <CarouselContent className="ml-2">
+                {trendingProducts.map((product) => (
+                  <CarouselItem key={product.id} className="basis-3/4 sm:basis-1/2 md:basis-1/3 pl-2">
+                    <ProductCard product={product} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </section>
 
-      {/* Main Product Feed */}
-      <section>
-        <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-          {translatedContent.allProductsTitle}
-        </h2>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
+          {/* Best Selling Products Section */}
+          <section>
+            <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
+              {translatedContent.bestSellingTitle}
+            </h2>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6">
+              {bestSellingProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

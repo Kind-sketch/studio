@@ -1,4 +1,6 @@
+
 import BuyerBottomNav from '@/components/buyer-bottom-nav';
+import BuyerHeader from '@/components/buyer-header';
 
 export default function BuyerLayout({
   children,
@@ -7,7 +9,8 @@ export default function BuyerLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+      <BuyerHeader />
+      <main className="flex-1 pb-20 pt-16 md:pb-0 md:pt-0">{children}</main>
       <BuyerBottomNav />
     </div>
   );
