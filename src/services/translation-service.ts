@@ -1,14 +1,15 @@
+
 'use server';
 /**
- * @fileOverview A flow for translating text into different languages using a generative model.
+ * @fileOverview A service for translating text, with caching and rate-limiting.
  *
  * - translateText - A function that handles text translation.
  * - TranslateTextInput - The input type for the translateText function.
  * - TranslateTextOutput - The return type for the translateText function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'zod';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
 const TranslateTextInputSchema = z.object({
   texts: z.array(z.string()).describe('An array of texts to be translated.'),
@@ -20,6 +21,7 @@ const TranslateTextOutputSchema = z.object({
   translatedTexts: z.array(z.string()).describe('The translated texts.'),
 });
 export type TranslateTextOutput = z.infer<typeof TranslateTextOutputSchema>;
+
 
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
@@ -33,21 +35,6 @@ const translationQueue: {
 let isProcessing = false;
 let isCoolingDown = false;
 const COOL_DOWN_PERIOD = 60000; // 60 seconds
-
-const prompt = ai.definePrompt({
-    name: 'translateTextPrompt',
-    input: { schema: TranslateTextInputSchema },
-    output: { schema: TranslateTextOutputSchema },
-    prompt: `Translate the following array of JSON strings from English to the language with code '{{targetLanguage}}'. 
-    
-    Return a JSON object with a single key "translatedTexts" that contains an array of the translated strings. The order of the translated strings in the array must exactly match the order of the original strings.
-    
-    Original Texts:
-    {{jsonStringify texts}}
-    
-    Your response MUST be a valid JSON object.
-    `,
-});
 
 async function processQueue() {
   if (isProcessing || translationQueue.length === 0 || isCoolingDown) {
@@ -99,11 +86,12 @@ async function performTranslation(input: TranslateTextInput): Promise<TranslateT
     }
 
     try {
-        const { output } = await prompt(input);
+        const translateFlow = ai.flow('translateTextFlow');
+        const result = await translateFlow(input);
         
-        if (output?.translatedTexts && output.translatedTexts.length === texts.length) {
-            translationCache.set(cacheKey, output.translatedTexts);
-            return { translatedTexts: output.translatedTexts };
+        if (result?.translatedTexts && result.translatedTexts.length === texts.length) {
+            translationCache.set(cacheKey, result.translatedTexts);
+            return { translatedTexts: result.translatedTexts };
         } else {
             console.warn("Translation returned incorrect number of items, returning original texts.");
             return { translatedTexts: texts };
