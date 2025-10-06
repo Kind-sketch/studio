@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow that allows buyers to design custom products using AI.
@@ -42,7 +43,9 @@ const prompt = ai.definePrompt({
   name: 'buyerAiDesignedProductsPrompt',
   input: {schema: BuyerAiDesignedProductsInputSchema},
   output: {schema: BuyerAiDesignedProductsOutputSchema},
-  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided prompt and style to design a product that meets the buyer's needs. Return the designed product image as a data URI and provide a description of the designed product.
+  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided prompt and style to design a product that meets the buyer's needs. 
+
+Generate a short, compelling description for the newly designed product.
 
 {{#if prompt}}
 Prompt: {{{prompt}}}
@@ -62,8 +65,17 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt(input);
     let model = 'googleai/imagen-4.0-fast-generate-001';
-    let generationPrompt: any = input.prompt;
+    let generationPrompt: any = `${input.prompt}, in the style of ${input.style}`;
     let config: any = {};
+
+    if (input.imageUri) {
+      model = 'googleai/gemini-2.5-flash-image-preview';
+      generationPrompt = [
+        {media: {url: input.imageUri}},
+        {text: `Based on the provided image, generate a new product with the following attributes: ${input.prompt}, in the style of ${input.style}`},
+      ];
+      config.responseModalities = ['TEXT', 'IMAGE'];
+    }
 
     const {media} = await ai.generate({
       model: model,
