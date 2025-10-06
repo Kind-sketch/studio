@@ -8,20 +8,7 @@
  * - TranslateTextOutput - The return type for the translateText function.
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-
-const TranslateTextInputSchema = z.object({
-  texts: z.array(z.string()).describe('An array of texts to be translated.'),
-  targetLanguage: z.string().describe('The target language code (e.g., "hi", "es").'),
-});
-export type TranslateTextInput = z.infer<typeof TranslateTextInputSchema>;
-
-const TranslateTextOutputSchema = z.object({
-  translatedTexts: z.array(z.string()).describe('The translated texts.'),
-});
-export type TranslateTextOutput = z.infer<typeof TranslateTextOutputSchema>;
-
+import { translateTextFlow, type TranslateTextInput, type TranslateTextOutput } from '@/ai/flows/translate-text';
 
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
@@ -86,8 +73,7 @@ async function performTranslation(input: TranslateTextInput): Promise<TranslateT
     }
 
     try {
-        const translateFlow = ai.flow('translateTextFlow');
-        const result = await translateFlow(input);
+        const result = await translateTextFlow(input);
         
         if (result?.translatedTexts && result.translatedTexts.length === texts.length) {
             translationCache.set(cacheKey, result.translatedTexts);
