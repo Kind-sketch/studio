@@ -67,7 +67,7 @@ async function processQueue() {
     translationQueue.unshift({ input, resolve, reject });
     
     // Check if it's a rate limit error to trigger cool-down
-    if (error instanceof Error && error.message.includes('429')) {
+    if (error instanceof Error && (error.message.includes('429') || error.message.includes('rate limit'))) {
         console.log(`Rate limit detected. Cooling down for ${COOL_DOWN_PERIOD / 1000} seconds.`);
         isCoolingDown = true;
         setTimeout(() => {
@@ -79,7 +79,7 @@ async function processQueue() {
     isProcessing = false;
     // Process next item if not cooling down
     if (!isCoolingDown) {
-      processQueue();
+      setTimeout(processQueue, 1000); // Process next item after a short delay
     }
   }
 }
