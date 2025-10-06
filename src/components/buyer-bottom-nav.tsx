@@ -21,19 +21,21 @@ export default function BuyerBottomNav() {
       <div className="grid h-16 grid-cols-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+          const isCustomize = item.label === 'Customize';
           return (
             <Link
               href={item.href}
               key={item.label}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors',
+                'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors relative',
                 isActive
                   ? 'text-primary'
-                  : 'text-muted-foreground hover:text-primary'
+                  : 'text-muted-foreground hover:text-primary',
+                isCustomize && 'bg-yellow-100/70 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 rounded-lg m-1 shadow-[0_0_15px_rgba(253,244,140,0.8)]'
               )}
             >
               <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
+              <span className={cn(isCustomize && 'font-bold')}>{item.label}</span>
             </Link>
           );
         })}
