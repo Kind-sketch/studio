@@ -28,10 +28,10 @@ export default function BuyerBottomNav() {
               key={item.label}
               className={cn(
                 'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors relative',
-                isActive
+                isActive && !isCustomize
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-primary',
-                isCustomize && 'bg-yellow-100/70 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 rounded-lg m-1 shadow-[0_0_15px_rgba(253,244,140,0.8)]'
+                isCustomize && 'bg-primary/90 text-primary-foreground rounded-lg m-1 shadow-[0_0_15px_rgba(239,68,68,0.6)]'
               )}
             >
               <item.icon className="h-5 w-5" />
