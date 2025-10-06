@@ -42,11 +42,7 @@ const prompt = ai.definePrompt({
   name: 'buyerAiDesignedProductsPrompt',
   input: {schema: BuyerAiDesignedProductsInputSchema},
   output: {schema: BuyerAiDesignedProductsOutputSchema},
-  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided image, prompt and style to design a product that meets the buyer's needs. Return the designed product image as a data URI and provide a description of the designed product.
-
-{{#if imageUri}}
-Image: {{media url=imageUri}}
-{{/if}}
+  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided prompt and style to design a product that meets the buyer's needs. Return the designed product image as a data URI and provide a description of the designed product.
 
 {{#if prompt}}
 Prompt: {{{prompt}}}
@@ -68,17 +64,6 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
     let model = 'googleai/imagen-4.0-fast-generate-001';
     let generationPrompt: any = input.prompt;
     let config: any = {};
-
-    if (input.imageUri) {
-      model = 'googleai/gemini-2.5-flash-image-preview';
-      generationPrompt = [
-        {media: {url: input.imageUri}},
-        {text: `generate an image of this with the following prompt: ${input.prompt}`},
-      ];
-      config = {
-        responseModalities: ['TEXT', 'IMAGE'],
-      };
-    }
 
     const {media} = await ai.generate({
       model: model,
