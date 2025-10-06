@@ -15,7 +15,7 @@ import { artisans } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -252,3 +252,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    

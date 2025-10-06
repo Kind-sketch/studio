@@ -26,7 +26,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Product } from '@/lib/types';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 
 const chartConfig = {
@@ -282,3 +282,5 @@ export default function StatsPage() {
     </div>
   );
 }
+
+    

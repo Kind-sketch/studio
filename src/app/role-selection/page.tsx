@@ -11,7 +11,7 @@ import {
 import { Palette, ShoppingBag, HeartHandshake } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import { useState, useEffect } from 'react';
 
 const baseRoles = [
@@ -124,3 +124,5 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
+
+    

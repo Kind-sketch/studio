@@ -8,7 +8,7 @@ import type { SavedCollection, Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 export default function SavedCollectionPage() {
   const [collections, setCollections] = useState<SavedCollection[]>([]);
@@ -91,3 +91,5 @@ export default function SavedCollectionPage() {
     </div>
   );
 }
+
+    

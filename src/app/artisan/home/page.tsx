@@ -20,7 +20,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedCollection, Product } from '@/lib/types';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 // Mocking the current artisan as Elena Vance (ID '1')
 const CURRENT_ARTISAN_ID = '1';
@@ -222,3 +222,5 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    

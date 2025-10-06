@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import { useEffect, useState, useRef } from 'react';
 import SupportDialog from './support-dialog';
 import {
@@ -465,3 +465,5 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
+
+    

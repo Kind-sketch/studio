@@ -15,7 +15,7 @@ import { Loader2, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import Image from 'next/image';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -194,3 +194,5 @@ export default function UpdateStatusPage() {
     </div>
   );
 }
+
+    

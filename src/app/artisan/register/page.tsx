@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -214,5 +214,7 @@ export default function ArtisanRegisterPage() {
     </div>
   );
 }
+
+    
 
     

@@ -13,7 +13,7 @@ import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -277,3 +277,5 @@ export default function OrdersPage() {
     </div>
   );
 }
+
+    

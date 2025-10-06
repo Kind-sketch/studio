@@ -9,7 +9,7 @@ import { Check, X } from 'lucide-react';
 import type { SponsorRequest } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 
 const initialSponsorRequests: SponsorRequest[] = [
@@ -164,3 +164,5 @@ export default function SponsorRequestsPage() {
     </div>
   );
 }
+
+    

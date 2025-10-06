@@ -10,7 +10,7 @@ import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { categories as baseCategories } from '@/lib/data';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 export default function CategorySelectionPage() {
   const router = useRouter();
@@ -139,3 +139,5 @@ export default function CategorySelectionPage() {
     </div>
   );
 }
+
+    

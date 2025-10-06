@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import SupportDialog from '@/components/support-dialog';
 
 
@@ -190,3 +190,5 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
       </div>
   );
 }
+
+    

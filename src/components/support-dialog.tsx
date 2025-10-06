@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 const baseQuestions = [
   "I'm having trouble uploading a product.",
@@ -145,3 +145,5 @@ export default function SupportDialog({ children }: { children: React.ReactNode 
     </Dialog>
   );
 }
+
+    

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 export default function MyProductsPage() {
   const [myProducts, setMyProducts] = useState<Product[]>([]);
@@ -114,3 +114,5 @@ export default function MyProductsPage() {
     </div>
   );
 }
+
+    

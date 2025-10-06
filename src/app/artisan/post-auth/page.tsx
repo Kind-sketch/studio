@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Upload, User, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import { useState, useEffect } from 'react';
 import { HeaderActions } from '@/components/artisan-sidebar';
 
@@ -90,3 +90,5 @@ export default function ArtisanPostAuthPage() {
     </>
   );
 }
+
+    

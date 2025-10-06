@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 const initialSponsorRequests: SponsorRequest[] = [
     {
@@ -285,3 +285,5 @@ export default function SponsorsPage() {
     </div>
   );
 }
+
+    

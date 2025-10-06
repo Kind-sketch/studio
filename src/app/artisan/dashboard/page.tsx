@@ -10,7 +10,7 @@ import { products } from "@/lib/data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/context/language-context";
-import { translateText } from "@/ai/flows/translate-text";
+import { translateText } from "@/services/translation-service";
 import { useState, useEffect } from 'react';
 
 const sponsoredProducts = [
@@ -176,3 +176,5 @@ export default function ArtisanDashboard() {
     </div>
   )
 }
+
+    

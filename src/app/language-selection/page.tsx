@@ -1,10 +1,11 @@
+
 'use client';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { languages } from '@/lib/data';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -64,3 +65,5 @@ export default function LanguageSelectionPage() {
     </div>
   );
 }
+
+    

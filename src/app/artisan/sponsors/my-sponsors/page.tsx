@@ -20,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
+import { translateText } from '@/services/translation-service';
 
 export default function MySponsorsPage() {
   const [mySponsors, setMySponsors] = useState<SponsorRequest[]>([]);
@@ -150,3 +150,5 @@ export default function MySponsorsPage() {
     </div>
   );
 }
+
+    
