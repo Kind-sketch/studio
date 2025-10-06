@@ -47,7 +47,7 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
   const toastIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (isArtisanFlow && typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -121,7 +121,7 @@ export default function MainHeader({ isArtisanFlow = false }: MainHeaderProps) {
         recognitionRef.current = recognition;
       }
     }
-  }, [language, toast, dismiss, router]);
+  }, [language, toast, dismiss, router, isArtisanFlow]);
 
   const handleMicClick = () => {
     if (isListening) {
