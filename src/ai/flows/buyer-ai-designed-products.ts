@@ -12,12 +12,6 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const BuyerAiDesignedProductsInputSchema = z.object({
-  imageUri: z
-    .string()
-    .optional()
-    .describe(
-      "An image provided by the buyer, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
   prompt: z.string().optional().describe('A text prompt describing the desired product design.'),
   style: z.string().optional().describe('A style or theme for the product design.'),
 });
@@ -65,14 +59,7 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt(input);
     const model = 'googleai/gemini-2.5-flash-image-preview';
-    let generationPrompt: any = [{text: `${input.prompt}, in the style of ${input.style}`}];
-    
-    if (input.imageUri) {
-      generationPrompt = [
-        {media: {url: input.imageUri}},
-        {text: `Based on the provided image, generate a new product with the following attributes: ${input.prompt}, in the style of ${input.style}`},
-      ];
-    }
+    let generationPrompt = [{text: `${input.prompt}, in the style of ${input.style}`}];
     
     const {media} = await ai.generate({
       model: model,

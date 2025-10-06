@@ -42,7 +42,6 @@ const formSchema = z.object({
     message: 'Please describe your desired design in at least 10 characters.',
   }),
   style: z.string().optional(),
-  image: z.any().optional(),
 });
 
 export default function BuyerCustomizePage() {
@@ -51,7 +50,6 @@ export default function BuyerCustomizePage() {
     designedProductImage: string;
     description: string;
   } | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const translatedContent = {
@@ -59,10 +57,6 @@ export default function BuyerCustomizePage() {
     mainDescription: 'Bring your ideas to life. Let our AI help you create a unique product.',
     cardTitle: 'Create Your Design',
     cardDescription: 'Describe what you want to create, and our AI will generate it for you.',
-    uploadLabel: 'Upload an image (optional)',
-    uploadHint: 'Click to upload',
-    uploadHint2: 'or drag and drop',
-    uploadHint3: 'SVG, PNG, JPG or GIF',
     promptLabel: 'Design Prompt',
     promptPlaceholder: 'e.g., A ceramic mug with a galaxy pattern, deep blues and purples...',
     styleLabel: 'Style',
@@ -87,18 +81,6 @@ export default function BuyerCustomizePage() {
     },
   });
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-        form.setValue('image', reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
@@ -106,7 +88,6 @@ export default function BuyerCustomizePage() {
       const response = await buyerAiDesignedProducts({
         prompt: values.prompt,
         style: values.style,
-        imageUri: values.image,
       });
       setResult(response);
     } catch (error) {
@@ -145,34 +126,6 @@ export default function BuyerCustomizePage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="image"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>{translatedContent.uploadLabel}</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center justify-center w-full">
-                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-secondary hover:bg-muted">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    {preview ? (
-                                        <Image src={preview} alt="Image preview" width={100} height={100} className="object-contain h-24"/>
-                                    ) : (
-                                        <>
-                                        <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
-                                        <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">{translatedContent.uploadHint}</span> {translatedContent.uploadHint2}</p>
-                                        <p className="text-xs text-muted-foreground">{translatedContent.uploadHint3}</p>
-                                        </>
-                                    )}
-                                </div>
-                                <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*"/>
-                            </label>
-                        </div> 
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="prompt"
