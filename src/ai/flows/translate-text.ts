@@ -40,7 +40,7 @@ ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.prompt('translateTextPrompt')(input);
+    const { output } = await ai.run('translateTextPrompt', input);
     if (!output) {
       throw new Error('Translation failed to produce an output.');
     }
