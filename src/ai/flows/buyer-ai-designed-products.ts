@@ -65,10 +65,25 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
+    let model = 'googleai/imagen-4.0-fast-generate-001';
+    let generationPrompt: any = input.prompt;
+    let config: any = {};
+
+    if (input.imageUri) {
+      model = 'googleai/gemini-2.5-flash-image-preview';
+      generationPrompt = [
+        {media: {url: input.imageUri}},
+        {text: `generate an image of this with the following prompt: ${input.prompt}`},
+      ];
+      config = {
+        responseModalities: ['TEXT', 'IMAGE'],
+      };
+    }
 
     const {media} = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: input.prompt,
+      model: model,
+      prompt: generationPrompt,
+      config: config,
     });
 
     return {
