@@ -6,60 +6,18 @@ import ProductCard from '@/components/product-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
-import { useState, useEffect } from 'react';
+import type { Category } from '@/lib/types';
 
 export default function BuyerHomePage() {
   const trendingProducts = [...products].sort((a, b) => b.likes - a.likes);
-  const { language } = useLanguage();
-  const [categories, setCategories] = useState(baseCategories);
-  const [translatedContent, setTranslatedContent] = useState({
+  const categories: Category[] = baseCategories;
+  const translatedContent = {
     title: 'Discover Handcrafted Wonders',
     description: 'Explore unique creations from artisans around the world.',
     categoriesTitle: 'Categories',
     trendingTitle: 'Trending Now',
     allProductsTitle: 'All Products',
-  });
-
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const categoryNames = baseCategories.map(c => c.name);
-        const textsToTranslate = [
-          'Discover Handcrafted Wonders',
-          'Explore unique creations from artisans around the world.',
-          'Categories',
-          'Trending Now',
-          'All Products',
-          ...categoryNames,
-        ];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        setTranslatedContent({
-          title: translatedTexts[0],
-          description: translatedTexts[1],
-          categoriesTitle: translatedTexts[2],
-          trendingTitle: translatedTexts[3],
-          allProductsTitle: translatedTexts[4],
-        });
-        const translatedCategories = baseCategories.map((cat, index) => ({
-          ...cat,
-          name: translatedTexts[5 + index],
-        }));
-        setCategories(translatedCategories);
-      } else {
-        setCategories(baseCategories);
-        setTranslatedContent({
-          title: 'Discover Handcrafted Wonders',
-          description: 'Explore unique creations from artisans around the world.',
-          categoriesTitle: 'Categories',
-          trendingTitle: 'Trending Now',
-          allProductsTitle: 'All Products',
-        });
-      }
-    };
-    translateContent();
-  }, [language]);
+  };
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-6">

@@ -23,12 +23,10 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MainHeader from './main-header';
 
-const baseNavItems = [
+const navItems = [
   { href: '/sponsor/dashboard', label: 'Home', icon: Home },
   { href: '/sponsor/revenue', label: 'Revenue', icon: DollarSign },
   { href: '/sponsor/profile', label: 'Account', icon: User },
@@ -37,9 +35,6 @@ const baseNavItems = [
 function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     const pathname = usePathname();
     const { toast } = useToast();
-    const { language } = useLanguage();
-    const [navItems, setNavItems] = useState(baseNavItems);
-    const [translatedLogout, setTranslatedLogout] = useState('Logout');
     const router = useRouter();
 
     const handleLinkClick = (href: string) => {
@@ -48,28 +43,6 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
           closeSheet();
         }
     };
-
-
-    useEffect(() => {
-        const translateNav = async () => {
-            if (language !== 'en') {
-                const labels = baseNavItems.map(item => item.label);
-                const { translatedTexts } = await translateText({ texts: [...labels, 'Logout'], targetLanguage: language });
-                
-                const translatedNavItems = baseNavItems.map((item, index) => ({
-                    ...item,
-                    label: translatedTexts[index],
-                }));
-                setNavItems(translatedNavItems);
-                setTranslatedLogout(translatedTexts[labels.length]);
-            } else {
-                setNavItems(baseNavItems);
-                setTranslatedLogout('Logout');
-            }
-        };
-        translateNav();
-    }, [language]);
-
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -113,7 +86,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
                     className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent"
                 >
                     <LogOut className="h-4 w-4" />
-                    {translatedLogout}
+                    Logout
                 </button>
                  <div className="flex justify-center pt-4">
                     <Logo className="h-10 w-10 text-muted-foreground" />

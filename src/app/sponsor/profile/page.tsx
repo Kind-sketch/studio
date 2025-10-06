@@ -12,8 +12,6 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Edit, Save } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -26,7 +24,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { language } = useLanguage();
   
   const [sponsor, setSponsor] = useState({
       name: 'Sponsor Name',
@@ -34,7 +31,7 @@ export default function ProfilePage() {
       phone: '123-456-7890'
   });
 
-  const [translatedContent, setTranslatedContent] = useState({
+  const translatedContent = {
     title: 'My Profile',
     description: 'Manage your sponsor profile details.',
     editProfileButton: 'Edit Profile',
@@ -44,7 +41,7 @@ export default function ProfilePage() {
     saveButton: 'Save Changes',
     profileUpdatedToast: 'Profile Updated',
     profileUpdatedToastDesc: 'Your details have been successfully saved.',
-  });
+  };
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -53,21 +50,6 @@ export default function ProfilePage() {
       phone: '',
     },
   });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
 
   useEffect(() => {
     const storedProfile = localStorage.getItem('sponsorProfile');

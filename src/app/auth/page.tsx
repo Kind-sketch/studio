@@ -11,12 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -29,10 +27,9 @@ export default function AuthPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
-  const { language } = useLanguage();
   const [otpSent, setOtpSent] = useState(false);
 
-  const [translatedContent, setTranslatedContent] = useState({
+  const translatedContent = {
     title: 'Welcome',
     description: 'Join as a Buyer or Sponsor',
     buyerTab: 'Buyer',
@@ -48,22 +45,7 @@ export default function AuthPage() {
     invalidOtpToast: 'Invalid OTP',
     invalidOtpToastDesc: 'The OTP you entered is incorrect.',
     termsAndConditions: 'Terms & Conditions',
-  });
-
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const textsToTranslate = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translateContent();
-  }, [language]);
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -173,5 +155,3 @@ export default function AuthPage() {
     </div>
   );
 }
-
-    

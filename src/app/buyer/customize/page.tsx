@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -35,8 +36,6 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Upload, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
 
 const formSchema = z.object({
   prompt: z.string().min(10, {
@@ -54,9 +53,8 @@ export default function BuyerCustomizePage() {
   } | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const { toast } = useToast();
-  const { language } = useLanguage();
 
-  const [translatedContent, setTranslatedContent] = useState({
+  const translatedContent = {
     mainTitle: 'Design with AI',
     mainDescription: 'Bring your ideas to life. Let our AI help you create a unique product.',
     cardTitle: 'Create Your Design',
@@ -78,62 +76,7 @@ export default function BuyerCustomizePage() {
     placeholderText: 'Your generated design will appear here.',
     errorToast: 'Design Generation Failed',
     errorToastDesc: 'There was an error generating your custom design. Please try again.',
-  });
-
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const textsToTranslate = [
-          'Design with AI',
-          'Bring your ideas to life. Let our AI help you create a unique product.',
-          'Create Your Design',
-          'Describe what you want to create, and our AI will generate it for you.',
-          'Upload an image (optional)',
-          'Click to upload',
-          'or drag and drop',
-          'SVG, PNG, JPG or GIF',
-          'Design Prompt',
-          'e.g., A ceramic mug with a galaxy pattern, deep blues and purples...',
-          'Style',
-          'Select a style',
-          'Realistic', 'Cartoon', 'Watercolor', 'Abstract', 'Minimalist',
-          'Generate Design',
-          'Generating...',
-          'Your AI-Generated Design',
-          'Purchase This Design',
-          'Your design is being created...',
-          'Your generated design will appear here.',
-          'Design Generation Failed',
-          'There was an error generating your custom design. Please try again.',
-        ];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        setTranslatedContent({
-          mainTitle: translatedTexts[0],
-          mainDescription: translatedTexts[1],
-          cardTitle: translatedTexts[2],
-          cardDescription: translatedTexts[3],
-          uploadLabel: translatedTexts[4],
-          uploadHint: translatedTexts[5],
-          uploadHint2: translatedTexts[6],
-          uploadHint3: translatedTexts[7],
-          promptLabel: translatedTexts[8],
-          promptPlaceholder: translatedTexts[9],
-          styleLabel: translatedTexts[10],
-          stylePlaceholder: translatedTexts[11],
-          styles: translatedTexts.slice(12, 17),
-          generateButton: translatedTexts[17],
-          generatingButton: translatedTexts[18],
-          resultTitle: translatedTexts[19],
-          purchaseButton: translatedTexts[20],
-          generatingText: translatedTexts[21],
-          placeholderText: translatedTexts[22],
-          errorToast: translatedTexts[23],
-          errorToastDesc: translatedTexts[24],
-        });
-      }
-    };
-    translateContent();
-  }, [language]);
+  };
 
 
   const form = useForm<z.infer<typeof formSchema>>({

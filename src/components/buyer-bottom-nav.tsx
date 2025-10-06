@@ -1,14 +1,12 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutGrid, Sparkles, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
-import { useEffect, useState } from 'react';
 
-const baseNavItems = [
+const navItems = [
   { href: '/buyer/home', label: 'Home', icon: Home },
   { href: '/buyer/categories', label: 'Categories', icon: LayoutGrid },
   { href: '/buyer/customize', label: 'Customize', icon: Sparkles },
@@ -17,26 +15,6 @@ const baseNavItems = [
 
 export default function BuyerBottomNav() {
   const pathname = usePathname();
-  const { language } = useLanguage();
-  const [navItems, setNavItems] = useState(baseNavItems);
-
-  useEffect(() => {
-    const translateNav = async () => {
-      if (language !== 'en') {
-        const labels = baseNavItems.map(item => item.label);
-        const { translatedTexts } = await translateText({ texts: labels, targetLanguage: language });
-        const translatedNavItems = baseNavItems.map((item, index) => ({
-          ...item,
-          label: translatedTexts[index],
-        }));
-        setNavItems(translatedNavItems);
-      } else {
-        setNavItems(baseNavItems);
-      }
-    };
-    translateNav();
-  }, [language]);
-
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-card md:hidden">

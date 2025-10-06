@@ -6,22 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, Artisan } from "@/lib/types";
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ProductCard from "@/components/product-card";
+import type { Product, Artisan, Category } from "@/lib/types";
+import { useState } from 'react';
 import Link from "next/link";
 
 export default function SponsorDashboardPage() {
   const { toast } = useToast();
-  const { language } = useLanguage();
-  const [categories, setCategories] = useState(baseCategories);
-  const [selectedArtisan, setSelectedArtisan] = useState<Artisan | null>(null);
-
-  const [translatedContent, setTranslatedContent] = useState({
+  const categories: Category[] = baseCategories;
+  
+  const translatedContent = {
     title: 'Welcome, Sponsor!',
     description: "Invest in culture, empower creators, and share in the success of India's finest artisans.",
     discoverTitle: 'Discover Artisans to Sponsor',
@@ -29,54 +22,10 @@ export default function SponsorDashboardPage() {
     by: 'by',
     specializesIn: 'specializes in',
     supportCraft: 'Support their craft to see more creations like this.',
-    sponsorButton: 'Sponsor Artisan',
     toastTitle: 'Sponsorship Sent!',
     toastDescription: 'Your request to sponsor {artisanName} has been sent.',
-    artisanDetailsTitle: 'Artisan Details',
-    otherProducts: "Other products by this artisan"
-  });
+  };
 
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const categoryNames = baseCategories.map(c => c.name);
-        const textsToTranslate = [
-            ...Object.values(translatedContent),
-            ...categoryNames
-        ];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-        
-        const translatedCategories = baseCategories.map((cat, index) => ({
-          ...cat,
-          name: translatedTexts[Object.keys(translatedContent).length + index]
-        }));
-        setCategories(translatedCategories);
-
-      } else {
-        setCategories(baseCategories);
-      }
-    };
-    translateContent();
-  }, [language]);
-
-  const handleSponsor = (artisanName: string) => {
-    const description = translatedContent.toastDescription.replace('{artisanName}', artisanName);
-    toast({
-      title: translatedContent.toastTitle,
-      description: description,
-    });
-  }
-
-  const allProductsByArtisan = (artisanId: string) => {
-    return products.filter(p => p.artisan.id === artisanId);
-  }
-  
   const productsByCategory = (categoryName: string) => {
     return products.filter(p => p.category === categoryName);
   }
@@ -91,13 +40,13 @@ export default function SponsorDashboardPage() {
       <section className="my-10">
         <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
         <div className="space-y-8">
-          {baseCategories.map((category, index) => {
+          {categories.map((category) => {
             const categoryProducts = productsByCategory(category.name);
             if (categoryProducts.length === 0) return null;
 
             return (
               <div key={category.id}>
-                <h3 className="font-headline text-xl font-semibold mb-4">{categories[index]?.name || category.name}</h3>
+                <h3 className="font-headline text-xl font-semibold mb-4">{category.name}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryProducts.map(product => (
                     <Card key={product.id} className="overflow-hidden group">

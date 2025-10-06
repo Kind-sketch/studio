@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,9 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { products } from "@/lib/data";
 import Image from "next/image";
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/ai/flows/translate-text';
-import { useState, useEffect } from 'react';
 
 // Mock data for sponsored products and revenue
 const myRevenueData = [
@@ -35,8 +33,7 @@ const sharedRevenueData = [
 ];
 
 export default function RevenuePage() {
-    const { language } = useLanguage();
-    const [translatedContent, setTranslatedContent] = useState({
+    const translatedContent = {
         mainTitle: 'Revenue Generated',
         mainDescription: 'Track your sponsorship returns.',
         myRevenueTitle: 'My Revenue',
@@ -49,37 +46,7 @@ export default function RevenuePage() {
         artisanHeader: 'Artisan',
         artisanShareHeader: "Artisan's Share",
         sharedAmountHeader: 'Shared Amount',
-    });
-    
-    useEffect(() => {
-        const translateContent = async () => {
-            if (language !== 'en') {
-                const textsToTranslate = [
-                    'Revenue Generated', 'Track your sponsorship returns.', 'My Revenue',
-                    'Direct revenue generated for you from sponsored products.', 'Product', 'Name', 'Revenue',
-                    'Shared Revenue', 'Profit shared with artisans from successful sales.', 'Artisan',
-                    "Artisan's Share", 'Shared Amount',
-                ];
-                const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-                setTranslatedContent({
-                    mainTitle: translatedTexts[0],
-                    mainDescription: translatedTexts[1],
-                    myRevenueTitle: translatedTexts[2],
-                    myRevenueDescription: translatedTexts[3],
-                    productHeader: translatedTexts[4],
-                    nameHeader: translatedTexts[5],
-                    revenueHeader: translatedTexts[6],
-                    sharedRevenueTitle: translatedTexts[7],
-                    sharedRevenueDescription: translatedTexts[8],
-                    artisanHeader: translatedTexts[9],
-                    artisanShareHeader: translatedTexts[10],
-                    sharedAmountHeader: translatedTexts[11],
-                });
-            }
-        };
-        translateContent();
-    }, [language]);
-
+    };
 
   return (
     <div className="container mx-auto p-4">
