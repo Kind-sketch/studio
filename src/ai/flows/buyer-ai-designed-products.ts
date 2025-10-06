@@ -62,7 +62,7 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
         const {output: descriptionOutput} = await prompt(input);
         
         const model = 'googleai/gemini-2.5-flash-image-preview';
-        let generationPrompt = [{text: `${input.prompt}, in the style of ${input.style}`}];
+        let generationPrompt = [{text: `Generate an image of a craft poto. The design should be: ${input.prompt}, in the style of ${input.style}`}];
         
         const {media} = await ai.generate({
           model: model,
