@@ -19,7 +19,7 @@ const translateTextPrompt = ai.definePrompt({
     name: 'translateTextPrompt',
     input: { schema: TranslateTextInputSchema },
     output: { schema: TranslateTextOutputSchema },
-    prompt: `Translate the following array of JSON strings from English to the language with code '{{targetLanguage}}'. 
+    prompt: `Translate the following array of strings from their original language to the target language with code '{{targetLanguage}}'. 
     
     Return a JSON object with a single key "translatedTexts" that contains an array of the translated strings. The order of the translated strings in the array must exactly match the order of the original strings.
     
@@ -30,22 +30,10 @@ const translateTextPrompt = ai.definePrompt({
     `,
 });
 
-const translateTextFlow = ai.defineFlow(
-  {
-    name: 'translateTextFlow',
-    inputSchema: TranslateTextInputSchema,
-    outputSchema: TranslateTextOutputSchema,
-  },
-  async (input) => {
+export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
     const { output } = await translateTextPrompt(input);
     if (!output) {
       throw new Error('Translation failed to produce an output.');
     }
     return output;
-  }
-);
-
-
-export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
-    return translateTextFlow(input);
 }

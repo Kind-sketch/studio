@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview A service for translating text, with caching and rate-limiting.
+ * @fileOverview A service for translating text, with caching.
  *
  * - translateText - A function that handles text translation.
  * - TranslateTextInput - The input type for the translateText function.
@@ -14,85 +14,48 @@ import type { TranslateTextInput, TranslateTextOutput } from '@/ai/flows/transla
 // In-memory cache for translations to reduce API calls
 const translationCache = new Map<string, string[]>();
 
-// Queueing and rate-limiting state
-const translationQueue: {
-  input: TranslateTextInput;
-  resolve: (value: TranslateTextOutput) => void;
-  reject: (reason?: any) => void;
-}[] = [];
-let isProcessing = false;
-let isCoolingDown = false;
-const COOL_DOWN_PERIOD = 60000; // 60 seconds
-
-async function processQueue() {
-  if (isProcessing || translationQueue.length === 0 || isCoolingDown) {
-    return;
-  }
-  isProcessing = true;
-
-  const { input, resolve, reject } = translationQueue.shift()!;
-  
-  try {
-    const result = await performTranslation(input);
-    resolve(result);
-  } catch (error) {
-    console.error("Translation failed, re-queueing after cool-down:", error);
-    // Put it back at the front of the queue to be retried.
-    translationQueue.unshift({ input, resolve, reject });
-    
-    // Check if it's a rate limit error to trigger cool-down
-    if (error instanceof Error && (error.message.includes('429') || error.message.includes('rate limit'))) {
-        console.log(`Rate limit detected. Cooling down for ${COOL_DOWN_PERIOD / 1000} seconds.`);
-        isCoolingDown = true;
-        setTimeout(() => {
-            isCoolingDown = false;
-            processQueue(); // Resume processing after cool-down
-        }, COOL_DOWN_PERIOD);
-    }
-  } finally {
-    isProcessing = false;
-    // Process next item if not cooling down
-    if (!isCoolingDown) {
-      setTimeout(processQueue, 1000); // Process next item after a short delay
-    }
-  }
-}
-
-async function performTranslation(input: TranslateTextInput): Promise<TranslateTextOutput> {
+export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
     const { texts, targetLanguage } = input;
-    
-    if (targetLanguage === 'en') {
-      return { translatedTexts: texts };
+
+    if (targetLanguage === 'en' || !texts || texts.length === 0) {
+      return { translatedTexts: texts || [] };
     }
     
-    const cacheKey = `${targetLanguage}:${texts.join('||')}`;
+    // Filter out any empty or non-string values to avoid sending invalid data
+    const validTexts = texts.filter(t => typeof t === 'string' && t.trim() !== '');
+    if (validTexts.length === 0) {
+        return { translatedTexts: texts };
+    }
+
+    const cacheKey = `${targetLanguage}:${validTexts.join('||')}`;
     if (translationCache.has(cacheKey)) {
-      const cachedTranslations = translationCache.get(cacheKey);
-      if (cachedTranslations) {
-        return { translatedTexts: cachedTranslations };
-      }
+        const cachedTranslations = translationCache.get(cacheKey)!;
+        // Re-map the translated texts to the original array structure
+        const result = texts.map(originalText => {
+            const index = validTexts.indexOf(originalText);
+            return index !== -1 ? cachedTranslations[index] : originalText;
+        });
+        return { translatedTexts: result };
     }
 
     try {
-        const result = await translateTextFlow(input);
+        const result = await translateTextFlow({ texts: validTexts, targetLanguage });
         
-        if (result?.translatedTexts && result.translatedTexts.length === texts.length) {
+        if (result?.translatedTexts && result.translatedTexts.length === validTexts.length) {
             translationCache.set(cacheKey, result.translatedTexts);
-            return { translatedTexts: result.translatedTexts };
+             // Re-map the translated texts to the original array structure
+            const finalResult = texts.map(originalText => {
+                const index = validTexts.indexOf(originalText);
+                return index !== -1 ? result.translatedTexts[index] : originalText;
+            });
+            return { translatedTexts: finalResult };
         } else {
             console.warn("Translation returned incorrect number of items, returning original texts.");
             return { translatedTexts: texts };
         }
     } catch (error: any) {
         console.error("Generative AI translation failed:", error);
-        // Re-throw to be caught by the queue processor
-        throw error;
+        // In case of an error, return the original texts to prevent UI breakage
+        return { translatedTexts: texts };
     }
-}
-
-export async function translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
-    return new Promise((resolve, reject) => {
-        translationQueue.push({ input, resolve, reject });
-        processQueue();
-    });
 }
