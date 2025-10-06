@@ -4,7 +4,7 @@
  * @fileOverview An AI flow that allows buyers to design custom products using AI.
  *
  * - buyerAiDesignedProducts - A function that handles the product design process.
- * - BuyerAiDesignedProductsInput - The input type for the buyerAiDesignedProducts function.
+ * - BuyerAiDesignedProductsInput - The input type for the buyerAidesignedProducts function.
  * - BuyerAiDesignedProductsOutput - The return type for the buyerAiDesignedProducts function.
  */
 
@@ -62,7 +62,10 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
         const {output: descriptionOutput} = await prompt(input);
         
         const model = 'googleai/gemini-2.5-flash-image-preview';
-        let generationPrompt = [{text: `Generate an image of a craft poto. The design should be: ${input.prompt}, in the style of ${input.style}`}];
+        let generationPrompt = [{text: `You are an expert artisan AI. Generate an image of a handmade craft product that is an exact representation of the following description. The product should belong to a craft category like textiles, pottery, metalwork, sculpture, paintings, or glass paintings.
+
+User Description: "${input.prompt}"
+Style: "${input.style}"`}];
         
         const {media} = await ai.generate({
           model: model,
