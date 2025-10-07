@@ -143,7 +143,7 @@ export default function ArtisanHomePage() {
           <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
               <CarouselContent>
               {myProducts.map((product) => (
-                  <CarouselItem key={product.id} className="basis-1/3 md:basis-1/4 lg:basis-1/5">
+                  <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/3">
                     <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
                   </CarouselItem>
               ))}

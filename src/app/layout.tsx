@@ -43,7 +43,7 @@ export default function RootLayout({
         <LanguageProvider>
           <TranslationProvider>
             <div className="flex items-center justify-center min-h-screen w-full bg-zinc-200 dark:bg-zinc-800">
-                <div className="relative w-full max-w-[420px] h-screen bg-background shadow-2xl overflow-y-auto">
+                <div className="relative w-full max-w-[420px] h-screen max-h-[844px] sm:max-h-[920px] bg-background shadow-2xl overflow-y-auto">
                     {children}
                     {isClient && <Toaster />}
                 </div>
