@@ -608,7 +608,7 @@ export const translations = {
         title: "உங்கள் பதிவை முடிக்கவும்",
         description: "உங்கள் கணக்கைப் பாதுகாக்க ஒரு மீட்பு எண்ணை உள்ளிட்டு இரண்டு எண்களையும் சரிபார்க்கவும்.",
         primaryNumberLabel: "முதன்மை எண்",
-        primaryOtpLabel: "முதன்மை எண்ணுக்கான OTP",
+        primaryOtpLabel: "OTP for Primary Number",
         otpPlaceholder: "5-இலக்க OTP ஐ உள்ளிடவும்",
         recoveryNumberLabel: "மீட்பு மொபைல் எண்",
         recoveryNumberPlaceholder: "10-இலக்க மீட்பு எண்",
@@ -856,5 +856,3 @@ export const translations = {
     ],
   },
 };
-
-    
