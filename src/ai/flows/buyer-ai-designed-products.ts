@@ -59,12 +59,15 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
     try {
         const {output: descriptionOutput} = await descriptionPrompt(input);
         
-        const model = 'googleai/imagen-4.0-fast-generate-001';
+        const model = 'googleai/gemini-2.5-flash-image-preview';
         let generationPrompt = `Generate an image of a craft based on textiles, pottery, metalwork, sculpture, paintings, or glass paintings. The design should be an exact representation of the following description: "${input.prompt}", in the style of "${input.style}"`;
         
         const {media} = await ai.generate({
           model: model,
           prompt: generationPrompt,
+          config: {
+            responseModalities: ['IMAGE', 'TEXT'],
+          },
         });
 
         if (!media?.url) {
