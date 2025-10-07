@@ -25,7 +25,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import ProductCard from '@/components/product-card';
 import { useTranslation } from '@/context/translation-context';
-import { translations } from '@/lib/translations';
+import { useLanguage } from '@/context/language-context';
 
 
 const formSchema = z.object({
@@ -40,6 +40,7 @@ export default function AddProductPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.add_product_page;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -150,7 +151,10 @@ export default function AddProductPage() {
     }
     setIsGenerating(true);
     try {
-      const result = await generateProductDetails({ photoDataUri: imageData });
+      const result = await generateProductDetails({ 
+        photoDataUri: imageData,
+        targetLanguage: language,
+      });
       
       form.setValue('productName', result.productName);
       form.setValue('productDescription', result.productDescription);
@@ -260,7 +264,7 @@ export default function AddProductPage() {
 
   return (
     <div className="p-4">
-      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
+      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
         <ChevronLeft className="h-6 w-6" />
       </Button>
       <Card className="w-full max-w-xl mx-auto shadow-lg">
@@ -412,5 +416,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    

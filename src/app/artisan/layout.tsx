@@ -15,7 +15,7 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth', '/artisan/register-recovery', '/artisan/add-product'];
+  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth', '/artisan/register-recovery'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   if (noSidebarRoutes.includes(pathname)) {
@@ -54,10 +54,10 @@ export default function ArtisanLayout({
            <Link href="/artisan/add-product" passHref>
               <Button
                 size="icon"
-                className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-red-600 text-white shadow-lg transition-transform hover:scale-110 hover:bg-red-700"
+                className="fixed bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
                 aria-label="Add New Product"
               >
-                <Plus className="h-7 w-7" />
+                <Plus className="h-8 w-8" />
               </Button>
             </Link>
         </main>

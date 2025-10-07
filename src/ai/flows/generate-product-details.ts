@@ -10,6 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { productCategories } from '@/lib/data';
+import { translateText } from '@/services/translation-service';
 
 const GenerateProductDetailsInputSchema = z.object({
   photoDataUri: z
@@ -17,6 +18,7 @@ const GenerateProductDetailsInputSchema = z.object({
     .describe(
       "A photo of the product, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  targetLanguage: z.string().optional().describe('The optional language to translate the output to.'),
 });
 export type GenerateProductDetailsInput = z.infer<typeof GenerateProductDetailsInputSchema>;
 
@@ -34,7 +36,7 @@ export async function generateProductDetails(input: GenerateProductDetailsInput)
 
 const prompt = ai.definePrompt({
   name: 'generateProductDetailsPrompt',
-  input: {schema: GenerateProductDetailsInputSchema},
+  input: {schema: z.object({ photoDataUri: GenerateProductDetailsInputSchema.shape.photoDataUri })},
   output: {schema: GenerateProductDetailsOutputSchema},
   prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details: a product name, a product category, a product story, and a product description.
 
@@ -53,8 +55,36 @@ const generateProductDetailsFlow = ai.defineFlow(
     inputSchema: GenerateProductDetailsInputSchema,
     outputSchema: GenerateProductDetailsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async ({ photoDataUri, targetLanguage }) => {
+    const {output} = await prompt({ photoDataUri });
+    if (!output) {
+      throw new Error("Failed to generate product details from the AI model.");
+    }
+    
+    // If a target language is provided and it's not English, translate the text fields.
+    if (targetLanguage && targetLanguage !== 'en') {
+      const textsToTranslate = [
+        output.productName,
+        output.productStory,
+        output.productDescription,
+      ];
+      
+      const { translatedTexts } = await translateText({
+        texts: textsToTranslate,
+        targetLanguage,
+      });
+
+      if (translatedTexts.length === 3) {
+        return {
+          productName: translatedTexts[0],
+          productCategory: output.productCategory,
+          productStory: translatedTexts[1],
+          productDescription: translatedTexts[2],
+        };
+      }
+    }
+
+    // Return the original English output if no translation is needed or if translation fails.
+    return output;
   }
 );
