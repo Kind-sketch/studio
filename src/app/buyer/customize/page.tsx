@@ -17,8 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Send } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please describe your idea in at least 10 characters.'),
@@ -27,56 +26,14 @@ const formSchema = z.object({
 
 export default function CustomizePage() {
   const { toast } = useToast();
+  const { translations, isTranslating } = useTranslation();
+  const t = translations.customize_page;
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const { language } = useLanguage();
-  const [productCategories, setProductCategories] = useState(baseProductCategories);
   
   const defaultImage = PlaceHolderImages.find(p => p.id === 'product-5');
-
-  const [translatedContent, setTranslatedContent] = useState({
-      title: 'Design Your Own Craft',
-      description: "Describe your idea, and our AI will visualize it. Then, we'll connect you with a skilled artisan.",
-      productDescriptionLabel: 'Product Description',
-      productDescriptionPlaceholder: "e.g., 'A ceramic mug with a mountain landscape and a starry night sky glaze...'",
-      craftCategoryLabel: 'Craft Category',
-      selectCategoryPlaceholder: 'Select a category...',
-      generateImageButton: 'Generate Image with AI',
-      generatingImageButton: 'Generating Image...',
-      missingInfoToast: 'Missing Information',
-      missingInfoDesc: 'Please provide a description and select a category.',
-      imageGeneratedToast: 'Image Generated!',
-      imageGeneratedDesc: 'Here is a visualization of your idea.',
-      generationFailedToast: 'Generation Failed',
-      generationFailedDesc: 'The AI is busy right now. Please try again later. Here is a placeholder image.',
-      noImageToast: 'No Image',
-      noImageDesc: 'Please generate an image before submitting.',
-      requestSentToast: 'Request Sent!',
-      requestSentDesc: 'An artisan from the selected category has been notified of your request.',
-      sendRequestButton: 'Send Request to Artisan',
-      sendingRequestButton: 'Sending Request',
-      imagePlaceholder: 'Your AI-generated image will appear here',
-  });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: [...values, ...baseProductCategories], targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-        setProductCategories(translatedTexts.slice(values.length));
-      } else {
-        setProductCategories(baseProductCategories);
-      }
-    };
-    translate();
-  }, [language]);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -91,8 +48,8 @@ export default function CustomizePage() {
     if (!description || !category) {
         toast({
             variant: 'destructive',
-            title: translatedContent.missingInfoToast,
-            description: translatedContent.missingInfoDesc,
+            title: t.missingInfoToast,
+            description: t.missingInfoDesc,
         });
         return;
     }
@@ -106,16 +63,16 @@ export default function CustomizePage() {
       });
       setGeneratedImage(imageUrl);
       toast({
-        title: translatedContent.imageGeneratedToast,
-        description: translatedContent.imageGeneratedDesc,
+        title: t.imageGeneratedToast,
+        description: t.imageGeneratedDesc,
       });
     } catch (error) {
       console.error(error);
       setGeneratedImage(defaultImage?.imageUrl || '');
       toast({
         variant: 'destructive',
-        title: translatedContent.generationFailedToast,
-        description: translatedContent.generationFailedDesc,
+        title: t.generationFailedToast,
+        description: t.generationFailedDesc,
       });
     } finally {
       setIsGenerating(false);
@@ -126,8 +83,8 @@ export default function CustomizePage() {
     if (!generatedImage) {
         toast({
             variant: 'destructive',
-            title: translatedContent.noImageToast,
-            description: translatedContent.noImageDesc,
+            title: t.noImageToast,
+            description: t.noImageDesc,
         });
         return;
     }
@@ -139,20 +96,28 @@ export default function CustomizePage() {
     setTimeout(() => {
         setIsSubmitting(false);
         toast({
-            title: translatedContent.requestSentToast,
-            description: translatedContent.requestSentDesc,
+            title: t.requestSentToast,
+            description: t.requestSentDesc,
         });
         form.reset();
         setGeneratedImage(null);
     }, 1500);
   }
 
+  const getCategoryDisplayValue = (value: string) => {
+    const index = baseProductCategories.findIndex(c => c === value);
+    if (index !== -1 && translations.product_categories.length > index) {
+      return translations.product_categories[index];
+    }
+    return value;
+  };
+
   return (
     <div className="container mx-auto p-4 max-w-2xl">
       <Card className="w-full shadow-lg">
         <CardHeader>
-            <CardTitle className="font-headline text-2xl md:text-3xl">{translatedContent.title}</CardTitle>
-            <CardDescription>{translatedContent.description}</CardDescription>
+            <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>
+            <CardDescription>{t.description}</CardDescription>
         </CardHeader>
         
         <Form {...form}>
@@ -160,11 +125,11 @@ export default function CustomizePage() {
             <CardContent className="space-y-6">
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
+                  <FormLabel>{t.productDescriptionLabel}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder={translatedContent.productDescriptionPlaceholder}
+                      placeholder={t.productDescriptionPlaceholder}
                       className="h-32"
                     />
                   </FormControl>
@@ -173,17 +138,19 @@ export default function CustomizePage() {
               )}/>
                <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.craftCategoryLabel}</FormLabel>
+                  <FormLabel>{t.craftCategoryLabel}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder={translatedContent.selectCategoryPlaceholder}/>
+                            <SelectValue placeholder={t.selectCategoryPlaceholder}>
+                                {getCategoryDisplayValue(field.value)}
+                            </SelectValue>
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                         {baseProductCategories.map((cat, index) => (
                             <SelectItem key={cat} value={cat}>
-                                {productCategories[index] || cat}
+                                {translations.product_categories[index] || cat}
                             </SelectItem>
                         ))}
                         </SelectContent>
@@ -193,7 +160,7 @@ export default function CustomizePage() {
               )}/>
 
               <Button type="button" onClick={handleGenerateImage} disabled={isGenerating} className="w-full">
-                  {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{translatedContent.generatingImageButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{translatedContent.generateImageButton}</>}
+                  {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.generatingImageButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.generateImageButton}</>}
               </Button>
 
               <div className="relative flex flex-col items-center justify-center w-full aspect-square border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
@@ -204,7 +171,7 @@ export default function CustomizePage() {
                 ) : (
                     <div className="flex flex-col items-center justify-center text-muted-foreground text-center p-4">
                         <Sparkles className="w-8 h-8 mb-2" />
-                        <p className="text-sm font-semibold">{translatedContent.imagePlaceholder}</p>
+                        <p className="text-sm font-semibold">{t.imagePlaceholder}</p>
                     </div>
                 )}
               </div>
@@ -212,7 +179,7 @@ export default function CustomizePage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isSubmitting || !generatedImage}>
-                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{translatedContent.sendingRequestButton}</> : <><Send className="mr-2 h-4 w-4" />{translatedContent.sendRequestButton}</>}
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.sendingRequestButton}</> : <><Send className="mr-2 h-4 w-4" />{t.sendRequestButton}</>}
               </Button>
             </CardFooter>
           </form>
