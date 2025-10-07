@@ -17,13 +17,8 @@ export default function BuyerHeader() {
           className="pl-8"
         />
       </div>
-      <Link href="/buyer/customize" passHref>
-        <Button variant="outline" size="sm">
-          <Sparkles className="mr-2 h-4 w-4" />
-          Customize
-        </Button>
-      </Link>
     </header>
   );
 }
+
 

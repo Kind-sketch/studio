@@ -14,7 +14,6 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 import '@/ai/flows/community-trend-insights.ts';
-import '@/ai/flows/buyer-ai-designed-products.ts';
 import '@/ai/flows/generate-product-details.ts';
 import '@/ai/flows/translate-text.ts';
 import '@/ai/flows/text-to-speech.ts';
