@@ -3,7 +3,6 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useLanguage } from './language-context';
-import { translateText } from '@/services/translation-service';
 import { translations as allTranslations } from '@/lib/translations';
 
 type Translations = typeof allTranslations.en;
