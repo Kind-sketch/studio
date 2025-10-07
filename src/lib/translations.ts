@@ -856,5 +856,3 @@ export const translations = {
     ],
   },
 };
-
-    
