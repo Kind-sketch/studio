@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow that generates custom product images for buyers.
@@ -5,7 +6,6 @@
 
 import { ai } from '@/ai/genkit';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { z } from 'genkit';
 import { 
     type BuyerAiDesignedProductsInput, 
     type BuyerAiDesignedProductsOutput,
@@ -19,10 +19,10 @@ const generateProductImage = ai.defineFlow(
     inputSchema: BuyerAiDesignedProductsInputSchema,
     outputSchema: BuyerAiDesignedProductsOutputSchema,
   },
-  async ({ prompt, style }) => {
+  async ({ prompt: userInput, style }) => {
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
+      prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${userInput}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
     });
 
     if (!media?.url) {
