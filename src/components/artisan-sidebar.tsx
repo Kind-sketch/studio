@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -90,6 +89,23 @@ export function HeaderActions() {
         '/artisan/orders': ['orders', 'requests', 'shipments', 'manage orders'],
         '/artisan/sponsors': ['sponsors', 'sponsorships', 'partners', 'supporters'],
         '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
+    };
+
+    const handleVoiceCommand = (command: string): boolean => {
+        for (const path in navKeywords) {
+            if (navKeywords[path].some(keyword => command.includes(keyword))) {
+                router.push(path);
+                 if (toastIdRef.current) {
+                    toast({
+                        id: toastIdRef.current,
+                        title: 'Navigating...',
+                        description: `Taking you to the requested page.`,
+                    });
+                }
+                return true;
+            }
+        }
+        return false;
     };
 
     useEffect(() => {
@@ -200,23 +216,6 @@ export function HeaderActions() {
         }
     };
 
-    const handleVoiceCommand = (command: string): boolean => {
-        for (const path in navKeywords) {
-            if (navKeywords[path].some(keyword => command.includes(keyword))) {
-                router.push(path);
-                 if (toastIdRef.current) {
-                    toast({
-                        id: toastIdRef.current,
-                        title: 'Navigating...',
-                        description: `Taking you to the requested page.`,
-                    });
-                }
-                return true;
-            }
-        }
-        return false;
-    };
-
     return (
         <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
@@ -280,16 +279,16 @@ interface ArtisanSidebarProps {
 
 export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
     const { toast } = useToast();
     const { translations } = useTranslation();
-    const router = useRouter();
     const t = translations.artisan_sidebar;
-
+    
     const handleLinkClick = (href: string) => {
+        router.push(href);
         if (closeSheet) {
           closeSheet();
         }
-        router.push(href);
     };
 
     const handleLogout = (e: React.MouseEvent) => {
@@ -317,10 +316,10 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     return (
         <div className="flex h-full max-h-screen flex-col bg-sidebar text-sidebar-foreground">
             <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4 lg:h-[60px]">
-                <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
+                <button onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-6 w-6 text-primary lg:h-8 lg:w-8" />
                     <span className="font-headline text-lg lg:text-xl">Artistry Havens</span>
-                </Link>
+                </button>
                  {closeSheet && (
                     <button onClick={closeSheet} className="ml-auto rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
                         <X className="h-4 w-4" />
@@ -399,5 +398,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    
