@@ -41,11 +41,11 @@ import { useTranslation } from '@/context/translation-context';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', icon: Home },
-  { href: '/artisan/dashboard', icon: DollarSign },
-  { href: '/artisan/my-products', icon: ShoppingBag },
-  { href: '/artisan/stats', icon: BarChart3 },
-  { href: '/artisan/profile', icon: User },
+  { href: '/artisan/home', icon: Home, label: 'Home' },
+  { href: '/artisan/dashboard', icon: DollarSign, label: 'Revenue' },
+  { href: '/artisan/my-products', icon: ShoppingBag, label: 'My Products' },
+  { href: '/artisan/stats', icon: BarChart3, label: 'Statistics' },
+  { href: '/artisan/profile', icon: User, label: 'My Profile' },
 ];
 
 interface Notification {
@@ -282,7 +282,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const pathname = usePathname();
     const { toast } = useToast();
     const { translations } = useTranslation();
-    const t = translations.artisan_sidebar;
     const router = useRouter();
 
     const handleLinkClick = (href: string) => {
@@ -291,6 +290,8 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         }
         router.push(href);
     };
+
+    const t = translations.artisan_sidebar;
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
