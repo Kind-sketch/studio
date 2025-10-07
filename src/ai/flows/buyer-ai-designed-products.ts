@@ -25,7 +25,7 @@ const generateProductImage = ai.defineFlow(
       model: 'googleai/gemini-2.5-flash-image-preview',
       prompt: `Generate a single, photorealistic image of a handmade artisan craft based on the following description. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
       config: {
-        responseModalities: ['IMAGE'],
+        responseModalities: ['IMAGE', 'TEXT'],
       },
     });
 
