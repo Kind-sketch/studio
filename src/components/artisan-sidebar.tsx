@@ -283,6 +283,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { toast } = useToast();
     const { translations } = useTranslation();
     const router = useRouter();
+    const t = translations.artisan_sidebar;
 
     const handleLinkClick = (href: string) => {
         if (closeSheet) {
@@ -290,8 +291,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         }
         router.push(href);
     };
-
-    const t = translations.artisan_sidebar;
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
