@@ -55,7 +55,7 @@ export default function CustomizePage() {
     try {
       const result = await buyerAiDesignedProducts({
         prompt: description,
-        style: category, // Using category as style for simplicity
+        style: category,
       });
       setGeneratedImage(result.imageUrl);
       toast({
