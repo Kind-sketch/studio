@@ -347,12 +347,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
             </div>
             <div className="flex-1 overflow-y-auto">
                 <nav className="flex h-full flex-col p-4">
-                    <div className="flex-1">
-                        <Button onClick={() => handleLinkClick('/artisan/add-product')} className="w-full mb-6">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Add New Product
-                        </Button>
-                        
+                    <div className="flex-1 space-y-6">
                         <div className="mb-4">
                             <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">Studio</h3>
                             <ul className="space-y-1 mt-2">
@@ -417,5 +412,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    

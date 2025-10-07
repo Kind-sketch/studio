@@ -4,9 +4,10 @@
 import ArtisanSidebar, { HeaderActions } from '@/components/artisan-sidebar';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { PanelLeft } from 'lucide-react';
+import { PanelLeft, Plus } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ArtisanLayout({
   children,
@@ -14,7 +15,7 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth', '/artisan/register-recovery'];
+  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth', '/artisan/register-recovery', '/artisan/add-product'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   if (noSidebarRoutes.includes(pathname)) {
@@ -48,8 +49,17 @@ export default function ArtisanLayout({
           </div>
           <HeaderActions />
         </header>
-        <main className="flex-1 overflow-y-auto bg-muted/40">
+        <main className="flex-1 overflow-y-auto bg-muted/40 relative">
           {children}
+           <Link href="/artisan/add-product" passHref>
+              <Button
+                size="icon"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-red-600 text-white shadow-lg transition-transform hover:scale-110 hover:bg-red-700"
+                aria-label="Add New Product"
+              >
+                <Plus className="h-7 w-7" />
+              </Button>
+            </Link>
         </main>
       </div>
     </div>
