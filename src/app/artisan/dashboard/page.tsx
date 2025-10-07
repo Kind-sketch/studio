@@ -9,9 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { products } from "@/lib/data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { useLanguage } from "@/context/language-context";
-import { translateText } from "@/services/translation-service";
-import { useState, useEffect } from 'react';
+import { useTranslation } from "@/context/translation-context";
 
 const sponsoredProducts = [
   {
@@ -30,46 +28,14 @@ const sponsoredProducts = [
 
 
 export default function ArtisanDashboard() {
-  const { language } = useLanguage();
-  const [translatedContent, setTranslatedContent] = useState({
-    welcome: 'Welcome back, Artisan!',
-    snapshot: "Here's a snapshot of your creative haven.",
-    revenue: 'Your Revenue',
-    fromLastMonth: '+20.1% from last month',
-    sharedWithSponsors: 'Shared with Sponsors',
-    fromSponsorships: 'From 2 active sponsorships',
-    totalSales: 'Total Sales',
-    totalSalesStat: '+180.1% from last month',
-    totalLikes: 'Total Likes',
-    totalLikesStat: '+19% from last month',
-    sharedTableTitle: 'Shared with Sponsors',
-    sharedTableDescription: 'Revenue shared with sponsors from your successful sales.',
-    productHeader: 'Product',
-    sponsorHeader: 'Sponsor',
-    sponsorShareHeader: "Sponsor's Share",
-    sharedAmountHeader: 'Shared Amount',
-  });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
+  const { translations } = useTranslation();
+  const t = translations.artisan_dashboard;
   
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.welcome}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.snapshot}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.welcome}</h1>
+        <p className="text-sm text-muted-foreground">{t.snapshot}</p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
@@ -83,24 +49,24 @@ export default function ArtisanDashboard() {
                 <CarouselItem>
                     <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{translatedContent.revenue}</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t.revenue}</CardTitle>
                         <HandCoins className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">₹3,731.89</div>
-                        <p className="text-xs text-muted-foreground">{translatedContent.fromLastMonth}</p>
+                        <p className="text-xs text-muted-foreground">{t.fromLastMonth}</p>
                     </CardContent>
                     </Card>
                 </CarouselItem>
                 <CarouselItem>
                     <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{translatedContent.sharedWithSponsors}</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t.sharedWithSponsors}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">₹165.00</div>
-                        <p className="text-xs text-muted-foreground">{translatedContent.fromSponsorships}</p>
+                        <p className="text-xs text-muted-foreground">{t.fromSponsorships}</p>
                     </CardContent>
                     </Card>
                 </CarouselItem>
@@ -112,41 +78,41 @@ export default function ArtisanDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{translatedContent.totalSales}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.totalSales}</CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+235</div>
-            <p className="text-xs text-muted-foreground">{translatedContent.totalSalesStat}</p>
+            <p className="text-xs text-muted-foreground">{t.totalSalesStat}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{translatedContent.totalLikes}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.totalLikes}</CardTitle>
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-muted-foreground">{translatedContent.totalLikesStat}</p>
+            <p className="text-xs text-muted-foreground">{t.totalLikesStat}</p>
           </CardContent>
         </Card>
       </div>
 
        <Card>
           <CardHeader>
-            <CardTitle>{translatedContent.sharedTableTitle}</CardTitle>
+            <CardTitle>{t.sharedTableTitle}</CardTitle>
             <CardDescription>
-             {translatedContent.sharedTableDescription}
+             {t.sharedTableDescription}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
-                  <TableHead>{translatedContent.sponsorHeader}</TableHead>
-                  <TableHead>{translatedContent.sponsorShareHeader}</TableHead>
-                  <TableHead className="text-right">{translatedContent.sharedAmountHeader}</TableHead>
+                  <TableHead className="w-[80px] sm:w-[100px]">{t.productHeader}</TableHead>
+                  <TableHead>{t.sponsorHeader}</TableHead>
+                  <TableHead>{t.sponsorShareHeader}</TableHead>
+                  <TableHead className="text-right">{t.sharedAmountHeader}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -176,5 +142,3 @@ export default function ArtisanDashboard() {
     </div>
   )
 }
-
-    
