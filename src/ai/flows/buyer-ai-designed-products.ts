@@ -22,11 +22,8 @@ const generateProductImage = ai.defineFlow(
   },
   async ({ prompt, style }) => {
     const { media } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash-image-preview',
-      prompt: `Generate a single, photorealistic image of a handmade artisan craft based on the following description. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
-      config: {
-        responseModalities: ['IMAGE', 'TEXT'],
-      },
+      model: 'googleai/imagen-4.0-fast-generate-001',
+      prompt: `Generate a single, photorealistic image of a handmade artisan craft. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
     });
 
     if (!media || !media.url) {
@@ -45,7 +42,7 @@ export async function buyerAiDesignedProducts(input: BuyerAiDesignedProductsInpu
     return result;
 
   } catch (error) {
-    console.error('Error generating image with Gemini, returning fallback.', error);
+    console.error('Error generating image with AI, returning fallback.', error);
     return {
       imageUrl: fallbackImage,
     };
