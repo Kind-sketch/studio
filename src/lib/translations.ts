@@ -408,7 +408,7 @@ export const translations = {
         ],
         orders: 'Orders',
         sponsors: 'Sponsors',
-        savedCollection: 'Saved Collection',
+        savedCollection: 'Inspirations',
         logout: 'Logout',
         logoutToastTitle: 'Logged Out',
         logoutToastDesc: 'You have been successfully logged out.',
@@ -772,7 +772,7 @@ export const translations = {
       title: "உங்கள் மொழியைத் தேர்வுசெய்க",
     },
     role_selection_page: {
-      welcome: "கைவினைத்திறన్ புகலிடங்களுக்கு வருக",
+      welcome: "கைவினைத்திறன் புகலிடங்களுக்கு வருக",
       joinCommunity: "எங்கள் சமூகத்தில் நீங்கள் எப்படி சேர விரும்புகிறீர்கள்?",
       footer: "கைவினைஞர்களுக்கு, முதல் படி பதிவு செய்வதாகும்.",
       roles: [
@@ -840,7 +840,7 @@ export const translations = {
       ],
       orders: "ஆர்டர்கள்",
       sponsors: "ஸ்பான்சர்கள்",
-      savedCollection: "சேமித்தவை",
+      savedCollection: "ஊக்கங்கள்",
       logout: "வெளியேறு",
       logoutToastTitle: "வெளியேறப்பட்டது",
       logoutToastDesc: "நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள்.",

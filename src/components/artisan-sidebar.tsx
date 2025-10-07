@@ -18,11 +18,11 @@ import {
   Bell,
   DollarSign,
   X,
+  PlusCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/services/translation-service';
@@ -36,24 +36,25 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from './ui/badge';
 import { useTranslation } from '@/context/translation-context';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
+import { artisans } from '@/lib/data';
 
-const baseNavItems = [
-  { href: '/artisan/home', icon: Home, label: 'Home' },
-  { href: '/artisan/dashboard', icon: DollarSign, label: 'Revenue' },
-  { href: '/artisan/my-products', icon: ShoppingBag, label: 'My Products' },
-  { href: '/artisan/stats', icon: BarChart3, label: 'Statistics' },
-  { href: '/artisan/profile', icon: User, label: 'My Profile' },
-];
+const artisan = artisans[0]; // Mock current user
 
-interface Notification {
-    id: string;
-    title: string;
-    description: string;
-    read: boolean;
-    createdAt: Date;
-}
+const baseNavItems = {
+    studio: [
+      { href: '/artisan/home', icon: Home, label: 'Home' },
+      { href: '/artisan/my-products', icon: ShoppingBag, label: 'My Products' },
+      { href: '/artisan/saved-collection', icon: Bookmark, label: 'Inspirations' },
+    ],
+    business: [
+      { href: '/artisan/dashboard', icon: DollarSign, label: 'Revenue' },
+      { href: '/artisan/orders', icon: Package, label: 'Orders' },
+      { href: '/artisan/stats', icon: BarChart3, label: 'Statistics' },
+      { href: '/artisan/sponsors', icon: HeartHandshake, label: 'Sponsors' },
+    ]
+};
 
 export function HeaderActions() {
     const { toast, dismiss } = useToast();
@@ -64,6 +65,14 @@ export function HeaderActions() {
     const toastIdRef = useRef<string | null>(null);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
+
+    interface Notification {
+        id: string;
+        title: string;
+        description: string;
+        read: boolean;
+        createdAt: Date;
+    }
 
     useEffect(() => {
         // Mock notifications
@@ -224,7 +233,7 @@ export function HeaderActions() {
                         variant="ghost"
                         size="icon"
                         aria-label="Notifications"
-                        className="relative"
+                        className="relative rounded-full"
                     >
                         <Bell className="h-5 w-5" />
                         {hasUnread && (
@@ -256,6 +265,7 @@ export function HeaderActions() {
                   variant="ghost"
                   size="icon"
                   aria-label="Support"
+                  className="rounded-full"
               >
                   <MessageCircleQuestion className="h-5 w-5" />
               </Button>
@@ -284,6 +294,20 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar;
     
+    const translatedNavItems = {
+        studio: [
+            { href: '/artisan/home', icon: Home, label: t.navItems[0].label },
+            { href: '/artisan/my-products', icon: ShoppingBag, label: t.navItems[2].label },
+            { href: '/artisan/saved-collection', icon: Bookmark, label: t.savedCollection },
+        ],
+        business: [
+            { href: '/artisan/dashboard', icon: DollarSign, label: t.navItems[1].label },
+            { href: '/artisan/orders', icon: Package, label: t.orders },
+            { href: '/artisan/stats', icon: BarChart3, label: t.navItems[3].label },
+            { href: '/artisan/sponsors', icon: HeartHandshake, label: t.sponsors },
+        ]
+    };
+    
     const handleLinkClick = (href: string) => {
         router.push(href);
         if (closeSheet) {
@@ -301,14 +325,8 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     };
     
     const isLinkActive = (href: string) => {
-        if (href === '/artisan/orders') {
-            return pathname.startsWith('/artisan/orders');
-        }
-        if (href === '/artisan/sponsors') {
-            return pathname.startsWith('/artisan/sponsors');
-        }
-         if (href === '/artisan/profile') {
-            return pathname === '/artisan/profile';
+        if (href.endsWith('/...')) {
+            return pathname.startsWith(href.slice(0, -4));
         }
         return pathname === href;
     };
@@ -328,72 +346,73 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                 )}
             </div>
             <div className="flex-1 overflow-y-auto">
-                <nav className="px-2 py-4 lg:px-4">
-                    <ul className="space-y-1">
-                        {t.navItems.map((item, index) => (
-                        <li key={item.label}>
-                            <button
-                                onClick={() => handleLinkClick(baseNavItems[index].href)}
-                                className={cn(
-                                    'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                                    isLinkActive(baseNavItems[index].href) && 'bg-sidebar-accent text-primary font-semibold'
-                                )}
-                            >
-                                <baseNavItems[index].icon className="h-4 w-4" />
-                                {item.label}
+                <nav className="flex h-full flex-col p-4">
+                    <div className="flex-1">
+                        <Button onClick={() => handleLinkClick('/artisan/add-product')} className="w-full mb-6">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add New Product
+                        </Button>
+                        
+                        <div className="mb-4">
+                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">Studio</h3>
+                            <ul className="space-y-1 mt-2">
+                                {translatedNavItems.studio.map((item) => (
+                                <li key={item.label}>
+                                    <button
+                                        onClick={() => handleLinkClick(item.href)}
+                                        className={cn(
+                                            'w-full flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                            isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
+                                        )}
+                                    >
+                                        <item.icon className="h-4 w-4" />
+                                        {item.label}
+                                    </button>
+                                </li>
+                                ))}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">Business Tools</h3>
+                            <ul className="space-y-1 mt-2">
+                                {translatedNavItems.business.map((item) => (
+                                <li key={item.label}>
+                                    <button
+                                        onClick={() => handleLinkClick(item.href)}
+                                        className={cn(
+                                            'w-full flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                            isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
+                                        )}
+                                    >
+                                        <item.icon className="h-4 w-4" />
+                                        {item.label}
+                                    </button>
+                                </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div className="mt-auto -mx-4 border-t border-sidebar-border">
+                        <div className="flex items-center justify-between p-4">
+                            <button onClick={() => handleLinkClick('/artisan/profile')} className="flex items-center gap-3 w-full">
+                                <Avatar className="h-9 w-9">
+                                    <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
+                                    <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm font-medium truncate">{artisan.name}</span>
                             </button>
-                        </li>
-                        ))}
-                    </ul>
-                    <Separator className="my-4" />
-                    <ul className="space-y-1">
-                      <li>
-                        <button
-                            onClick={() => handleLinkClick('/artisan/orders')}
-                            className={cn(
-                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                                isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
-                            )}
-                        >
-                            <Package className="h-4 w-4" />
-                            {t.orders}
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                            onClick={() => handleLinkClick('/artisan/sponsors')}
-                            className={cn(
-                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                                isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
-                            )}
-                        >
-                            <HeartHandshake className="h-4 w-4" />
-                            {t.sponsors}
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                            onClick={() => handleLinkClick('/artisan/saved-collection')}
-                            className={cn(
-                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                                isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
-                            )}
-                        >
-                            <Bookmark className="h-5 w-5" />
-                            {t.savedCollection}
-                        </button>
-                      </li>
-                    </ul>
+                            <button
+                                onClick={handleLogout}
+                                className="p-2 text-sidebar-foreground/60 hover:text-primary"
+                                aria-label="Logout"
+                            >
+                                <LogOut className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
                 </nav>
-            </div>
-            <div className="mt-auto border-t border-sidebar-border p-4">
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent"
-                >
-                    <LogOut className="h-4 w-4" />
-                    {t.logout}
-                </button>
             </div>
         </div>
     );
