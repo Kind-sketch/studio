@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow that generates custom product images for buyers.
@@ -8,7 +9,8 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { 
     type BuyerAiDesignedProductsInput, 
     type BuyerAiDesignedProductsOutput,
-    BuyerAiDesignedProductsInputSchema
+    BuyerAiDesignedProductsInputSchema,
+    BuyerAiDesignedProductsOutputSchema
 } from './buyer-ai-designed-products-types';
 
 const generateProductImage = ai.defineFlow(
