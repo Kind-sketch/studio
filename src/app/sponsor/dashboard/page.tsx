@@ -7,14 +7,17 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, Artisan, Category } from "@/lib/types";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
+import { translateText } from "@/services/translation-service";
 
 export default function SponsorDashboardPage() {
   const { toast } = useToast();
-  const categories: Category[] = baseCategories;
+  const [categories, setCategories] = useState<Category[]>(baseCategories);
+  const { language } = useLanguage();
   
-  const translatedContent = {
+  const [translatedContent, setTranslatedContent] = useState({
     title: 'Welcome, Sponsor!',
     description: "Invest in culture, empower creators, and share in the success of India's finest artisans.",
     discoverTitle: 'Discover Artisans to Sponsor',
@@ -24,7 +27,34 @@ export default function SponsorDashboardPage() {
     supportCraft: 'Support their craft to see more creations like this.',
     toastTitle: 'Sponsorship Sent!',
     toastDescription: 'Your request to sponsor {artisanName} has been sent.',
-  };
+  });
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const categoryNames = baseCategories.map(c => c.name);
+        const { translatedTexts } = await translateText({ texts: [...values, ...categoryNames], targetLanguage: language });
+        
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+
+        const translatedCategories = baseCategories.map((cat, index) => ({
+            ...cat,
+            name: translatedTexts[values.length + index]
+        }));
+        setCategories(translatedCategories);
+
+      } else {
+        setCategories(baseCategories);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   const productsByCategory = (categoryName: string) => {
     return products.filter(p => p.category === categoryName);
@@ -41,7 +71,10 @@ export default function SponsorDashboardPage() {
         <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
         <div className="space-y-8">
           {categories.map((category) => {
-            const categoryProducts = productsByCategory(category.name);
+            const originalCategory = baseCategories.find(c => c.id === category.id);
+            if (!originalCategory) return null;
+
+            const categoryProducts = productsByCategory(originalCategory.name);
             if (categoryProducts.length === 0) return null;
 
             return (
@@ -67,7 +100,7 @@ export default function SponsorDashboardPage() {
                       </CardContent>
                       <CardContent className="p-3">
                         <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
-                          {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
+                          {product.artisan.name} {translatedContent.specializesIn} {category.name}. {translatedContent.supportCraft}
                         </p>
                         <Link href={`/sponsor/product/${product.id}`} passHref>
                           <Button className="w-full">{translatedContent.viewArtisanButton}</Button>

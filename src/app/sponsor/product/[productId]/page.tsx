@@ -10,6 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft } from 'lucide-react';
 import Reviews from '@/components/reviews';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/services/translation-service';
+import { useState, useEffect } from 'react';
+
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -17,15 +21,45 @@ export default function ProductDetailPage() {
   const { toast } = useToast();
   const productId = params.productId as string;
   const product = products.find(p => p.id === productId);
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState({
+    backButton: 'Back',
+    productNotFound: 'Product not found.',
+    artisanDetails: 'Artisan Details',
+    name: 'Name',
+    phone: 'Phone',
+    description: 'Description',
+    story: 'The Story Behind',
+    sponsorButton: 'Sponsor Artisan',
+    toastTitle: 'Sponsorship Sent!',
+    toastDescription: 'Your request to sponsor {artisanName} has been sent.',
+  });
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   if (!product) {
-    return <div className="p-4 text-center">Product not found.</div>;
+    return <div className="p-4 text-center">{translatedContent.productNotFound}</div>;
   }
 
   const handleSponsor = () => {
     toast({
-      title: 'Sponsorship Sent!',
-      description: `Your request to sponsor ${product.artisan.name} has been sent.`,
+      title: translatedContent.toastTitle,
+      description: translatedContent.toastDescription.replace('{artisanName}', product.artisan.name),
     });
   };
 
@@ -33,7 +67,7 @@ export default function ProductDetailPage() {
     <div className="p-4">
        <Button onClick={() => router.back()} variant="ghost" className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" />
-        Back
+        {translatedContent.backButton}
       </Button>
       <Card className="overflow-hidden">
         <CardContent className="p-0">
@@ -56,27 +90,27 @@ export default function ProductDetailPage() {
         <CardContent>
             <Separator className="my-4" />
              <div>
-                <h3 className="font-headline text-lg font-semibold mb-2">Artisan Details</h3>
-                <p className="text-muted-foreground">Name: {product.artisan.name}</p>
-                {product.artisan.phone && <p className="text-muted-foreground">Phone: {product.artisan.phone}</p>}
+                <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.artisanDetails}</h3>
+                <p className="text-muted-foreground">{translatedContent.name}: {product.artisan.name}</p>
+                {product.artisan.phone && <p className="text-muted-foreground">{translatedContent.phone}: {product.artisan.phone}</p>}
             </div>
             <Separator className="my-4" />
             <div>
-                <h3 className="font-headline text-lg font-semibold mb-2">Description</h3>
+                <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.description}</h3>
                 <p className="text-muted-foreground">{product.description}</p>
             </div>
             {product.story && (
                 <>
                     <Separator className="my-4" />
                     <div>
-                        <h3 className="font-headline text-lg font-semibold mb-2">The Story Behind</h3>
+                        <h3 className="font-headline text-lg font-semibold mb-2">{translatedContent.story}</h3>
                         <p className="text-muted-foreground italic">"{product.story}"</p>
                     </div>
                 </>
             )}
         </CardContent>
         <CardContent>
-            <Button onClick={handleSponsor} className="w-full">Sponsor Artisan</Button>
+            <Button onClick={handleSponsor} className="w-full">{translatedContent.sponsorButton}</Button>
         </CardContent>
       </Card>
     </div>

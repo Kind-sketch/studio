@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { products, categories as baseCategories, artisans } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,26 +10,56 @@ import Autoplay from 'embla-carousel-autoplay';
 import type { Category, Product } from '@/lib/types';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/services/translation-service';
 
 export default function BuyerHomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>(baseCategories);
+  const { language } = useLanguage();
 
   const trendingProducts = [...products].sort((a, b) => b.likes - a.likes).slice(0, 8);
   const bestSellingProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
-  const categories: Category[] = baseCategories;
   
   const filteredProducts = selectedCategory
     ? products.filter(p => p.category === selectedCategory)
     : products;
 
-  const translatedContent = {
+  const [translatedContent, setTranslatedContent] = useState({
     artisansTitle: 'Meet the Artisans',
     categoriesTitle: 'Shop by Category',
     trendingTitle: 'Trending Now',
     bestSellingTitle: 'Best Sellers',
     allProductsTitle: 'All Products',
     allCategories: 'All',
-  };
+  });
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const categoryNames = baseCategories.map(c => c.name);
+        const { translatedTexts } = await translateText({ texts: [...values, ...categoryNames], targetLanguage: language });
+        
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+
+        const translatedCategories = baseCategories.map((cat, index) => ({
+            ...cat,
+            name: translatedTexts[values.length + index]
+        }));
+        setCategories(translatedCategories);
+
+      } else {
+        setCategories(baseCategories);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-6">

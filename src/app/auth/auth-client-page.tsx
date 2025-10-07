@@ -11,11 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
+import { useLanguage } from '@/context/language-context';
+import { translateText } from '@/services/translation-service';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -28,8 +30,9 @@ export default function AuthClientPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
   const [otpSent, setOtpSent] = useState(false);
+  const { language } = useLanguage();
 
-  const translatedContent = {
+  const [translatedContent, setTranslatedContent] = useState({
     title: 'Welcome',
     description: 'Join as a Buyer or Sponsor',
     buyerTab: 'Buyer',
@@ -45,7 +48,23 @@ export default function AuthClientPage() {
     invalidOtpToast: 'Invalid OTP',
     invalidOtpToastDesc: 'The OTP you entered is incorrect.',
     termsAndConditions: 'Terms & Conditions',
-  };
+  });
+
+  useEffect(() => {
+    const translate = async () => {
+      if (language !== 'en') {
+        const values = Object.values(translatedContent);
+        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
+        const newContent: any = {};
+        Object.keys(translatedContent).forEach((key, index) => {
+          newContent[key] = translatedTexts[index];
+        });
+        setTranslatedContent(newContent);
+      }
+    };
+    translate();
+  }, [language]);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
