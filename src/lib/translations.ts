@@ -642,7 +642,7 @@ export const translations = {
         ]
     },
     saved_collection_page: {
-      title: "சேமிக்கப்பட்ட தொகுப்புகள்",
+      title: "சேமித்த தொகுப்புகள்",
       description: "உங்கள் ஊக்கமளிக்கும் தயாரிப்புகளின் தொகுக்கப்பட்ட பட்டியல்கள்.",
       items: "பொருட்கள்",
       noItems: "இந்தத் தொகுப்பில் இன்னும் பொருட்கள் இல்லை.",
@@ -848,9 +848,9 @@ export const translations = {
         { label: "புள்ளிவிவரங்கள்" },
         { label: "என் சுயவிவரம்" },
       ],
-      orders: "ஆர்டர்கள்",
-      sponsors: "ஸ்பான்சர்கள்",
-      savedCollection: "ஊக்கங்கள்",
+      orders: "என் ஆர்டர்கள்",
+      sponsors: "என் ஸ்பான்சர்கள்",
+      savedCollection: "சேமித்த தொகுப்புகள்",
       logout: "வெளியேறு",
       logoutToastTitle: "வெளியேறப்பட்டது",
       logoutToastDesc: "நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள்.",
@@ -876,3 +876,5 @@ export const translations = {
     ],
   },
 };
+
+    
