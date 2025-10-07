@@ -22,7 +22,7 @@ const generateProductImage = ai.defineFlow(
   async ({ prompt: userInput, style }) => {
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${userInput}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
+      prompt: `A single... image of a handmade artisan craft. The product should be: "${userInput}". The craft style is ${style}.`,
     });
 
     if (!media?.url) {
