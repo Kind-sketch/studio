@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI flow that generates custom product images for buyers.
@@ -22,12 +21,15 @@ const generateProductImage = ai.defineFlow(
   },
   async ({ prompt, style }) => {
     const { media } = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
+      model: 'googleai/gemini-2.5-flash-image-preview',
       prompt: `Generate a single, photorealistic image of a handmade artisan craft. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
+      config: {
+        responseModalities: ['IMAGE', 'TEXT'],
+      },
     });
 
-    if (!media || !media.url) {
-      throw new Error('Image generation failed to return media.');
+    if (!media?.url) {
+      throw new Error('Image generation failed to return a valid media URL.');
     }
     return { imageUrl: media.url };
   }
