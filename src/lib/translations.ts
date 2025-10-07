@@ -659,7 +659,7 @@ export const translations = {
       noSponsorsTitle: "தற்போதைய ஸ்பான்சர்கள் இல்லை.",
       noSponsorsDescription: "ஏற்றுக்கொள்ளப்பட்ட ஸ்பான்சர் கோரிக்கைகள் இங்கே தோன்றும்.",
       terminateDialogTitle: "உறுதியாகவா?",
-      terminateDialogDescription: "இது {sponsorName} உடனான உங்கள் ஸ்பான்சர்ஷிப்பை நிரந்தரமாக முடிவுக்குக் கொண்டுவரும். இந்தச் செயலைச் செயல்தவிர்க்க முடியாது.",
+      terminateDialogDescription: "{sponsorName} உடனான உங்கள் ஸ்பான்சர்ஷிப்பை இது நிரந்தரமாக முடிவுக்குக் கொண்டுவரும். இந்தச் செயலைச் செயல்தவிர்க்க முடியாது.",
       cancelButton: "ரத்துசெய்",
       sponsorshipTerminatedToast: "ஸ்பான்சர்ஷிப் முடிவுக்கு வந்தது",
       sponsorshipTerminatedToastDesc: "ஸ்பான்சர் உங்கள் பட்டியலிலிருந்து அகற்றப்பட்டார்.",
@@ -683,7 +683,7 @@ export const translations = {
       noSponsorsTitle: "தற்போதைய ஸ்பான்சர்கள் இல்லை.",
       noSponsorsDescription: "ஏற்றுக்கொள்ளப்பட்ட ஸ்பான்சர் கோரிக்கைகள் இங்கே தோன்றும்.",
       terminateDialogTitle: "உறுதியாகவா?",
-      terminateDialogDescription: "இது {sponsorName} உடனான உங்கள் ஸ்பான்சர்ஷிப்பை நிரந்தரமாக முடிவுக்குக் கொண்டுவரும். இந்தச் செயலைச் செயல்தவிர்க்க முடியாது.",
+      terminateDialogDescription: "{sponsorName} உடனான உங்கள் ஸ்பான்சர்ஷிப்பை இது நிரந்தரமாக முடிவுக்குக் கொண்டுவரும். இந்தச் செயலைச் செயல்தவிர்க்க முடியாது.",
       cancelButton: "ரத்துசெய்",
       sponsorAcceptedToast: "ஸ்பான்சர் ஏற்கப்பட்டது",
       sponsorAcceptedToastDesc: "ஸ்பான்சர் \"என் ஸ்பான்சர்கள்\" இல் சேர்க்கப்பட்டார்.",
@@ -850,7 +850,7 @@ export const translations = {
       ],
       orders: "ஆர்டர்கள்",
       sponsors: "ஸ்பான்சர்கள்",
-      savedCollection: "ஸ்பೂರ್த்திகள்",
+      savedCollection: "ஸ்பூரத்திகள்",
       logout: "வெளியேறு",
       logoutToastTitle: "வெளியேறப்பட்டது",
       logoutToastDesc: "நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள்.",
@@ -877,4 +877,5 @@ export const translations = {
   },
 };
 
+    
     
