@@ -15,7 +15,7 @@ export default function ArtisanLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth'];
+  const noSidebarRoutes = ['/artisan/register', '/artisan/category-selection', '/artisan/post-auth', '/artisan/register-recovery'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   if (noSidebarRoutes.includes(pathname)) {
@@ -23,33 +23,32 @@ export default function ArtisanLayout({
   }
 
   return (
-    <div className="flex h-screen w-full flex-col bg-secondary/30">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:flex h-full fixed top-0 left-0 z-50">
+    <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-card md:block">
         <ArtisanSidebar />
       </div>
-
-      <div className="md:ml-64 flex flex-1 flex-col overflow-hidden">
-        {/* Mobile Header */}
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 md:hidden">
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
                 <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
+                <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-[300px] p-0 z-[101]">
-              <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+            <SheetContent side="left" className="flex flex-col p-0">
+               <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
           <HeaderActions />
         </header>
-
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
-        
         {pathname !== '/artisan/add-product' && (
           <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
             <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
