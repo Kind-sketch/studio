@@ -39,7 +39,6 @@ import {
 import { Badge } from './ui/badge';
 import { useTranslation } from '@/context/translation-context';
 
-
 const baseNavItems = [
   { href: '/artisan/home', icon: Home, label: 'Home' },
   { href: '/artisan/dashboard', icon: DollarSign, label: 'Revenue' },
@@ -47,6 +46,7 @@ const baseNavItems = [
   { href: '/artisan/stats', icon: BarChart3, label: 'Statistics' },
   { href: '/artisan/profile', icon: User, label: 'My Profile' },
 ];
+
 
 interface Notification {
     id: string;
