@@ -34,13 +34,11 @@ export async function buyerAiDesignedProducts(
   return buyerAiDesignedProductsFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'buyerAiDesignedProductsPrompt',
+const descriptionPrompt = ai.definePrompt({
+  name: 'buyerAiDesignedProductsDescriptionPrompt',
   input: {schema: BuyerAiDesignedProductsInputSchema},
-  output: {schema: BuyerAiDesignedProductsOutputSchema},
-  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided prompt and style to design a product that meets the buyer's needs. 
-
-Generate a short, compelling description for the newly designed product.
+  output: {schema: z.object({ description: z.string() })},
+  prompt: `You are an AI assistant that helps buyers design custom products. Use the provided prompt and style to write a short, compelling description for the newly designed product.
 
 {{#if prompt}}
 Prompt: {{{prompt}}}
@@ -59,20 +57,14 @@ const buyerAiDesignedProductsFlow = ai.defineFlow(
   },
   async input => {
     try {
-        const {output: descriptionOutput} = await prompt(input);
+        const {output: descriptionOutput} = await descriptionPrompt(input);
         
-        const model = 'googleai/gemini-2.5-flash-image-preview';
-        let generationPrompt = [{text: `You are an expert artisan AI. Generate an image of a handmade craft product that is an exact representation of the following description. The product should belong to a craft category like textiles, pottery, metalwork, sculpture, paintings, or glass paintings.
-
-User Description: "${input.prompt}"
-Style: "${input.style}"`}];
+        const model = 'googleai/imagen-4.0-fast-generate-001';
+        let generationPrompt = `Generate an image of a craft based on textiles, pottery, metalwork, sculpture, paintings, or glass paintings. The design should be an exact representation of the following description: "${input.prompt}", in the style of "${input.style}"`;
         
         const {media} = await ai.generate({
           model: model,
           prompt: generationPrompt,
-          config: {
-            responseModalities: ['TEXT', 'IMAGE'],
-          },
         });
 
         if (!media?.url) {
