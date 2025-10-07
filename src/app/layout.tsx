@@ -39,14 +39,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased flex items-center justify-center bg-zinc-200 dark:bg-zinc-800" suppressHydrationWarning>
+      <body className="font-body antialiased" suppressHydrationWarning>
         <LanguageProvider>
           <TranslationProvider>
-            <div className="relative w-full max-w-[420px] h-screen bg-background shadow-2xl overflow-hidden">
-              <div className="h-full w-full overflow-y-auto">
-                {children}
-              </div>
-              {isClient && <Toaster />}
+            <div className="flex items-center justify-center min-h-screen w-full bg-zinc-200 dark:bg-zinc-800">
+                <div className="relative w-full max-w-[420px] h-screen bg-background shadow-2xl overflow-y-auto">
+                    {children}
+                    {isClient && <Toaster />}
+                </div>
             </div>
           </TranslationProvider>
         </LanguageProvider>
