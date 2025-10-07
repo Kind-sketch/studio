@@ -47,7 +47,6 @@ const baseNavItems = [
   { href: '/artisan/profile', icon: User, label: 'My Profile' },
 ];
 
-
 interface Notification {
     id: string;
     title: string;
