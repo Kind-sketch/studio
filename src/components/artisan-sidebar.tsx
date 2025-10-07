@@ -41,13 +41,12 @@ import { useTranslation } from '@/context/translation-context';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', labelKey: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
-  { href: '/artisan/dashboard', labelKey: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
-  { href: '/artisan/my-products', labelKey: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
-  { href: '/artisan/stats', labelKey: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
-  { href: '/artisan/profile', labelKey: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
+  { href: '/artisan/home', icon: Home },
+  { href: '/artisan/dashboard', icon: DollarSign },
+  { href: '/artisan/my-products', icon: ShoppingBag },
+  { href: '/artisan/stats', icon: BarChart3 },
+  { href: '/artisan/profile', icon: User },
 ];
-
 
 interface Notification {
     id: string;
