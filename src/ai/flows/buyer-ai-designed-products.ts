@@ -28,7 +28,7 @@ const generateProductImage = ai.defineFlow(
     if (!media?.url) {
       throw new Error('Image generation failed to return a valid media URL.');
     }
-    return { imageUrl: media.url };
+    return media.url;
   }
 );
 
@@ -42,8 +42,6 @@ export async function buyerAiDesignedProducts(input: BuyerAiDesignedProductsInpu
 
   } catch (error) {
     console.error('Error generating image with AI, returning fallback.', error);
-    return {
-      imageUrl: fallbackImage,
-    };
+    return fallbackImage;
   }
 }

@@ -7,7 +7,5 @@ export const BuyerAiDesignedProductsInputSchema = z.object({
 });
 export type BuyerAiDesignedProductsInput = z.infer<typeof BuyerAiDesignedProductsInputSchema>;
 
-export const BuyerAiDesignedProductsOutputSchema = z.object({
-  imageUrl: z.string().describe('The URL of the generated image.'),
-});
+export const BuyerAiDesignedProductsOutputSchema = z.string().describe('A data URI of the generated image.');
 export type BuyerAiDesignedProductsOutput = z.infer<typeof BuyerAiDesignedProductsOutputSchema>;

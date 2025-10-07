@@ -53,11 +53,11 @@ export default function CustomizePage() {
     setIsGenerating(true);
     setGeneratedImage(null);
     try {
-      const result = await buyerAiDesignedProducts({
+      const imageUrl = await buyerAiDesignedProducts({
         prompt: description,
         style: category,
       });
-      setGeneratedImage(result.imageUrl);
+      setGeneratedImage(imageUrl);
       toast({
         title: 'Image Generated!',
         description: 'Here is a visualization of your idea.',
