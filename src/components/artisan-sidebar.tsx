@@ -37,19 +37,17 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from './ui/badge';
+import { useTranslation } from '@/context/translation-context';
 
 
 const baseNavItems = [
-  { href: '/artisan/home', label: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
-  { href: '/artisan/dashboard', label: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
-  { href: '/artisan/my-products', label: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
-  { href: '/artisan/stats', label: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
-  { href: '/artisan/profile', label: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
+  { href: '/artisan/home', labelKey: 'Home', icon: Home, keywords: ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'] },
+  { href: '/artisan/dashboard', labelKey: 'Revenue', icon: DollarSign, keywords: ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'] },
+  { href: '/artisan/my-products', labelKey: 'My Products', icon: ShoppingBag, keywords: ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'] },
+  { href: '/artisan/stats', labelKey: 'Statistics', icon: BarChart3, keywords: ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'] },
+  { href: '/artisan/profile', labelKey: 'My Profile', icon: User, keywords: ['profile', 'account', 'me', 'my details', 'user'] },
 ];
 
-const bottomNavItems: any[] = [
-    // Settings removed
-];
 
 interface Notification {
     id: string;
@@ -284,15 +282,8 @@ interface ArtisanSidebarProps {
 export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const pathname = usePathname();
     const { toast } = useToast();
-    const { language } = useLanguage();
-    const [navItems, setNavItems] = useState(baseNavItems);
-    const [translatedBottomNav, setTranslatedBottomNav] = useState(bottomNavItems);
-    const [translatedOrders, setTranslatedOrders] = useState('Orders');
-    const [translatedSponsors, setTranslatedSponsors] = useState('Sponsors');
-    const [translatedSavedCollection, setTranslatedSavedCollection] = useState('Saved Collection');
-    const [translatedLogout, setTranslatedLogout] = useState('Logout');
-    const [logoutToastTitle, setLogoutToastTitle] = useState('Logged Out');
-    const [logoutToastDesc, setLogoutToastDesc] = useState('You have been successfully logged out.');
+    const { translations } = useTranslation();
+    const t = translations.artisan_sidebar;
     const router = useRouter();
 
     const handleLinkClick = (href: string) => {
@@ -302,67 +293,12 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         router.push(href);
     };
 
-    useEffect(() => {
-        const translateNav = async () => {
-            if (language !== 'en') {
-                const labels = baseNavItems.map(item => item.label);
-                const bottomLabels = bottomNavItems.map(item => item.label);
-                const { translatedTexts } = await translateText({ 
-                    texts: [
-                        ...labels, 
-                        'Orders', 
-                        'Sponsors', 
-                        'Saved Collection', 
-                        ...bottomLabels, 
-                        'Logout',
-                        'Logged Out',
-                        'You have been successfully logged out.'
-                    ], 
-                    targetLanguage: language 
-                });
-                
-                const translatedNavItems = baseNavItems.map((item, index) => ({
-                    ...item,
-                    label: translatedTexts[index],
-                }));
-                setNavItems(translatedNavItems);
-
-                let offset = labels.length;
-                setTranslatedOrders(translatedTexts[offset]);
-                setTranslatedSponsors(translatedTexts[offset + 1]);
-                setTranslatedSavedCollection(translatedTexts[offset + 2]);
-
-                const newBottomNav = bottomNavItems.map((item, index) => ({
-                    ...item,
-                    label: translatedTexts[offset + 3 + index],
-                }));
-                setTranslatedBottomNav(newBottomNav);
-
-                offset += 3 + bottomLabels.length;
-                setTranslatedLogout(translatedTexts[offset]);
-                setLogoutToastTitle(translatedTexts[offset + 1]);
-                setLogoutToastDesc(translatedTexts[offset + 2]);
-
-            } else {
-                setNavItems(baseNavItems);
-                setTranslatedBottomNav(bottomNavItems);
-                setTranslatedOrders('Orders');
-                setTranslatedSponsors('Sponsors');
-                setTranslatedSavedCollection('Saved Collection');
-                setTranslatedLogout('Logout');
-                setLogoutToastTitle('Logged Out');
-                setLogoutToastDesc('You have been successfully logged out.');
-            }
-        };
-        translateNav();
-    }, [language]);
-
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
         handleLinkClick('/');
         toast({
-            title: logoutToastTitle,
-            description: logoutToastDesc
+            title: t.logoutToastTitle,
+            description: t.logoutToastDesc
         });
     };
     
@@ -380,90 +316,87 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     };
 
     return (
-        <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground w-64 border-r border-sidebar-border">
-            <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-4">
+        <div className="flex h-full max-h-screen flex-col bg-sidebar text-sidebar-foreground">
+            <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4 lg:h-[60px]">
                 <Link href="/artisan/home" onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
-                    <Logo className="h-8 w-8 text-primary" />
-                    <span className="font-headline text-xl">Artistry Havens</span>
+                    <Logo className="h-6 w-6 text-primary lg:h-8 lg:w-8" />
+                    <span className="font-headline text-lg lg:text-xl">Artistry Havens</span>
                 </Link>
+                 {closeSheet && (
+                    <button onClick={closeSheet} className="ml-auto rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Close</span>
+                    </button>
+                )}
             </div>
-            <nav className="flex-1 overflow-y-auto py-4 px-2">
-                <ul className="space-y-1">
-                    {navItems.map((item) => (
-                    <li key={item.label}>
+            <div className="flex-1 overflow-y-auto">
+                <nav className="px-2 py-4 lg:px-4">
+                    <ul className="space-y-1">
+                        {t.navItems.map((item, index) => (
+                        <li key={item.label}>
+                            <button
+                                onClick={() => handleLinkClick(baseNavItems[index].href)}
+                                className={cn(
+                                    'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                    isLinkActive(baseNavItems[index].href) && 'bg-sidebar-accent text-primary font-semibold'
+                                )}
+                            >
+                                <baseNavItems[index].icon className="h-4 w-4" />
+                                {item.label}
+                            </button>
+                        </li>
+                        ))}
+                    </ul>
+                    <Separator className="my-4" />
+                    <ul className="space-y-1">
+                      <li>
                         <button
-                            onClick={() => handleLinkClick(item.href)}
+                            onClick={() => handleLinkClick('/artisan/orders')}
                             className={cn(
                                 'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                                isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
+                                isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
                             )}
                         >
-                            <item.icon className="h-4 w-4" />
-                            {item.label}
+                            <Package className="h-4 w-4" />
+                            {t.orders}
                         </button>
-                    </li>
-                    ))}
-                </ul>
-                <Separator className="my-4" />
-                <div className="px-3 py-2">
-                    <button
-                        onClick={() => handleLinkClick('/artisan/orders')}
-                        className={cn(
-                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                            isLinkActive('/artisan/orders') && 'bg-sidebar-accent text-primary font-semibold'
-                        )}
-                    >
-                        <Package className="h-4 w-4" />
-                        {translatedOrders}
-                    </button>
-                </div>
-                <div className="px-3 py-2">
-                    <button
-                        onClick={() => handleLinkClick('/artisan/sponsors')}
-                        className={cn(
-                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                            isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
-                        )}
-                    >
-                        <HeartHandshake className="h-4 w-4" />
-                        {translatedSponsors}
-                    </button>
-                </div>
-                <div className="px-3 py-2">
-                    <button
-                        onClick={() => handleLinkClick('/artisan/saved-collection')}
-                        className={cn(
-                            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
-                            isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
-                        )}
-                    >
-                        <Bookmark className="h-5 w-5" />
-                        {translatedSavedCollection}
-                    </button>
-                </div>
-            </nav>
-            <div className="mt-auto border-t border-sidebar-border p-4 space-y-2">
-                {translatedBottomNav.map(item => (
-                     <button
-                        key={item.href}
-                        onClick={() => handleLinkClick(item.href)}
-                        className={cn("w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent", isLinkActive(item.href) && "bg-sidebar-accent text-primary font-semibold" )}
+                      </li>
+                      <li>
+                        <button
+                            onClick={() => handleLinkClick('/artisan/sponsors')}
+                            className={cn(
+                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                isLinkActive('/artisan/sponsors') && 'bg-sidebar-accent text-primary font-semibold'
+                            )}
                         >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                    </button>
-                ))}
-                <Separator />
+                            <HeartHandshake className="h-4 w-4" />
+                            {t.sponsors}
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                            onClick={() => handleLinkClick('/artisan/saved-collection')}
+                            className={cn(
+                                'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                isLinkActive('/artisan/saved-collection') && 'bg-sidebar-accent text-primary font-semibold'
+                            )}
+                        >
+                            <Bookmark className="h-5 w-5" />
+                            {t.savedCollection}
+                        </button>
+                      </li>
+                    </ul>
+                </nav>
+            </div>
+            <div className="mt-auto border-t border-sidebar-border p-4">
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent"
                 >
                     <LogOut className="h-4 w-4" />
-                    {translatedLogout}
+                    {t.logout}
                 </button>
             </div>
         </div>
     );
 }
-
-    

@@ -3,9 +3,8 @@
 
 import ArtisanSidebar, { HeaderActions } from '@/components/artisan-sidebar';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, PanelLeft } from 'lucide-react';
+import { PanelLeft } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 
@@ -19,11 +18,11 @@ export default function ArtisanLayout({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   if (noSidebarRoutes.includes(pathname)) {
-    return <main>{children}</main>;
+    return <main className="h-full overflow-y-auto">{children}</main>;
   }
 
   return (
-    <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
       <div className="hidden border-r bg-card md:block">
         <ArtisanSidebar />
       </div>
@@ -40,22 +39,18 @@ export default function ArtisanLayout({
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0">
+            <SheetContent side="left" className="flex flex-col p-0 w-full max-w-[280px]">
                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
+          <div className="w-full flex-1">
+            {/* Can add a search bar here if needed */}
+          </div>
           <HeaderActions />
         </header>
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-muted/40">
           {children}
         </main>
-        {pathname !== '/artisan/add-product' && (
-          <Link href="/artisan/add-product" className="fixed bottom-8 right-8 z-30">
-            <Button size="icon" className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg">
-              <Plus className="h-6 w-6" />
-            </Button>
-          </Link>
-        )}
       </div>
     </div>
   );
