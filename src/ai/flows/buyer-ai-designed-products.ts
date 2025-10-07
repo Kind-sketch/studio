@@ -6,6 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { z } from 'genkit';
 import { 
     type BuyerAiDesignedProductsInput, 
     type BuyerAiDesignedProductsOutput,
