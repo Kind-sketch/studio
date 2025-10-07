@@ -1,11 +1,9 @@
-
 'use server';
 /**
  * @fileOverview An AI flow that generates custom product images for buyers.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { 
     type BuyerAiDesignedProductsInput, 
@@ -17,18 +15,21 @@ const generateProductImage = ai.defineFlow(
   {
     name: 'generateProductImageFlow',
     inputSchema: BuyerAiDesignedProductsInputSchema,
-    outputSchema: z.string(),
+    outputSchema: BuyerAiDesignedProductsOutputSchema,
   },
   async ({ prompt, style }) => {
     const { media } = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `Generate a photorealistic image of a handmade artisan craft. The product should be: ${prompt}. The craft style is ${style}. The image should be on a clean, neutral background, looking like a professional product photo.`,
+      model: 'googleai/gemini-2.5-flash-image-preview',
+      prompt: `Generate a single, photorealistic image of a handmade artisan craft based on the following description. The product should be: "${prompt}". The craft style is ${style}. The image must be on a clean, neutral background, looking like a professional product photo for an e-commerce website. Do not include any text in the image.`,
+      config: {
+        responseModalities: ['IMAGE'],
+      },
     });
 
     if (!media || !media.url) {
       throw new Error('Image generation failed to return media.');
     }
-    return media.url;
+    return { imageUrl: media.url };
   }
 );
 
@@ -37,11 +38,11 @@ export async function buyerAiDesignedProducts(input: BuyerAiDesignedProductsInpu
   const fallbackImage = PlaceHolderImages.find(p => p.id === 'product-7')?.imageUrl || 'https://picsum.photos/seed/fallback/512/512';
   
   try {
-    const imageUrl = await generateProductImage(input);
-    return { imageUrl };
+    const result = await generateProductImage(input);
+    return result;
 
   } catch (error) {
-    console.error('Error generating image with Imagen, returning fallback.', error);
+    console.error('Error generating image with Gemini, returning fallback.', error);
     return {
       imageUrl: fallbackImage,
     };
