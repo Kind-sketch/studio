@@ -18,7 +18,7 @@ import {
   Bell,
   DollarSign,
   X,
-  PlusCircle,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -42,44 +42,34 @@ import { artisans } from '@/lib/data';
 
 const artisan = artisans[0]; // Mock current user
 
-const baseNavItems = {
-    studio: [
-      { href: '/artisan/home', icon: Home, label: 'Home' },
-      { href: '/artisan/my-products', icon: ShoppingBag, label: 'My Products' },
-      { href: '/artisan/saved-collection', icon: Bookmark, label: 'Inspirations' },
-    ],
-    business: [
-      { href: '/artisan/dashboard', icon: DollarSign, label: 'Revenue' },
-      { href: '/artisan/orders', icon: Package, label: 'Orders' },
-      { href: '/artisan/stats', icon: BarChart3, label: 'Statistics' },
-      { href: '/artisan/sponsors', icon: HeartHandshake, label: 'Sponsors' },
-    ]
-};
+interface Notification {
+    id: string;
+    titleKey: 'newOrder' | 'newSponsor' | 'milestone';
+    descriptionKey: 'newOrderDesc' | 'newSponsorDesc' | 'milestoneDesc';
+    descriptionParams?: { [key: string]: string | number };
+    read: boolean;
+    createdAt: Date;
+}
 
 export function HeaderActions() {
     const { toast, dismiss } = useToast();
     const router = useRouter();
     const { language } = useLanguage();
+    const { translations } = useTranslation();
+    const t = translations.artisan_sidebar.notifications;
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
     const toastIdRef = useRef<string | null>(null);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
 
-    interface Notification {
-        id: string;
-        title: string;
-        description: string;
-        read: boolean;
-        createdAt: Date;
-    }
 
     useEffect(() => {
         // Mock notifications
         const mockNotifications: Notification[] = [
-            { id: '1', title: 'New Order Request', description: 'You have a new request for "Ceramic Dawn Vase".', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 5) },
-            { id: '2', title: 'New Sponsor', description: 'ArtLover22 wants to sponsor you!', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2) },
-            { id: '3', title: 'Milestone Reached', description: 'Congrats! You\'ve reached 100 sales.', read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
+            { id: '1', titleKey: 'newOrder', descriptionKey: 'newOrderDesc', descriptionParams: { productName: "Ceramic Dawn Vase"}, read: false, createdAt: new Date(Date.now() - 1000 * 60 * 5) },
+            { id: '2', titleKey: 'newSponsor', descriptionKey: 'newSponsorDesc', descriptionParams: { sponsorName: "ArtLover22" }, read: false, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2) },
+            { id: '3', titleKey: 'milestone', descriptionKey: 'milestoneDesc', descriptionParams: { salesCount: 100 }, read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
         ];
         setNotifications(mockNotifications);
     }, []);
@@ -224,6 +214,16 @@ export function HeaderActions() {
             }
         }
     };
+    
+    const formatNotificationDescription = (key: string, params: any) => {
+        let desc = key;
+        if (params) {
+            for (const p of Object.keys(params)) {
+                desc = desc.replace(`{${p}}`, params[p]);
+            }
+        }
+        return desc;
+    }
 
     return (
         <div className="ml-auto flex items-center gap-2">
@@ -242,20 +242,20 @@ export function HeaderActions() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-80">
-                    <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t.title}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {notifications.length > 0 ? (
                         notifications.map((n) => (
                             <DropdownMenuItem key={n.id} onClick={() => markAsRead(n.id)} className={cn("flex items-start gap-2", !n.read && "bg-accent/50")}>
                                 {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
                                 <div className={cn(!n.read && 'pl-1')}>
-                                    <p className="font-semibold">{n.title}</p>
-                                    <p className="text-xs text-muted-foreground">{n.description}</p>
+                                    <p className="font-semibold">{t[n.titleKey]}</p>
+                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t[n.descriptionKey], n.descriptionParams)}</p>
                                 </div>
                             </DropdownMenuItem>
                         ))
                     ) : (
-                        <p className="p-4 text-center text-sm text-muted-foreground">No new notifications</p>
+                        <p className="p-4 text-center text-sm text-muted-foreground">{t.noNotifications}</p>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>

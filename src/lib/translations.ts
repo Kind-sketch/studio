@@ -412,6 +412,16 @@ export const translations = {
         logout: 'Logout',
         logoutToastTitle: 'Logged Out',
         logoutToastDesc: 'You have been successfully logged out.',
+        notifications: {
+            title: "Notifications",
+            newOrder: "New Order Request",
+            newSponsor: "New Sponsor",
+            milestone: "Milestone Reached",
+            newOrderDesc: 'You have a new request for "{productName}".',
+            newSponsorDesc: '{sponsorName} wants to sponsor you!',
+            milestoneDesc: "Congrats! You've reached {salesCount} sales.",
+            noNotifications: "No new notifications",
+        }
     },
     product_categories: [
         'Textiles',
@@ -608,7 +618,7 @@ export const translations = {
         title: "உங்கள் பதிவை முடிக்கவும்",
         description: "உங்கள் கணக்கைப் பாதுகாக்க ஒரு மீட்பு எண்ணை உள்ளிட்டு இரண்டு எண்களையும் சரிபார்க்கவும்.",
         primaryNumberLabel: "முதன்மை எண்",
-        primaryOtpLabel: "OTP for Primary Number",
+        primaryOtpLabel: "முதன்மை எண்ணுக்கான OTP",
         otpPlaceholder: "5-இலக்க OTP ஐ உள்ளிடவும்",
         recoveryNumberLabel: "மீட்பு மொபைல் எண்",
         recoveryNumberPlaceholder: "10-இலக்க மீட்பு எண்",
@@ -844,6 +854,16 @@ export const translations = {
       logout: "வெளியேறு",
       logoutToastTitle: "வெளியேறப்பட்டது",
       logoutToastDesc: "நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள்.",
+      notifications: {
+          title: "அறிவிப்புகள்",
+          newOrder: "புதிய ஆர்டர் கோரிக்கை",
+          newSponsor: "புதிய ஸ்பான்சர்",
+          milestone: "மைல்கல் எட்டப்பட்டது",
+          newOrderDesc: '"{productName}" க்கான புதிய கோரிக்கை உங்களிடம் உள்ளது.',
+          newSponsorDesc: '{sponsorName} உங்களை ஸ்பான்சர் செய்ய விரும்புகிறார்!',
+          milestoneDesc: "வாழ்த்துக்கள்! நீங்கள் {salesCount} விற்பனையை எட்டியுள்ளீர்கள்.",
+          noNotifications: "புதிய அறிவிப்புகள் இல்லை",
+      }
     },
     product_categories: [
       "ஜவுளி",
@@ -856,5 +876,3 @@ export const translations = {
     ],
   },
 };
-
-    
