@@ -45,7 +45,7 @@ export default function ArtisanLayout({
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
-            {/* Can add a search bar here if needed */}
+            {/* The HeaderActions component is now guaranteed to be here for all child pages */}
           </div>
           <HeaderActions />
         </header>
