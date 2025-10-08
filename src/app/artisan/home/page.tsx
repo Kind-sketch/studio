@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -13,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Lightbulb, Play, Pause, RotateCcw, Mic } from 'lucide-react';
+import { Loader2, Lightbulb, Play, Pause, RotateCcw, Mic, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
@@ -21,6 +22,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import Autoplay from "embla-carousel-autoplay";
 import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
+import { cn } from '@/lib/utils';
 
 
 // Mocking the current artisan as Elena Vance (ID '1')
@@ -114,6 +116,9 @@ export default function ArtisanHomePage() {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
+            if (audioRef.current.ended) {
+                audioRef.current.currentTime = 0;
+            }
             audioRef.current.play();
         }
         setIsPlaying(!isPlaying);
@@ -122,14 +127,6 @@ export default function ArtisanHomePage() {
   
   const handleAudioEnded = () => {
     setIsPlaying(false);
-  };
-
-  const handleRestart = () => {
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setIsPlaying(true);
-    }
   };
 
   const handleMicClick = () => {
@@ -237,15 +234,16 @@ export default function ArtisanHomePage() {
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-md">{t.aiGeneratedInsightsTitle}</CardTitle>
                          {result.aiReviewAudio && (
-                          <div className="flex items-center gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handlePlayPause}>
-                              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                className={cn("h-8 w-8 rounded-full", isPlaying && "bg-accent text-accent-foreground")}
+                                onClick={handlePlayPause}
+                                aria-label={t.playAudio}
+                            >
+                                <Volume2 className="h-5 w-5" />
+                                <audio ref={audioRef} src={result.aiReviewAudio} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={handleAudioEnded} />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleRestart}>
-                              <RotateCcw className="h-4 w-4" />
-                            </Button>
-                            <audio ref={audioRef} src={result.aiReviewAudio} onEnded={handleAudioEnded} />
-                          </div>
                         )}
                     </div>
                 </CardHeader>
