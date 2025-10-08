@@ -44,8 +44,8 @@ export default function ArtisanLayout({
                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1">
-            {/* The HeaderActions component is now guaranteed to be here for all child pages */}
+          <div className="flex-1">
+            {/* This space is intentionally left blank to push actions to the right */}
           </div>
           <HeaderActions />
         </header>
