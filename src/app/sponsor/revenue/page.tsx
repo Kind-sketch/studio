@@ -64,32 +64,34 @@ export default function RevenuePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
-                  <TableHead>{translatedContent.nameHeader}</TableHead>
-                  <TableHead className="text-right">{translatedContent.revenueHeader}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {myRevenueData.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <Image
-                        src={item.image.url}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        className="rounded-md object-cover aspect-square"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-right font-semibold">₹{item.revenue.toFixed(2)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
+                    <TableHead>{translatedContent.nameHeader}</TableHead>
+                    <TableHead className="text-right">{translatedContent.revenueHeader}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {myRevenueData.map((item) => (
+                    <TableRow key={item.id}>
+                        <TableCell>
+                        <Image
+                            src={item.image.url}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            className="rounded-md object-cover aspect-square"
+                        />
+                        </TableCell>
+                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell className="text-right font-semibold">₹{item.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            </div>
           </CardContent>
         </Card>
 
@@ -101,36 +103,38 @@ export default function RevenuePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
-                  <TableHead>{translatedContent.artisanHeader}</TableHead>
-                  <TableHead>{translatedContent.artisanShareHeader}</TableHead>
-                  <TableHead className="text-right">{translatedContent.sharedAmountHeader}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sharedRevenueData.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                       <Image
-                        src={item.image.url}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        className="rounded-md object-cover aspect-square"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{item.artisan.name}</TableCell>
-                    <TableCell>
-                        <Badge variant="secondary">{item.artisanShare}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead className="w-[80px] sm:w-[100px]">{translatedContent.productHeader}</TableHead>
+                    <TableHead>{translatedContent.artisanHeader}</TableHead>
+                    <TableHead>{translatedContent.artisanShareHeader}</TableHead>
+                    <TableHead className="text-right">{translatedContent.sharedAmountHeader}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {sharedRevenueData.map((item) => (
+                    <TableRow key={item.id}>
+                        <TableCell>
+                        <Image
+                            src={item.image.url}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            className="rounded-md object-cover aspect-square"
+                        />
+                        </TableCell>
+                        <TableCell className="font-medium">{item.artisan.name}</TableCell>
+                        <TableCell>
+                            <Badge variant="secondary">{item.artisanShare}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
