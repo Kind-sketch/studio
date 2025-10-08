@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
 import {
   Home,
-  BarChart3,
   User,
   Package,
   HeartHandshake,
@@ -214,7 +213,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         business: [
             { href: '/artisan/dashboard', icon: DollarSign, labelKey: 'revenue' },
             { href: '/artisan/orders', icon: Package, labelKey: 'orders' },
-            { href: '/artisan/stats', icon: BarChart3, labelKey: 'statistics' },
             { href: '/artisan/sponsors', icon: HeartHandshake, labelKey: 'sponsors' },
         ]
     };

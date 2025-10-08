@@ -14,7 +14,7 @@ import { z } from 'genkit';
 // Define the valid page slugs the AI can return.
 const pageSlugs = [
   'home', 'my-products', 'saved-collection', 'dashboard', 'orders', 
-  'stats', 'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product'
+  'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product'
 ] as const;
 
 const InterpretNavCommandInputSchema = z.object({
@@ -51,7 +51,6 @@ Here are the available pages and keywords associated with them:
 - 'add-product': Add a new product, upload a creation, new item.
 - 'dashboard': Revenue, earnings, money, income, sales overview.
 - 'orders': Manage orders, new orders, track shipments.
-- 'stats': Statistics, performance, analytics, charts, likes vs sales.
 - 'sponsors': Manage sponsors, find sponsors.
 - 'sponsors/requests': Sponsor requests, new sponsors, people who want to donate, funding requests.
 - 'sponsors/my-sponsors': My current sponsors, existing partnerships.
