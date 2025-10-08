@@ -10,7 +10,6 @@ import {
   User,
   Package,
   HeartHandshake,
-  Mic,
   MessageCircleQuestion,
   ShoppingBag,
   Bookmark,
@@ -24,9 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import SupportDialog from './support-dialog';
 import {
     DropdownMenu,
@@ -52,14 +49,8 @@ interface Notification {
 }
 
 export function HeaderActions() {
-    const { toast, dismiss } = useToast();
-    const router = useRouter();
-    const { language } = useLanguage();
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar.notifications;
-    const [isListening, setIsListening] = useState(false);
-    const recognitionRef = useRef<any>(null);
-    const toastIdRef = useRef<string | null>(null);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
 
@@ -77,135 +68,6 @@ export function HeaderActions() {
     const markAsRead = (id: string) => {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     }
-
-    const navKeywords: { [key: string]: string[] } = {
-        '/artisan/home': ['trends', 'home', 'main', 'start', 'community', 'popular', 'feed', 'feedback', 'review'],
-        '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'],
-        '/artisan/my-products': ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'],
-        '/artisan/stats': ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'],
-        '/artisan/profile': ['profile', 'account', 'me', 'my details', 'user'],
-        '/artisan/orders': ['orders', 'requests', 'shipments', 'manage orders'],
-        '/artisan/sponsors': ['sponsors', 'sponsorships', 'partners', 'supporters'],
-        '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
-    };
-    
-    const handleVoiceCommand = (command: string): boolean => {
-        const lowerCaseCommand = command.toLowerCase().trim();
-        for (const path in navKeywords) {
-            if (navKeywords[path].some(keyword => lowerCaseCommand.includes(keyword.toLowerCase()))) {
-                router.push(path);
-                 if (toastIdRef.current) {
-                    toast({
-                        id: toastIdRef.current,
-                        title: 'Navigating...',
-                        description: `Taking you to the requested page.`,
-                    });
-                }
-                return true;
-            }
-        }
-        return false;
-    };
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                const recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = false; 
-                recognition.maxAlternatives = 1;
-
-                recognition.onresult = async (event: any) => {
-                    const spokenText = event.results[0][0].transcript;
-                    if (toastIdRef.current) {
-                        const { id } = toast({
-                            id: toastIdRef.current,
-                            title: 'Processing Command...',
-                            description: `"${spokenText}"`,
-                        });
-                        toastIdRef.current = id;
-                    }
-
-                    let commandFound = handleVoiceCommand(spokenText);
-
-                    if (!commandFound && language !== 'en') {
-                        try {
-                            const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
-                            const translatedCommand = translatedTexts[0];
-                            if (translatedCommand) {
-                                commandFound = handleVoiceCommand(translatedCommand);
-                            }
-                        } catch (e) {
-                             if (toastIdRef.current) {
-                                toast({
-                                    id: toastIdRef.current,
-                                    variant: 'destructive',
-                                    title: 'Translation Error',
-                                    description: 'Could not translate your command.',
-                                });
-                            }
-                        }
-                    }
-
-                    if (!commandFound && toastIdRef.current) {
-                        toast({
-                            id: toastIdRef.current,
-                            variant: 'destructive',
-                            title: 'Command Not Recognized',
-                            description: `Could not find a page for "${spokenText}".`,
-                        });
-                    }
-                };
-
-                recognition.onerror = (event: any) => {
-                    console.error('Speech recognition error', event.error);
-                    if (toastIdRef.current) {
-                        toast({
-                            id: toastIdRef.current,
-                            variant: 'destructive',
-                            title: 'Voice Error',
-                            description: 'Could not recognize your voice. Please try again.',
-                        });
-                    }
-                    setIsListening(false);
-                };
-
-                recognition.onend = () => {
-                    setIsListening(false);
-                    setTimeout(() => {
-                        if(toastIdRef.current) dismiss(toastIdRef.current);
-                    }, 3000);
-                };
-
-                recognitionRef.current = recognition;
-            }
-        }
-    }, [language, toast, dismiss, router]);
-
-    const handleMicClick = () => {
-        if (isListening) {
-            recognitionRef.current?.stop();
-        } else {
-            if (recognitionRef.current) {
-                recognitionRef.current.lang = language;
-                recognitionRef.current.start();
-                setIsListening(true);
-                const { id } = toast({
-                    title: 'Listening...',
-                    description: 'Please say a command.',
-                    duration: 5000,
-                });
-                toastIdRef.current = id;
-            } else {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Not Supported',
-                    description: 'Voice command is not supported on your browser.',
-                });
-            }
-        }
-    };
     
     const formatNotificationDescription = (key: string, params: any) => {
         let desc = key;
@@ -262,15 +124,6 @@ export function HeaderActions() {
                   <MessageCircleQuestion className="h-5 w-5" />
               </Button>
             </SupportDialog>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleMicClick}
-                aria-label="Use Voice Command"
-                className={cn("rounded-full bg-primary/10 text-primary hover:bg-primary/20", isListening && "animate-pulse")}
-            >
-                <Mic className="h-5 w-5" />
-            </Button>
         </div>
     )
 }
