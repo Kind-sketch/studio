@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,10 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
 
@@ -23,14 +22,25 @@ const formSchema = z.object({
   otp: z.string().min(5, 'OTP must be 5 digits.').optional(),
 });
 
-export default function AuthClientPage() {
+
+function AuthClientPageComponent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { translations } = useTranslation();
   const t = translations.auth_page;
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
   const [otpSent, setOtpSent] = useState(false);
+
+  useEffect(() => {
+    const role = searchParams.get('role');
+    if (role === 'sponsor') {
+      setUserType('sponsor');
+    } else {
+      setUserType('buyer');
+    }
+  }, [searchParams]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,6 +82,13 @@ export default function AuthClientPage() {
       router.push(redirectPath);
     }, 1000);
   }
+  
+  const getTitle = () => {
+    if (userType === 'sponsor') {
+        return t.sponsorTab || 'Sponsor Login';
+    }
+    return t.buyerTab || 'Buyer Login';
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
@@ -80,21 +97,14 @@ export default function AuthClientPage() {
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-2xl">{t.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
           <CardDescription>
             {t.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="buyer" onValueChange={setUserType} className="w-full mb-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="buyer">{t.buyerTab}</TabsTrigger>
-              <TabsTrigger value="sponsor">{t.sponsorTab}</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="mobileNumber"
@@ -139,4 +149,12 @@ export default function AuthClientPage() {
       </Card>
     </div>
   );
+}
+
+export default function AuthClientPage() {
+    return (
+        <Suspense>
+            <AuthClientPageComponent />
+        </Suspense>
+    )
 }

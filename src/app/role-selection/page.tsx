@@ -18,18 +18,21 @@ const baseRoles = [
     description: 'Showcase your creations, connect with buyers.',
     href: '/artisan/register',
     icon: Palette,
+    role: 'artisan'
   },
   {
     name: 'Buyer',
     description: 'Discover and purchase unique handmade goods.',
-    href: '/auth',
+    href: '/auth?role=buyer',
     icon: ShoppingBag,
+    role: 'buyer'
   },
   {
     name: 'Sponsor',
     description: 'Support artisans and the creative community.',
-    href: '/auth',
+    href: '/auth?role=sponsor',
     icon: HeartHandshake,
+    role: 'sponsor'
   },
 ];
 
