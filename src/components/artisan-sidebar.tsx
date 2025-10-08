@@ -90,14 +90,14 @@ export function HeaderActions() {
     };
 
     const tamilNavKeywords: { [key: string]: string[] } = {
-      '/artisan/home': ['முகப்பு', 'வீடு', 'தொடங்கு', 'போக்குகள்', 'சமூகம்', 'கருத்து', 'விமர்சனம்'],
+      '/artisan/home': ['முகப்பு', 'வீடு', 'தொடங்கு', 'போக்குகள்', 'சமூகம்', 'கருத்து', 'விமர்சனம்', 'ட்ரெண்ட்ஸ்'],
       '/artisan/dashboard': ['வருவாய்', 'பணம்', 'சம்பாத்தியம்', 'டாஷ்போர்டு', 'வருமானம்'],
-      '/artisan/my-products': ['என் தயாரிப்புகள்', 'பொருட்கள்', 'படைப்புகள்', 'காட்சியகம்'],
+      '/artisan/my-products': ['என் தயாரிப்புகள்', 'பொருட்கள்', 'படைப்புகள்', 'காட்சியகம்', 'தயாரிப்புகள்'],
       '/artisan/stats': ['புள்ளிவிவரங்கள்', 'தரவு', 'செயல்திறன்', 'விவரங்கள்'],
       '/artisan/profile': ['சுயவிவரம்', 'கணக்கு', 'என் விவரங்கள்'],
       '/artisan/orders': ['ஆர்டர்கள்', 'கோரிக்கைகள்', 'எனது ஆர்டர்கள்'],
       '/artisan/sponsors': ['ஸ்பான்சர்கள்', 'ஆதரவாளர்கள்', 'பங்குதாரர்கள்'],
-      '/artisan/saved-collection': ['சேமித்தவை', 'சேகரிப்புகள்', 'புக்மார்க்குகள்', 'பிடித்தவை'],
+      '/artisan/saved-collection': ['சேமித்தவை', 'சேகரிப்புகள்', 'புக்மார்க்குகள்', 'பிடித்தவை', 'ஸ்பூரத்திகள்'],
     };
 
     const handleVoiceCommand = (command: string): boolean => {
@@ -333,7 +333,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     
     const isLinkActive = (href: string) => {
         if (href === '/artisan/home') {
-            return pathname === href || pathname === '/artisan/trends';
+            return pathname === href;
         }
         if (href.endsWith('/sponsors')) {
             return pathname.startsWith('/artisan/sponsors');
@@ -358,12 +358,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
             <div className="flex-1 overflow-y-auto">
                 <nav className="flex h-full flex-col p-4">
                     <div className="flex-1 space-y-6">
-                        <div className="space-y-2">
-                             <Button onClick={() => handleLinkClick('/artisan/add-product')} className="w-full">
-                                <Plus className="mr-2 h-4 w-4" />
-                                {t.addProduct}
-                            </Button>
-                        </div>
 
                         <div>
                             <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">{t.studio}</h3>

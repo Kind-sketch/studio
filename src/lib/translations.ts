@@ -399,16 +399,19 @@ export const translations = {
         noQuestionSelected: 'Please select an issue.',
     },
     artisan_sidebar: {
-        navItems: [
-            { label: 'Home' },
-            { label: 'Revenue' },
-            { label: 'My Products' },
-            { label: 'Statistics' },
-            { label: 'My Profile' },
-        ],
-        orders: 'Orders',
-        sponsors: 'Sponsors',
-        savedCollection: 'Inspirations',
+        addProduct: 'Add New Product',
+        studio: 'Studio',
+        businessTools: 'Business Tools',
+        navItems: {
+            trends: 'Trends',
+            myProducts: 'My Products',
+            savedCollection: 'Inspirations',
+            revenue: 'Revenue',
+            orders: 'Orders',
+            statistics: 'Statistics',
+            sponsors: 'Sponsors',
+            profile: 'My Profile',
+        },
         logout: 'Logout',
         logoutToastTitle: 'Logged Out',
         logoutToastDesc: 'You have been successfully logged out.',
@@ -782,7 +785,7 @@ export const translations = {
       title: "உங்கள் மொழியைத் தேர்வுசெய்க",
     },
     role_selection_page: {
-      welcome: "கைவினைத்திறன் புகலிடங்களுக்கு வருக",
+      welcome: "கைவினைத்திறన్ புகலிடங்களுக்கு வருக",
       joinCommunity: "எங்கள் சமூகத்தில் நீங்கள் எப்படி சேர விரும்புகிறீர்கள்?",
       footer: "கைவினைஞர்களுக்கு, முதல் படி பதிவு செய்வதாகும்.",
       roles: [
@@ -841,16 +844,19 @@ export const translations = {
       noQuestionSelected: "தயவுசெய்து ஒரு சிக்கலைத் தேர்ந்தெடுக்கவும்.",
     },
     artisan_sidebar: {
-      navItems: [
-        { label: "முகப்பு" },
-        { label: "வருவாய்" },
-        { label: "என் தயாரிப்புகள்" },
-        { label: "புள்ளிவிவரங்கள்" },
-        { label: "என் சுயவிவரம்" },
-      ],
-      orders: "ஆர்டர்கள்",
-      sponsors: "ஸ்பான்சர்கள்",
-      savedCollection: "ஸ்பூரத்திகள்",
+      addProduct: 'புதிய பொருளைச் சேர்',
+      studio: 'ஸ்டுடியோ',
+      businessTools: 'வணிக கருவிகள்',
+      navItems: {
+        trends: 'போக்குகள்',
+        myProducts: 'என் தயாரிப்புகள்',
+        savedCollection: 'ஸ்பூரத்திகள்',
+        revenue: 'வருவாய்',
+        orders: 'ஆர்டர்கள்',
+        statistics: 'புள்ளிவிவரங்கள்',
+        sponsors: 'ஸ்பான்சர்கள்',
+        profile: 'என் சுயவிவரம்',
+      },
       logout: "வெளியேறு",
       logoutToastTitle: "வெளியேறப்பட்டது",
       logoutToastDesc: "நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள்.",
@@ -876,6 +882,3 @@ export const translations = {
     ],
   },
 };
-
-    
-    
