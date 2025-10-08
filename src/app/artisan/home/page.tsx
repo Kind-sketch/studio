@@ -141,16 +141,16 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-muted/40">
+    <div className="bg-muted/40 p-4">
       <div className="space-y-4 pt-6">
-        <div className="px-4">
+        <div>
             <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
             <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
         </div>
 
         {/* Frequently Bought Products */}
         <section className="space-y-3">
-          <h3 className="font-headline text-lg font-semibold px-4">{t.frequentlyBought}</h3>
+          <h3 className="font-headline text-lg font-semibold">{t.frequentlyBought}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
             plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]} 
@@ -168,7 +168,7 @@ export default function ArtisanHomePage() {
 
         {/* Bestselling Products */}
         <section className="space-y-3">
-            <h3 className="font-headline text-lg font-semibold px-4">{t.bestselling}</h3>
+            <h3 className="font-headline text-lg font-semibold">{t.bestselling}</h3>
              <Carousel 
               opts={{ align: 'start', loop: true }} 
               plugins={[Autoplay({ delay: 2500, stopOnInteraction: true, direction: 'backward' })]} 
@@ -185,7 +185,7 @@ export default function ArtisanHomePage() {
         </section>
 
         {/* AI Review Section */}
-        <section className="p-4">
+        <section>
              <Card>
               <CardHeader className="pb-4">
                 <CardTitle className="text-md">{t.aiReviewTitle}</CardTitle>
