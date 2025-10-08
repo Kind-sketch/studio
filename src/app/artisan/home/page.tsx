@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Lightbulb, Play, Pause, RotateCcw, Mic, Volume2 } from 'lucide-react';
+import { Loader2, Lightbulb, Mic, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
@@ -141,60 +141,54 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-muted/40 overflow-x-hidden">
-      <div className="flex-1 space-y-6">
-        <div className="flex items-center justify-between space-y-2 px-4 pt-6">
-          <div>
-            <h2 className="font-headline text-2xl md:text-3xl font-bold tracking-tight">{t.pageTitle}</h2>
+    <div className="flex h-full flex-col bg-muted/40">
+      <div className="space-y-4 pt-6">
+        <div className="px-4">
+            <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
             <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
-          </div>
         </div>
 
         {/* Frequently Bought Products */}
-        <section className="space-y-4">
-          <h3 className="font-headline text-xl font-semibold px-4">{t.frequentlyBought}</h3>
+        <section className="space-y-3">
+          <h3 className="font-headline text-lg font-semibold px-4">{t.frequentlyBought}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
             plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]} 
             className="w-full"
           >
             <CarouselContent className="-ml-4">
-              {frequentlyBought.map((product, index) => (
+              {frequentlyBought.map((product) => (
                 <CarouselItem key={product.id} className="basis-1/2 pl-4">
                    <ProductCard product={product} />
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
           </Carousel>
         </section>
 
         {/* Bestselling Products */}
-        <section className="space-y-4">
-            <h3 className="font-headline text-xl font-semibold px-4">{t.bestselling}</h3>
+        <section className="space-y-3">
+            <h3 className="font-headline text-lg font-semibold px-4">{t.bestselling}</h3>
              <Carousel 
               opts={{ align: 'start', loop: true }} 
-              plugins={[Autoplay({ delay: 2000, stopOnInteraction: true, playOnInit: true, direction: 'backward' })]} 
+              plugins={[Autoplay({ delay: 2500, stopOnInteraction: true, direction: 'backward' })]} 
               className="w-full"
             >
               <CarouselContent className="-ml-4">
-                  {bestSelling.map((product, index) => (
+                  {bestSelling.map((product) => (
                       <CarouselItem key={product.id} className="basis-1/2 pl-4">
                           <ProductCard product={product} />
                       </CarouselItem>
                   ))}
               </CarouselContent>
-              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
             </Carousel>
         </section>
 
         {/* AI Review Section */}
-        <section className="p-4 md:p-6">
+        <section className="p-4">
              <Card>
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg">{t.aiReviewTitle}</CardTitle>
+                <CardTitle className="text-md">{t.aiReviewTitle}</CardTitle>
                 <CardDescription className="text-xs">{t.aiReviewDescription}</CardDescription>
               </CardHeader>
               <Form {...form}>
@@ -208,7 +202,7 @@ export default function ArtisanHomePage() {
                           <FormItem>
                             <FormLabel className="sr-only">{t.productDescriptionLabel}</FormLabel>
                             <FormControl>
-                              <Textarea placeholder={t.productDescriptionPlaceholder} {...field} className="h-24 text-sm pr-12" />
+                              <Textarea placeholder={t.productDescriptionPlaceholder} {...field} className="h-20 text-sm pr-12" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -236,7 +230,7 @@ export default function ArtisanHomePage() {
             </Card>
             
             {result && (
-              <Card className="mt-6">
+              <Card className="mt-4">
                 <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-md">{t.aiGeneratedInsightsTitle}</CardTitle>
@@ -255,7 +249,7 @@ export default function ArtisanHomePage() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.aiReview}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-wrap">{result.aiReview}</p>
                 </CardContent>
               </Card>
             )}
