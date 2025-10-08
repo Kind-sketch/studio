@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from '@/hooks/use-toast';
 import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
@@ -211,30 +212,51 @@ export default function OrdersPage() {
           {renderRequests()}
         </TabsContent>
         <TabsContent value="my-orders">
-          <Tabs defaultValue="processing" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 text-xs">
-              <TabsTrigger value="processing" className="px-1 text-center">
-                <Package className="mr-1 h-4 w-4" /> {t.processingTab}
-              </TabsTrigger>
-              <TabsTrigger value="shipped" className="px-1 text-center">
-                <Ship className="mr-1 h-4 w-4" /> {t.shippedTab}
-              </TabsTrigger>
-              <TabsTrigger value="delivered" className="px-1 text-center">
-                <CheckCircle className="mr-1 h-4 w-4" /> {t.deliveredTab}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="processing">
-              {renderOrderList('Processing')}
-            </TabsContent>
-            <TabsContent value="shipped">
-              {renderOrderList('Shipped')}
-            </TabsContent>
-            <TabsContent value="delivered">
-              {renderOrderList('Delivered')}
-            </TabsContent>
-          </Tabs>
+           <Accordion type="multiple" defaultValue={['processing']} className="w-full space-y-2">
+            <Card>
+                <AccordionItem value="processing" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <Package className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.processingTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Processing')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+            <Card>
+                 <AccordionItem value="shipped" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <Ship className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.shippedTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Shipped')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+            <Card>
+                 <AccordionItem value="delivered" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <CheckCircle className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.deliveredTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Delivered')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+           </Accordion>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+    
