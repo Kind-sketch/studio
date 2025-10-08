@@ -15,6 +15,7 @@ import { Loader2, Sparkles, X } from 'lucide-react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useTranslation } from '@/context/translation-context';
+import { cn } from '@/lib/utils';
 
 type View = 'weekly' | 'monthly' | 'yearly';
 
@@ -91,7 +92,7 @@ export default function StatisticsPage() {
             <Button size="sm" variant={getButtonVariant('monthly')} onClick={() => setView('monthly')}>{t.monthly}</Button>
             <Button size="sm" variant={getButtonVariant('yearly')} onClick={() => setView('yearly')}>{t.yearly}</Button>
           </div>
-          <div className="aspect-video w-full">
+          <div className="h-60 w-full">
             <StatsChart data={statsData[view]} config={chartConfig} dataKey={view.slice(0, -2)} />
           </div>
         </CardContent>
@@ -103,52 +104,62 @@ export default function StatisticsPage() {
           <CardDescription>{t.productPerformanceDesc}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t.productHeader}</TableHead>
-                <TableHead className="text-right">{t.reviewHeader}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.slice(0, 5).map(product => (
-                <TableRow key={product.id}>
-                  <TableCell className="flex items-center gap-2">
-                    <Image src={product.image.url} alt={product.name} width={40} height={40} className="rounded-md aspect-square object-cover" />
-                    <div>
-                        <p className="font-medium truncate max-w-[120px]">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">Likes: {product.likes} | Sales: {product.sales}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Dialog>
-                       <DialogTrigger asChild>
-                         <Button variant="ghost" size="sm" onClick={() => handleGenerateReview(product.id, product.description)}>
-                           {isGenerating === product.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                         </Button>
-                       </DialogTrigger>
-                       <DialogContent>
-                          <DialogHeader>
-                              <DialogTitle>{aiReview ? `${t.reviewFor} ${product.name}`: t.generatingReviewTitle}</DialogTitle>
-                              <DialogDescription>
-                                  {aiReview ? t.analysisOfPotential : t.generatingReviewDesc}
-                              </DialogDescription>
-                          </DialogHeader>
-                          {aiReview ? (
-                            <div className="py-4 text-sm text-muted-foreground">{aiReview.review}</div>
-                          ) : (
-                            <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin"/></div>
-                          )}
-                          <DialogClose asChild>
-                              <Button type="button" variant="secondary">{t.close}</Button>
-                          </DialogClose>
-                       </DialogContent>
-                    </Dialog>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t.productHeader}</TableHead>
+                  <TableHead className="text-right">{t.reviewHeader}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {products.slice(0, 5).map(product => (
+                  <TableRow key={product.id}>
+                    <TableCell className="flex items-center gap-2">
+                      <Image src={product.image.url} alt={product.name} width={40} height={40} className="rounded-md aspect-square object-cover" />
+                      <div>
+                          <p className="font-medium truncate max-w-[120px]">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">Likes: {product.likes} | Sales: {product.sales}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Dialog>
+                         <DialogTrigger asChild>
+                           <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleGenerateReview(product.id, product.description)}
+                              className={cn(
+                                'animate-pulse bg-primary/10 text-primary hover:bg-primary/20',
+                                isGenerating === product.id && 'animate-spin'
+                              )}
+                            >
+                             {isGenerating === product.id ? <Loader2 className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+                           </Button>
+                         </DialogTrigger>
+                         <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>{aiReview ? `${t.reviewFor} ${product.name}`: t.generatingReviewTitle}</DialogTitle>
+                                <DialogDescription>
+                                    {aiReview ? t.analysisOfPotential : t.generatingReviewDesc}
+                                </DialogDescription>
+                            </DialogHeader>
+                            {aiReview ? (
+                              <div className="py-4 text-sm text-muted-foreground">{aiReview.review}</div>
+                            ) : (
+                              <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin"/></div>
+                            )}
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary">{t.close}</Button>
+                            </DialogClose>
+                         </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
