@@ -205,23 +205,23 @@ export default function StatsPage() {
               <CardTitle className="text-base">{translatedContent.productPerformance}</CardTitle>
               <CardDescription className="text-xs">{translatedContent.productPerformanceDesc}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2">
             {products.map(product => (
                 <Card key={product.id} className="overflow-hidden">
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-lg object-cover aspect-square bg-muted"/>
+                  <CardContent className="flex items-center gap-3 p-3">
+                    <Image src={product.image.url} alt={product.name} width={56} height={56} className="rounded-md object-cover aspect-square bg-muted"/>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold truncate">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">₹{product.price.toFixed(2)}</p>
+                      <p className="font-semibold truncate text-sm">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">₹{product.price.toFixed(2)}</p>
                     </div>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button 
                                 size="sm" 
                                 onClick={() => handleAiReview(product)}
-                                className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-9 px-3 shrink-0"
+                                className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-8 px-2.5 shrink-0"
                             >
-                                <Lightbulb className="mr-2 h-4 w-4" />
+                                <Lightbulb className="mr-1.5 h-3.5 w-3.5" />
                                 <span className="text-xs">{translatedContent.reviewHeader}</span>
                             </Button>
                         </AlertDialogTrigger>
@@ -271,3 +271,5 @@ export default function StatsPage() {
     </div>
   );
 }
+
+    
