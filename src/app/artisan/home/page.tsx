@@ -123,7 +123,7 @@ export default function ArtisanHomePage() {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
-            audioRef.current.play();
+            audio.current.play();
         }
         setIsPlaying(!isPlaying);
     }
@@ -151,16 +151,19 @@ export default function ArtisanHomePage() {
           </div>
         </div>
 
-        {/* My Top Performers */}
+        {/* Your Top Performers */}
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4">Your Top Performers</h3>
           <div className="space-y-6">
             <div className="w-full overflow-hidden">
               <h4 className="font-semibold text-md mb-2">Most Liked</h4>
-               <Carousel opts={{ align: 'start' }}>
-                <CarouselContent>
+               <Carousel 
+                opts={{ align: 'start', loop: true }}
+                plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
+               >
+                <CarouselContent className="-ml-2">
                   {myMostLiked.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-[3/4]" />
                     </CarouselItem>
                   ))}
@@ -169,10 +172,13 @@ export default function ArtisanHomePage() {
             </div>
              <div className="w-full overflow-hidden">
               <h4 className="font-semibold text-md mb-2">Most Bought</h4>
-               <Carousel opts={{ align: 'start' }}>
-                <CarouselContent>
+               <Carousel 
+                opts={{ align: 'start', loop: true, direction: 'rtl' }}
+                plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
+               >
+                <CarouselContent className="-ml-2">
                   {myMostBought.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-[3/4]" />
                     </CarouselItem>
                   ))}
@@ -258,7 +264,7 @@ export default function ArtisanHomePage() {
                 <h3 className="font-headline text-xl font-semibold mb-4">Community Favorites: Most Liked</h3>
                 <div className="w-full overflow-hidden">
                     <Carousel opts={{ align: 'start' }}>
-                    <CarouselContent>
+                    <CarouselContent className="-ml-2">
                         {otherMostLiked.slice(0, 8).map((product) => (
                         <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pr-2">
                             <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-[3/4]" />
