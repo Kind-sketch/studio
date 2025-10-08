@@ -38,12 +38,12 @@ export default function ArtisanDashboard() {
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         
         <Carousel
             opts={{ loop: true }}
             plugins={[Autoplay({ delay: 3000, stopOnInteraction: true })]}
-            className="w-full lg:col-span-1"
+            className="w-full lg:col-span-2"
         >
             <CarouselContent>
                 <CarouselItem>
@@ -111,7 +111,7 @@ export default function ArtisanDashboard() {
                 <TableRow>
                   <TableHead className="w-[80px] sm:w-[100px]">{t.productHeader}</TableHead>
                   <TableHead>{t.sponsorHeader}</TableHead>
-                  <TableHead>{t.sponsorShareHeader}</TableHead>
+                  <TableHead className="hidden sm:table-cell">{t.sponsorShareHeader}</TableHead>
                   <TableHead className="text-right">{t.sharedAmountHeader}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -128,7 +128,7 @@ export default function ArtisanDashboard() {
                       />
                     </TableCell>
                     <TableCell className="font-medium">{item.sponsor.name}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                         <Badge variant="secondary">{item.sponsorShare}</Badge>
                     </TableCell>
                     <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
