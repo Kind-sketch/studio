@@ -143,7 +143,7 @@ export default function ArtisanHomePage() {
   return (
     <div className="flex h-full flex-col bg-muted/40 overflow-x-hidden">
       <div className="flex-1 space-y-6">
-        <div className="flex items-center justify-between space-y-2 px-4 md:px-6 pt-4 md:pt-6">
+        <div className="flex items-center justify-between space-y-2 px-4 pt-6">
           <div>
             <h2 className="font-headline text-2xl md:text-3xl font-bold tracking-tight">{t.pageTitle}</h2>
             <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
@@ -151,39 +151,33 @@ export default function ArtisanHomePage() {
         </div>
 
         {/* Frequently Bought Products */}
-        <section>
-          <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.frequentlyBought}</h3>
+        <section className="space-y-4">
+          <h3 className="font-headline text-xl font-semibold px-4">{t.frequentlyBought}</h3>
           <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-            <CarouselContent>
+            <CarouselContent className="-ml-2">
               {frequentlyBought.map((product, index) => (
-                <CarouselItem key={product.id} className={cn("basis-1/2 md:basis-1/3", 
-                    index === 0 ? 'pl-4' : 'pl-2',
-                    index === frequentlyBought.length - 1 ? 'pr-4' : 'pr-2'
-                )}>
+                <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-4">
                    <ProductCard product={product} />
                 </CarouselItem>
               ))}
             </CarouselContent>
-             <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
             <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
           </Carousel>
         </section>
 
         {/* Bestselling Products */}
-        <section>
-            <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.bestselling}</h3>
+        <section className="space-y-4">
+            <h3 className="font-headline text-xl font-semibold px-4">{t.bestselling}</h3>
             <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-              <CarouselContent>
+              <CarouselContent className="-ml-2">
                   {bestSelling.map((product, index) => (
-                      <CarouselItem key={product.id} className={cn("basis-1/2 md:basis-1/3", 
-                        index === 0 ? 'pl-4' : 'pl-2',
-                        index === bestSelling.length - 1 ? 'pr-4' : 'pr-2'
-                      )}>
+                      <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-4">
                           <ProductCard product={product} />
                       </CarouselItem>
                   ))}
               </CarouselContent>
-               <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
               <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
             </Carousel>
         </section>
