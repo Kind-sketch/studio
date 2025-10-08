@@ -41,37 +41,39 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white flex flex-col"
+              className="h-7 w-7 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white flex flex-col p-1"
               onClick={handleLike}
             >
               <Heart
                 className={cn(
-                  'h-4 w-4 text-slate-700',
+                  'h-3 w-3 text-slate-700',
                   isLiked && 'fill-red-500 text-red-500'
                 )}
               />
-              <span className="text-[10px] text-slate-700 font-bold">{likeCount}</span>
+              <span className="text-[9px] text-slate-700 font-bold">{likeCount}</span>
             </Button>
             {showSaveButton && onSave && (
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
+                    className="h-7 w-7 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
                     onClick={onSave}
                 >
-                    <Bookmark className='h-4 w-4 text-slate-700' />
+                    <Bookmark className='h-3 w-3 text-slate-700' />
                 </Button>
             )}
           </div>
         </div>
-        <div className="p-2">
-          <h3 className="font-headline text-xs font-semibold truncate">{product.name}</h3>
-          <p className="text-[10px] text-muted-foreground truncate">
+        <div className="p-1.5">
+          <h3 className="font-headline text-[11px] font-semibold truncate">{product.name}</h3>
+          <p className="text-[9px] text-muted-foreground truncate">
             by {product.artisan.name}
           </p>
-          <p className="mt-1 font-semibold text-sm">₹{product.price.toFixed(2)}</p>
+          <p className="mt-0.5 font-semibold text-xs">₹{product.price.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>
   );
 }
+
+    
