@@ -158,9 +158,9 @@ export default function ArtisanHomePage() {
             <div>
               <h4 className="font-semibold text-md mb-2">Most Liked</h4>
                <Carousel opts={{ align: 'start' }} className="w-full">
-                <CarouselContent className="-ml-2">
+                <CarouselContent>
                   {myMostLiked.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                   ))}
@@ -170,9 +170,9 @@ export default function ArtisanHomePage() {
              <div>
               <h4 className="font-semibold text-md mb-2">Most Bought</h4>
                <Carousel opts={{ align: 'start' }} className="w-full">
-                <CarouselContent className="-ml-2">
+                <CarouselContent>
                   {myMostBought.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                   ))}
@@ -257,9 +257,9 @@ export default function ArtisanHomePage() {
             <section className="mb-6">
                 <h3 className="font-headline text-xl font-semibold mb-4">Community Favorites: Most Liked</h3>
                 <Carousel opts={{ align: 'start' }} className="w-full">
-                <CarouselContent className="-ml-2">
+                <CarouselContent>
                     {otherMostLiked.slice(0, 8).map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pr-2">
                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                     ))}
@@ -292,5 +292,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
