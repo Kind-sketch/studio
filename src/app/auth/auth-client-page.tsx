@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -98,9 +98,6 @@ function AuthClientPageComponent() {
             <Logo className="h-12 w-12 text-primary" />
           </Link>
           <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
-          <CardDescription>
-            {t.description}
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
