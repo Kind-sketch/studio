@@ -165,8 +165,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="p-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto p-4">
         <header className="mb-6">
           <h1 className="font-headline text-2xl font-bold">{translatedContent.title}</h1>
           <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
@@ -267,7 +266,6 @@ export default function StatsPage() {
             ))}
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
