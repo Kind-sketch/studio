@@ -7,22 +7,13 @@ import ProductCard from '@/components/product-card';
 import type { SavedCollection, Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 export default function SavedCollectionPage() {
   const [collections, setCollections] = useState<SavedCollection[]>([]);
   const [openCollections, setOpenCollections] = useState<string[]>([]);
-  const { language } = useLanguage();
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Saved Collections',
-    description: 'Your curated lists of inspiring products.',
-    items: 'items',
-    noItems: 'No items in this collection yet.',
-    noCollectionsTitle: 'No collections yet.',
-    noCollectionsDescription: 'Save products from the "Trends" page to start a collection.',
-  });
-
+  const { translations } = useTranslation();
+  const t = translations.saved_collection_page;
 
   useEffect(() => {
     const storedCollections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
@@ -30,26 +21,11 @@ export default function SavedCollectionPage() {
     setOpenCollections(storedCollections.map(c => c.id));
   }, []);
 
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
-
   return (
     <div className="container mx-auto p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
-        <p className="text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
+        <p className="text-muted-foreground">{t.description}</p>
       </header>
 
       {collections.length > 0 ? (
@@ -60,7 +36,7 @@ export default function SavedCollectionPage() {
                     <AccordionTrigger className="p-6 hover:no-underline">
                         <div className="text-left">
                             <h2 className="font-headline text-2xl font-semibold">{collection.name}</h2>
-                            <p className="text-sm text-muted-foreground">{collection.productIds.length} {translatedContent.items}</p>
+                            <p className="text-sm text-muted-foreground">{collection.productIds.length} {t.items}</p>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="p-6 pt-0">
@@ -72,7 +48,7 @@ export default function SavedCollectionPage() {
                         </div>
                          {collection.productIds.length === 0 && (
                             <div className="text-center text-muted-foreground py-8">
-                                <p>{translatedContent.noItems}</p>
+                                <p>{t.noItems}</p>
                             </div>
                         )}
                     </AccordionContent>
@@ -83,13 +59,11 @@ export default function SavedCollectionPage() {
       ) : (
         <Card className="flex items-center justify-center p-12">
           <div className="text-center text-muted-foreground">
-            <p className="text-lg">{translatedContent.noCollectionsTitle}</p>
-            <p>{translatedContent.noCollectionsDescription}</p>
+            <p className="text-lg">{t.noCollectionsTitle}</p>
+            <p>{t.noCollectionsDescription}</p>
           </div>
         </Card>
       )}
     </div>
   );
 }
-
-    
