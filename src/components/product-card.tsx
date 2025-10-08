@@ -22,7 +22,7 @@ export default function ProductCard({ product, onSave, showSaveButton }: Product
   return (
     <Card className="overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col">
       <CardContent className="p-0 flex-grow">
-        <div className="relative aspect-[4/5] w-full">
+        <div className="relative aspect-[3/4] w-full">
           <Image
             src={product.image.url}
             alt={product.name}
