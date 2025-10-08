@@ -89,22 +89,10 @@ export function HeaderActions() {
         '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
     };
     
-    const tamilNavKeywords: { [key: string]: string[] } = {
-        '/artisan/home': ['போக்குகள்', 'ட்ரெண்ட்ஸ்', 'முகப்பு', 'வீடு', 'தொடங்கு', 'சமூகம்', 'கருத்து', 'விமர்சனம்', 'முதன்மை', 'ஆரம்பம்'],
-        '/artisan/dashboard': ['வருவாய்', 'பணம்', 'சம்பாத்தியம்', 'டாஷ்போர்டு', 'வருமானம்', 'விற்பனை', 'நிதி'],
-        '/artisan/my-products': ['என் தயாரிப்புகள்', 'தயாரிப்புகள்', 'படைப்புகள்', 'காட்சியகம்', 'பொருட்கள்', 'சரக்கு'],
-        '/artisan/stats': ['புள்ளிவிவரங்கள்', 'தரவு', 'செயல்திறன்', 'விவரங்கள்', 'விளக்கப்படங்கள்', 'பகுப்பாய்வு'],
-        '/artisan/profile': ['சுயவிவரம்', 'கணக்கு', 'என் விவரங்கள்', 'பயனர்'],
-        '/artisan/orders': ['ஆர்டர்கள்', 'கோரிக்கைகள்', 'எனது ஆர்டர்கள்', 'அனுப்புதல்கள்'],
-        '/artisan/sponsors': ['ஸ்பான்சர்கள்', 'ஆதரவாளர்கள்', 'பங்குதாரர்கள்'],
-        '/artisan/saved-collection': ['சேமித்தவை', 'சேகரிப்புகள்', 'புக்மார்க்குகள்', 'பிடித்தவை', 'ஸ்பூரத்திகள்', 'உத்வேகம்'],
-    };
-
-    const handleVoiceCommand = (command: string, lang: string): boolean => {
-        const keywords = lang === 'ta' ? tamilNavKeywords : navKeywords;
+    const handleVoiceCommand = (command: string): boolean => {
         const lowerCaseCommand = command.toLowerCase().trim();
-        for (const path in keywords) {
-            if (keywords[path].some(keyword => lowerCaseCommand.includes(keyword.toLowerCase()))) {
+        for (const path in navKeywords) {
+            if (navKeywords[path].some(keyword => lowerCaseCommand.includes(keyword.toLowerCase()))) {
                 router.push(path);
                  if (toastIdRef.current) {
                     toast({
@@ -139,14 +127,14 @@ export function HeaderActions() {
                         toastIdRef.current = id;
                     }
 
-                    let commandFound = handleVoiceCommand(spokenText, language);
+                    let commandFound = handleVoiceCommand(spokenText);
 
-                    if (!commandFound && language === 'ta') {
+                    if (!commandFound && language !== 'en') {
                         try {
                             const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
                             const translatedCommand = translatedTexts[0];
                             if (translatedCommand) {
-                                commandFound = handleVoiceCommand(translatedCommand, 'en');
+                                commandFound = handleVoiceCommand(translatedCommand);
                             }
                         } catch (e) {
                              if (toastIdRef.current) {
