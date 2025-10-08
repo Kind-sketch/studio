@@ -173,10 +173,16 @@ export default function ArtisanHomePage() {
         {/* Bestselling Products */}
         <section>
             <h3 className="font-headline text-xl font-semibold mb-4">{t.bestselling}</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {bestSelling.slice(0, 4).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <div className="overflow-hidden">
+                <Carousel opts={{ align: 'start' }} className="w-full">
+                    <CarouselContent>
+                        {bestSelling.map((product) => (
+                            <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+                                <ProductCard product={product} />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                </Carousel>
             </div>
         </section>
 
