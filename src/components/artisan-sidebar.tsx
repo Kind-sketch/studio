@@ -88,7 +88,7 @@ export function HeaderActions() {
         '/artisan/sponsors': ['sponsors', 'sponsorships', 'partners', 'supporters'],
         '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
     };
-
+    
     const tamilNavKeywords: { [key: string]: string[] } = {
         '/artisan/home': ['முகப்பு', 'வீடு', 'தொடங்கு', 'போக்குகள்', 'சமூகம்', 'கருத்து', 'விமர்சனம்', 'ட்ரெண்ட்ஸ்', 'முதன்மை', 'ஆரம்பம்'],
         '/artisan/dashboard': ['வருவாய்', 'பணம்', 'சம்பாத்தியம்', 'டாஷ்போர்டு', 'வருமானம்', 'விற்பனை', 'நிதி'],
@@ -125,7 +125,7 @@ export function HeaderActions() {
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
-                recognition.interimResults = false; // Get final result
+                recognition.interimResults = false; 
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = async (event: any) => {
@@ -139,12 +139,8 @@ export function HeaderActions() {
                         toastIdRef.current = id;
                     }
 
-                    let commandFound = false;
+                    let commandFound = handleVoiceCommand(spokenText, language);
 
-                    // Primary check: Use the spoken language directly
-                    commandFound = handleVoiceCommand(spokenText, language);
-
-                    // Fallback check: If the language is Tamil and no command was found, try translating to English
                     if (!commandFound && language === 'ta') {
                         try {
                             const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
