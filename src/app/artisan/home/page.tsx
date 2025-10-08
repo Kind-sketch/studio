@@ -154,9 +154,12 @@ export default function ArtisanHomePage() {
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.frequentlyBought}</h3>
           <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-            <CarouselContent className="pl-4 -ml-1">
-              {frequentlyBought.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+            <CarouselContent>
+              {frequentlyBought.map((product, index) => (
+                <CarouselItem key={product.id} className={cn("basis-1/2 md:basis-1/3", 
+                    index === 0 ? 'pl-4' : 'pl-2',
+                    index === frequentlyBought.length - 1 ? 'pr-4' : 'pr-2'
+                )}>
                    <ProductCard product={product} />
                 </CarouselItem>
               ))}
@@ -170,9 +173,12 @@ export default function ArtisanHomePage() {
         <section>
             <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.bestselling}</h3>
             <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-              <CarouselContent className="pl-4 -ml-1">
-                  {bestSelling.map((product) => (
-                      <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+              <CarouselContent>
+                  {bestSelling.map((product, index) => (
+                      <CarouselItem key={product.id} className={cn("basis-1/2 md:basis-1/3", 
+                        index === 0 ? 'pl-4' : 'pl-2',
+                        index === bestSelling.length - 1 ? 'pr-4' : 'pr-2'
+                      )}>
                           <ProductCard product={product} />
                       </CarouselItem>
                   ))}
