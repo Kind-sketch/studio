@@ -163,7 +163,7 @@ export default function ArtisanHomePage() {
                >
                 <CarouselContent>
                   {myMostLiked.map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-1/5 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
                     </CarouselItem>
                   ))}
@@ -178,7 +178,7 @@ export default function ArtisanHomePage() {
                >
                 <CarouselContent>
                   {myMostBought.map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-1/5 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
                     </CarouselItem>
                   ))}
@@ -263,7 +263,7 @@ export default function ArtisanHomePage() {
                 <Carousel opts={{ align: 'start' }}>
                 <CarouselContent>
                     {otherMostLiked.slice(0, 8).map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 md:basis-1/3 pr-2">
+                    <CarouselItem key={product.id} className="basis-1/5 md:basis-1/3 pr-2">
                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
                     </CarouselItem>
                     ))}
@@ -285,7 +285,7 @@ export default function ArtisanHomePage() {
                 </div>
               </ScrollArea>
             </div>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-5 md:grid-cols-3 gap-2">
               {filteredOtherMostBought.slice(0, 6).map((product) => (
                 <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
               ))}
@@ -295,5 +295,7 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    
 
     
