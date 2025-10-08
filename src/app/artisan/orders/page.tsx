@@ -220,10 +220,10 @@ export default function OrdersPage() {
                 <p className="text-sm">{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
               </div>
               <div className="flex flex-col gap-2 mt-0 w-auto">
-                <Button onClick={() => handleAccept(order.id)} size="sm">
+                <Button onClick={() => handleAccept(order.id)} size="sm" className="whitespace-nowrap">
                   <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
                 </Button>
-                <Button onClick={() => handleDecline(order.id)} variant="outline" size="sm">
+                <Button onClick={() => handleDecline(order.id)} variant="outline" size="sm" className="whitespace-nowrap">
                   <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
                 </Button>
               </div>
@@ -252,13 +252,13 @@ export default function OrdersPage() {
         <TabsContent value="my-orders">
           <Tabs defaultValue="processing" className="w-full">
             <TabsList className="grid w-full grid-cols-3 text-xs">
-              <TabsTrigger value="processing">
+              <TabsTrigger value="processing" className="px-1 text-center">
                 <Package className="mr-1 h-4 w-4" /> {translatedContent.processingTab}
               </TabsTrigger>
-              <TabsTrigger value="shipped">
+              <TabsTrigger value="shipped" className="px-1 text-center">
                 <Ship className="mr-1 h-4 w-4" /> {translatedContent.shippedTab}
               </TabsTrigger>
-              <TabsTrigger value="delivered">
+              <TabsTrigger value="delivered" className="px-1 text-center">
                 <CheckCircle className="mr-1 h-4 w-4" /> {translatedContent.deliveredTab}
               </TabsTrigger>
             </TabsList>

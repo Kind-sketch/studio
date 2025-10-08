@@ -110,7 +110,7 @@ export default function ArtisanDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px]">{t.productHeader}</TableHead>
+                    <TableHead className="w-[80px] hidden sm:table-cell">{t.productHeader}</TableHead>
                     <TableHead>{t.sponsorHeader}</TableHead>
                     <TableHead>{t.sponsorShareHeader}</TableHead>
                     <TableHead className="text-right">{t.sharedAmountHeader}</TableHead>
@@ -119,7 +119,7 @@ export default function ArtisanDashboard() {
                 <TableBody>
                   {sponsoredProducts.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                          <Image
                           src={item.image.url}
                           alt={item.name}
@@ -128,7 +128,12 @@ export default function ArtisanDashboard() {
                           className="rounded-md object-cover aspect-square"
                         />
                       </TableCell>
-                      <TableCell className="font-medium whitespace-nowrap">{item.sponsor.name}</TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        <div>
+                            <p>{item.sponsor.name}</p>
+                            <p className="text-xs text-muted-foreground sm:hidden">{item.name}</p>
+                        </div>
+                      </TableCell>
                       <TableCell>
                           <Badge variant="secondary">{item.sponsorShare}</Badge>
                       </TableCell>

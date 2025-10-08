@@ -67,7 +67,7 @@ export default function MyProductsPage() {
       </header>
 
       {myProducts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {myProducts.map(product => (
             <Card key={product.id} className="overflow-hidden">
               <CardContent className="p-0">
@@ -114,5 +114,3 @@ export default function MyProductsPage() {
     </div>
   );
 }
-
-    
