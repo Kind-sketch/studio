@@ -161,7 +161,7 @@ export default function ArtisanHomePage() {
                 <CarouselContent className="-ml-2">
                   {myMostLiked.map((product) => (
                     <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
-                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                   ))}
                 </CarouselContent>
@@ -173,7 +173,7 @@ export default function ArtisanHomePage() {
                 <CarouselContent className="-ml-2">
                   {myMostBought.map((product) => (
                     <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
-                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                   ))}
                 </CarouselContent>
@@ -260,7 +260,7 @@ export default function ArtisanHomePage() {
                 <CarouselContent className="-ml-2">
                     {otherMostLiked.slice(0, 8).map((product) => (
                     <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
-                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                     </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -282,7 +282,7 @@ export default function ArtisanHomePage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {filteredOtherMostBought.slice(0, 6).map((product) => (
-                    <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                    <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square" />
                   ))}
                 </div>
             </section>
@@ -292,3 +292,5 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    

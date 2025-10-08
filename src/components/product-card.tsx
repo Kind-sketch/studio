@@ -14,13 +14,14 @@ interface ProductCardProps {
   product: Product;
   onSave?: () => void;
   showSaveButton?: boolean;
+  className?: string;
 }
 
-export default function ProductCard({ product, onSave, showSaveButton }: ProductCardProps) {
+export default function ProductCard({ product, onSave, showSaveButton, className }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <Card className="overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col">
+    <Card className={cn("overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col", className)}>
       <CardContent className="p-0 flex-grow">
         <div className="relative aspect-[3/4] w-full">
           <Image
@@ -84,3 +85,5 @@ export default function ProductCard({ product, onSave, showSaveButton }: Product
     </Card>
   );
 }
+
+    
