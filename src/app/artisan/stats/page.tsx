@@ -208,8 +208,8 @@ export default function StatsPage() {
           <CardContent className="space-y-2">
             {products.map(product => (
                 <Card key={product.id} className="overflow-hidden">
-                  <CardContent className="flex items-center gap-3 p-3">
-                    <Image src={product.image.url} alt={product.name} width={56} height={56} className="rounded-md object-cover aspect-square bg-muted"/>
+                  <CardContent className="flex items-center gap-2 p-2">
+                    <Image src={product.image.url} alt={product.name} width={48} height={48} className="rounded-md object-cover aspect-square bg-muted"/>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold truncate text-sm">{product.name}</p>
                       <p className="text-xs text-muted-foreground">₹{product.price.toFixed(2)}</p>
@@ -219,7 +219,7 @@ export default function StatsPage() {
                             <Button 
                                 size="sm" 
                                 onClick={() => handleAiReview(product)}
-                                className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-8 px-2.5 shrink-0"
+                                className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-8 px-2 shrink-0"
                             >
                                 <Lightbulb className="mr-1.5 h-3.5 w-3.5" />
                                 <span className="text-xs">{translatedContent.reviewHeader}</span>
@@ -272,4 +272,3 @@ export default function StatsPage() {
   );
 }
 
-    
