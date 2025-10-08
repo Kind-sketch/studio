@@ -153,8 +153,12 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section className="space-y-4">
           <h3 className="font-headline text-xl font-semibold px-4">{t.frequentlyBought}</h3>
-          <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-            <CarouselContent className="-ml-2">
+           <Carousel 
+            opts={{ align: 'start', loop: true }}
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]} 
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
               {frequentlyBought.map((product, index) => (
                 <CarouselItem key={product.id} className="basis-1/2 pl-4">
                    <ProductCard product={product} />
@@ -169,8 +173,12 @@ export default function ArtisanHomePage() {
         {/* Bestselling Products */}
         <section className="space-y-4">
             <h3 className="font-headline text-xl font-semibold px-4">{t.bestselling}</h3>
-            <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
-              <CarouselContent className="-ml-2">
+             <Carousel 
+              opts={{ align: 'start', loop: true }} 
+              plugins={[Autoplay({ delay: 2000, stopOnInteraction: true, playOnInit: true, direction: 'backward' })]} 
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
                   {bestSelling.map((product, index) => (
                       <CarouselItem key={product.id} className="basis-1/2 pl-4">
                           <ProductCard product={product} />
