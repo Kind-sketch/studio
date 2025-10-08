@@ -157,35 +157,39 @@ export default function ArtisanHomePage() {
           <div className="space-y-6">
             <div>
               <h4 className="font-semibold text-md mb-2">Most Liked</h4>
-               <Carousel 
-                opts={{ align: 'start', loop: true }}
-                plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
-                className="w-full"
-               >
-                <CarouselContent>
-                  {myMostLiked.map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 pl-2">
-                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
+              <div className="overflow-hidden">
+                <Carousel
+                  opts={{ align: 'start', loop: true }}
+                  plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
+                  className="w-full"
+                >
+                  <CarouselContent>
+                    {myMostLiked.map((product) => (
+                      <CarouselItem key={product.id} className="basis-2/5 pl-2">
+                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              </div>
             </div>
              <div>
               <h4 className="font-semibold text-md mb-2">Most Bought</h4>
-               <Carousel 
-                opts={{ align: 'start', loop: true, direction: 'rtl' }}
-                plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
-                className="w-full"
-               >
-                <CarouselContent>
-                  {myMostBought.map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 pl-2">
-                       <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
+              <div className="overflow-hidden">
+                <Carousel
+                  opts={{ align: 'start', loop: true, direction: 'rtl' }}
+                  plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
+                  className="w-full"
+                >
+                  <CarouselContent>
+                    {myMostBought.map((product) => (
+                      <CarouselItem key={product.id} className="basis-2/5 pl-2">
+                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              </div>
             </div>
           </div>
         </section>
@@ -261,15 +265,17 @@ export default function ArtisanHomePage() {
         {/* Most Liked of Other Artisans */}
         <section className="mb-6">
             <h3 className="font-headline text-xl font-semibold mb-4">Community Favorites: Most Liked</h3>
-            <Carousel opts={{ align: 'start' }} className="w-full -mx-2">
-            <CarouselContent>
-                {otherMostLiked.slice(0, 8).map((product) => (
-                <CarouselItem key={product.id} className="basis-2/5 px-2">
-                    <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
-                </CarouselItem>
-                ))}
-            </CarouselContent>
-            </Carousel>
+            <div className="overflow-hidden">
+                <Carousel opts={{ align: 'start' }} className="w-full">
+                <CarouselContent>
+                    {otherMostLiked.slice(0, 8).map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/3 px-2">
+                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                </Carousel>
+            </div>
         </section>
 
         {/* Most Bought of Other Artisans */}
@@ -285,9 +291,9 @@ export default function ArtisanHomePage() {
                 </div>
               </ScrollArea>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {filteredOtherMostBought.slice(0, 6).map((product) => (
-                <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
               ))}
             </div>
         </section>
@@ -295,3 +301,5 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    
