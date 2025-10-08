@@ -285,7 +285,7 @@ export default function ArtisanHomePage() {
                 </div>
               </ScrollArea>
             </div>
-            <div className="grid grid-cols-5 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-5 gap-2">
               {filteredOtherMostBought.slice(0, 6).map((product) => (
                 <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
               ))}
@@ -295,7 +295,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
-
-    
