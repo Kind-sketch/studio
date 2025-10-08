@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -18,7 +17,7 @@ import { Loader2, Lightbulb, Play, Pause, RotateCcw, Mic, Volume2 } from 'lucide
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
@@ -154,7 +153,7 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.frequentlyBought}</h3>
-          <Carousel opts={{ align: 'start' }} className="w-full">
+          <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
             <CarouselContent className="pl-4 -ml-1">
               {frequentlyBought.map((product) => (
                 <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
@@ -162,13 +161,15 @@ export default function ArtisanHomePage() {
                 </CarouselItem>
               ))}
             </CarouselContent>
+             <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
           </Carousel>
         </section>
 
         {/* Bestselling Products */}
         <section>
             <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.bestselling}</h3>
-            <Carousel opts={{ align: 'start' }} className="w-full">
+            <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
               <CarouselContent className="pl-4 -ml-1">
                   {bestSelling.map((product) => (
                       <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
@@ -176,6 +177,8 @@ export default function ArtisanHomePage() {
                       </CarouselItem>
                   ))}
               </CarouselContent>
+               <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
             </Carousel>
         </section>
 
