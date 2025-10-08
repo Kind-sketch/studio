@@ -141,7 +141,7 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-x-hidden">
+    <div className="overflow-x-hidden">
       <div className="space-y-4">
         <div>
             <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
@@ -153,10 +153,10 @@ export default function ArtisanHomePage() {
           <h3 className="font-headline text-lg font-semibold">{t.frequentlyBought}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
-            plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]} 
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: true, stopOnLastSnap: false })]} 
             className="w-full"
           >
-            <CarouselContent className="-ml-4">
+            <CarouselContent>
               {frequentlyBought.map((product) => (
                 <CarouselItem key={product.id} className="basis-1/2 pl-4">
                    <ProductCard product={product} />
@@ -171,10 +171,10 @@ export default function ArtisanHomePage() {
             <h3 className="font-headline text-lg font-semibold">{t.bestselling}</h3>
              <Carousel 
               opts={{ align: 'start', loop: true }} 
-              plugins={[Autoplay({ delay: 2500, stopOnInteraction: true, direction: 'backward' })]} 
+              plugins={[Autoplay({ delay: 2500, stopOnInteraction: true, playOnInit: true, direction: 'backward', stopOnLastSnap: false })]} 
               className="w-full"
             >
-              <CarouselContent className="-ml-4">
+              <CarouselContent>
                   {bestSelling.map((product) => (
                       <CarouselItem key={product.id} className="basis-1/2 pl-4">
                           <ProductCard product={product} />
