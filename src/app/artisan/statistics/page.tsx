@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, X } from 'lucide-react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useTranslation } from '@/context/translation-context';
 
 type View = 'weekly' | 'monthly' | 'yearly';
@@ -155,4 +155,3 @@ export default function StatisticsPage() {
   );
 }
 
-    
