@@ -40,7 +40,7 @@ export default function ArtisanLayout({
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0 w-full max-w-[280px]">
+            <SheetContent side="left" className="flex flex-col p-0 max-w-[280px]">
                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
