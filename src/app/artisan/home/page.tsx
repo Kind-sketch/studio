@@ -141,13 +141,13 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
-      <div className="flex-shrink-0">
-          <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
-          <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
+    <div className="flex flex-col p-4">
+      <div>
+        <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
+        <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
       </div>
 
-      <div className="flex-grow overflow-y-auto space-y-4 pt-4">
+      <div className="space-y-4 pt-4">
         {/* Frequently Bought Products */}
         <section className="space-y-2">
           <h3 className="font-headline text-lg font-semibold truncate">{t.frequentlyBought}</h3>
@@ -215,7 +215,7 @@ export default function ArtisanHomePage() {
                           onClick={handleMicClick}
                           className="absolute right-2 top-1/2 -translate-y-1/2"
                         >
-                          <Mic className={`h-5 w-5 ${isListening ? 'text-destructive' : ''}`} />
+                          <Mic className={cn("h-5 w-5", isListening && "text-destructive")} />
                         </Button>
                     </div>
                   </CardContent>
