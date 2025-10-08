@@ -91,7 +91,7 @@ export default function StatisticsPage() {
             <Button size="sm" variant={getButtonVariant('monthly')} onClick={() => setView('monthly')}>{t.monthly}</Button>
             <Button size="sm" variant={getButtonVariant('yearly')} onClick={() => setView('yearly')}>{t.yearly}</Button>
           </div>
-          <div className="h-64 w-full">
+          <div className="aspect-video w-full">
             <StatsChart data={statsData[view]} config={chartConfig} dataKey={view.slice(0, -2)} />
           </div>
         </CardContent>
@@ -154,4 +154,3 @@ export default function StatisticsPage() {
     </div>
   );
 }
-
