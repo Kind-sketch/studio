@@ -49,6 +49,7 @@ export default function ArtisanHomePage() {
 
   const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
   const mostLikedProducts = [...myProducts].sort((a, b) => b.likes - a.likes);
+  const frequentlyBoughtProducts = [...myProducts].sort((a, b) => b.sales - a.sales);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -165,21 +166,43 @@ export default function ArtisanHomePage() {
       </div>
 
       <div className="space-y-4 pt-4">
+        {/* Frequently Bought Products */}
+        <section className="space-y-2">
+            <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
+            <Carousel 
+                opts={{ align: 'start', loop: true }}
+                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true })]} 
+                className="w-full"
+            >
+                <CarouselContent>
+                {frequentlyBoughtProducts.map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    </CarouselItem>
+                ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            </Carousel>
+        </section>
+
         {/* Most Liked Products */}
         <section className="space-y-2">
           <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
            <Carousel 
-            opts={{ align: 'start', loop: true }}
-            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]} 
+            opts={{ align: 'start', loop: true, direction: 'rtl' }}
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
             className="w-full"
           >
             <CarouselContent>
               {mostLikedProducts.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/2 pl-2">
+                <CarouselItem key={product.id} className="basis-1/3 pl-2">
                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                 </CarouselItem>
               ))}
             </CarouselContent>
+            <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
           </Carousel>
         </section>
 
