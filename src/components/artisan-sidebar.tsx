@@ -18,6 +18,7 @@ import {
   Mic,
   BarChart,
   LayoutDashboard,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -207,6 +208,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     
     const baseNavItems = {
         studio: [
+            { href: '/artisan/home', icon: TrendingUp, labelKey: 'trends' },
             { href: '/artisan/my-products', icon: ShoppingBag, labelKey: 'myProducts' },
             { href: '/artisan/saved-collection', icon: Bookmark, labelKey: 'savedCollection' },
         ],
@@ -244,7 +246,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     return (
         <div className="flex h-full max-h-screen flex-col bg-sidebar text-sidebar-foreground">
             <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4 lg:h-[60px]">
-                <button onClick={() => handleLinkClick('/artisan/my-products')} className="flex items-center gap-2 font-semibold">
+                <button onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-6 w-6 text-primary lg:h-8 lg:w-8" />
                     <span className="font-headline text-lg lg:text-xl">Artistry Havens</span>
                 </button>

@@ -17,9 +17,9 @@ const baseOptions = [
     icon: Upload,
   },
   {
-    name: 'Visit My Products',
-    description: 'View the products you have for sale.',
-    href: '/artisan/my-products',
+    name: 'Visit My Page',
+    description: 'View your trends, and bestsellers.',
+    href: '/artisan/home',
     icon: LayoutDashboard,
   },
 ];

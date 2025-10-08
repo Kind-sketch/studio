@@ -120,8 +120,8 @@ export const translations = {
                 description: 'Add a new creation to your shop.',
             },
             {
-                name: 'Visit My Dashboard',
-                description: 'View your sales, trends, and statistics.',
+                name: 'Visit My Page',
+                description: 'View your trends, and bestsellers.',
             },
         ]
     },
@@ -280,6 +280,8 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
     artisan_home: {
       pageTitle: 'Trends',
       pageDescription: 'Discover what’s popular and get inspired.',
+      frequentlyBought: 'Frequently Bought Products',
+      bestselling: 'Bestselling Products',
       aiReviewTitle: 'Get an AI Review',
       aiReviewDescription: 'Have an idea for a new product? Get instant feedback from our AI.',
       productDescriptionLabel: 'Product Idea',
@@ -291,7 +293,6 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
       insightGenerationFailedToast: 'Insight Generation Failed',
       insightGenerationFailedToastDesc: 'The AI is a bit busy. Please try again.',
       aiGeneratedInsightsTitle: 'AI Generated Insights',
-      aiPlaceholder: 'Your AI review will appear here.',
       savedToCollectionToast: 'Saved to {collectionName}!',
     },
     auth_page: {
@@ -546,17 +547,17 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
       quantity: "அளவு",
     },
     post_auth_page: {
-      title: "அடுத்து என்ன செய்ய விரும்புகிறீர்கள்?",
-      options: [
-        {
-          name: "ஒரு பொருளைப் பதிவேற்றவும்",
-          description: "உங்கள் கடைக்கு ஒரு புதிய படைப்பைச் சேர்க்கவும்.",
-        },
-        {
-          name: "என் பக்கத்தைப் பார்வையிடவும்",
-          description: "உங்கள் விற்பனை, போக்குகள் மற்றும் புள்ளிவிவரங்களைக் காண்க.",
-        },
-      ],
+        title: "அடுத்து என்ன செய்ய விரும்புகிறீர்கள்?",
+        options: [
+            {
+                name: 'ஒரு பொருளைப் பதிவேற்றவும்',
+                description: 'உங்கள் கடைக்கு ஒரு புதிய படைப்பைச் சேர்க்கவும்.'
+            },
+            {
+                name: 'என் பக்கத்தைப் பார்வையிடவும்',
+                description: 'உங்கள் போக்குகள் மற்றும் சிறந்த விற்பனையாளர்களைக் காண்க.'
+            }
+        ]
     },
     profile_page: {
       title: "என் சுயவிவரம்",
@@ -713,6 +714,8 @@ sponsorshipTerminatedToast: "ஸ்பான்சர்ஷிப் முட�
     artisan_home: {
       pageTitle: 'போக்குகள்',
       pageDescription: 'பிரபலமானவற்றைக் கண்டுபிடித்து உத்வேகம் பெறுங்கள்.',
+      frequentlyBought: 'அடிக்கடி வாங்கப்படும் பொருட்கள்',
+      bestselling: 'அதிகம் விற்பனையாகும் பொருட்கள்',
       aiReviewTitle: 'ஒரு AI விமர்சனத்தைப் பெறுங்கள்',
       aiReviewDescription: 'புதிய தயாரிப்புக்கான யோசனை உள்ளதா? எங்கள் AI இலிருந்து உடனடி கருத்தைப் பெறுங்கள்.',
       productDescriptionLabel: 'தயாரிப்பு யோசனை',
@@ -724,7 +727,6 @@ sponsorshipTerminatedToast: "ஸ்பான்சர்ஷிப் முட�
       insightGenerationFailedToast: 'நுண்ணறிவு உருவாக்கம் தோல்வியடைந்தது',
       insightGenerationFailedToastDesc: 'AI சற்று பிஸியாக உள்ளது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.',
       aiGeneratedInsightsTitle: 'AI உருவாக்கிய நுண்ணறிவுகள்',
-      aiPlaceholder: 'உங்கள் AI விமர்சனம் இங்கே தோன்றும்.',
       savedToCollectionToast: '{collectionName} இல் சேமிக்கப்பட்டது!',
     },
     auth_page: {
@@ -876,5 +878,3 @@ sponsorshipTerminatedToast: "ஸ்பான்சர்ஷிப் முட�
     ],
   },
 };
-
-    

@@ -19,6 +19,12 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onSave, showSaveButton, className }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(product.likes);
+
+  const handleLike = () => {
+      setIsLiked(!isLiked);
+      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  }
 
   return (
     <Card className={cn("overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col", className)}>
@@ -35,8 +41,8 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
-              onClick={() => setIsLiked(!isLiked)}
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white flex flex-col"
+              onClick={handleLike}
             >
               <Heart
                 className={cn(
@@ -44,6 +50,7 @@ export default function ProductCard({ product, onSave, showSaveButton, className
                   isLiked && 'fill-red-500 text-red-500'
                 )}
               />
+              <span className="text-xs text-slate-700 font-bold">{likeCount}</span>
             </Button>
             {showSaveButton && onSave && (
                 <Button

@@ -7,21 +7,21 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { products as allProducts, categories as baseCategories } from '@/lib/data';
+import { products as allProducts } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Lightbulb, Play, Pause, RotateCcw, Filter } from 'lucide-react';
+import { Loader2, Lightbulb, Play, Pause, RotateCcw, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import type { SavedCollection, Product } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import 'regenerator-runtime/runtime';
+import { useLanguage } from '@/context/language-context';
+
 
 // Mocking the current artisan as Elena Vance (ID '1')
 const CURRENT_ARTISAN_ID = '1';
@@ -40,31 +40,48 @@ export default function ArtisanHomePage() {
   const [result, setResult] = useState<AiReviewResult | null>(null);
   const { toast } = useToast();
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.artisan_home;
   
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  // My Products
   const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
-  const myMostLiked = [...myProducts].sort((a, b) => b.likes - a.likes);
-  const myMostBought = [...myProducts].sort((a, b) => b.sales - a.sales);
-
-  // Other Artisans' Products
-  const otherProducts = allProducts.filter(p => p.artisan.id !== CURRENT_ARTISAN_ID);
-  const otherMostLiked = [...otherProducts].sort((a, b) => b.likes - a.likes);
-  const otherMostBought = [...otherProducts].sort((a, b) => b.sales - a.sales);
-  
-  const filteredOtherMostBought = selectedCategory
-    ? otherMostBought.filter(p => p.category === selectedCategory)
-    : otherMostBought;
+  const frequentlyBought = [...myProducts].sort((a, b) => b.sales - a.sales);
+  const bestSelling = [...myProducts].sort((a, b) => b.sales - a.likes);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { productDescription: '' },
   });
+
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+   useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = language;
+
+      recognitionRef.current.onstart = () => setIsListening(true);
+      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = async (event: any) => {
+        const command = event.results[0][0].transcript;
+        form.setValue('productDescription', command);
+        await onSubmit({ productDescription: command });
+      };
+    }
+  }, [language, form, toast]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -91,32 +108,6 @@ export default function ArtisanHomePage() {
     }
   }
 
-  function handleSaveToCollection(product: Product) {
-    if (!product) return;
-
-    const collections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
-    const categoryName = product.category;
-    let collection = collections.find(c => c.name === categoryName);
-
-    if (collection) {
-      if (!collection.productIds.includes(product.id)) {
-        collection.productIds.push(product.id);
-      }
-    } else {
-      collection = {
-        id: `coll-${Date.now()}-${Math.random()}`,
-        name: categoryName,
-        productIds: [product.id],
-      };
-      collections.push(collection);
-    }
-
-    localStorage.setItem('artisanCollections', JSON.stringify(collections));
-
-    toast({
-      title: t.savedToCollectionToast.replace('{collectionName}', categoryName),
-    });
-  }
 
   const handlePlayPause = () => {
     if (audioRef.current) {
@@ -141,6 +132,18 @@ export default function ArtisanHomePage() {
     }
   };
 
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
+
   return (
     <div className="flex h-full flex-col bg-muted/40">
       <div className="flex-1 space-y-6 p-4 md:p-6">
@@ -151,47 +154,30 @@ export default function ArtisanHomePage() {
           </div>
         </div>
 
-        {/* Your Top Performers */}
+        {/* Frequently Bought Products */}
         <section>
-          <h3 className="font-headline text-xl font-semibold mb-4">Your Top Performers</h3>
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-semibold text-md mb-2">Most Liked</h4>
-              <div className="overflow-hidden">
-                <Carousel
-                  opts={{ align: 'start', loop: true }}
-                  plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
-                  className="w-full"
-                >
-                  <CarouselContent>
-                    {myMostLiked.map((product) => (
-                      <CarouselItem key={product.id} className="basis-2/5 pl-2">
-                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
-              </div>
-            </div>
-             <div>
-              <h4 className="font-semibold text-md mb-2">Most Bought</h4>
-              <div className="overflow-hidden">
-                <Carousel
-                  opts={{ align: 'start', loop: true, direction: 'rtl' }}
-                  plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
-                  className="w-full"
-                >
-                  <CarouselContent>
-                    {myMostBought.map((product) => (
-                      <CarouselItem key={product.id} className="basis-2/5 pl-2">
-                         <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
-              </div>
-            </div>
+          <h3 className="font-headline text-xl font-semibold mb-4">{t.frequentlyBought}</h3>
+          <div className="overflow-hidden">
+            <Carousel opts={{ align: 'start' }} className="w-full">
+              <CarouselContent>
+                {frequentlyBought.map((product) => (
+                  <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+                     <ProductCard product={product} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
+        </section>
+
+        {/* Bestselling Products */}
+        <section>
+            <h3 className="font-headline text-xl font-semibold mb-4">{t.bestselling}</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {bestSelling.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
         </section>
 
         {/* AI Review Section */}
@@ -204,19 +190,30 @@ export default function ArtisanHomePage() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <CardContent>
-                    <FormField
-                      control={form.control}
-                      name="productDescription"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="sr-only">{t.productDescriptionLabel}</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder={t.productDescriptionPlaceholder} {...field} className="h-24 text-sm" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="relative">
+                      <FormField
+                        control={form.control}
+                        name="productDescription"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="sr-only">{t.productDescriptionLabel}</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder={t.productDescriptionPlaceholder} {...field} className="h-24 text-sm pr-12" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <Button 
+                          type="button" 
+                          size="icon" 
+                          variant="ghost" 
+                          onClick={handleMicClick}
+                          className="absolute right-2 top-1/2 -translate-y-1/2"
+                        >
+                          <Mic className={`h-5 w-5 ${isListening ? 'text-destructive' : ''}`} />
+                        </Button>
+                    </div>
                   </CardContent>
                   <CardFooter>
                     <Button type="submit" disabled={isLoading} size="sm" className="w-full">
@@ -247,59 +244,12 @@ export default function ArtisanHomePage() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-32 w-full rounded-md border p-3">
-                    <p className="text-xs text-muted-foreground whitespace-pre-wrap">{result.aiReview}</p>
-                  </ScrollArea>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.aiReview}</p>
                 </CardContent>
               </Card>
             )}
-
-            {!result && !isLoading && (
-                 <div className="flex h-32 flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card p-4 text-center text-muted-foreground mt-6">
-                    <Sparkles className="h-8 w-8" />
-                    <p className="mt-2 text-xs">{t.aiPlaceholder}</p>
-                </div>
-            )}
-        </section>
-
-        {/* Most Liked of Other Artisans */}
-        <section className="mb-6">
-            <h3 className="font-headline text-xl font-semibold mb-4">Community Favorites: Most Liked</h3>
-            <div className="overflow-hidden">
-                <Carousel opts={{ align: 'start' }} className="w-full">
-                <CarouselContent>
-                    {otherMostLiked.slice(0, 8).map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/3 px-2">
-                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
-                    </CarouselItem>
-                    ))}
-                </CarouselContent>
-                </Carousel>
-            </div>
-        </section>
-
-        {/* Most Bought of Other Artisans */}
-        <section>
-            <h3 className="font-headline text-xl font-semibold mb-4">Top Sellers: Most Bought</h3>
-            <div className="mb-4">
-              <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex items-center gap-2 pb-2">
-                   <Button variant={!selectedCategory ? 'default' : 'outline'} size="sm" onClick={() => setSelectedCategory(null)}>All</Button>
-                  {baseCategories.map(cat => (
-                    <Button key={cat.id} variant={selectedCategory === cat.name ? 'default' : 'outline'} size="sm" onClick={() => setSelectedCategory(cat.name)}>{translations.product_categories[baseCategories.findIndex(c=>c.id === cat.id)] || cat.name}</Button>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {filteredOtherMostBought.slice(0, 6).map((product) => (
-                <ProductCard key={product.id} product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-square"/>
-              ))}
-            </div>
         </section>
       </div>
     </div>
   );
 }
-
-    
