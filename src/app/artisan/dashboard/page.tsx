@@ -38,12 +38,12 @@ export default function ArtisanDashboard() {
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 mb-6">
         
         <Carousel
             opts={{ loop: true }}
             plugins={[Autoplay({ delay: 3000, stopOnInteraction: true })]}
-            className="w-full lg:col-span-2"
+            className="w-full"
         >
             <CarouselContent>
                 <CarouselItem>

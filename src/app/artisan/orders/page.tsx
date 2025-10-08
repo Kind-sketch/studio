@@ -159,25 +159,25 @@ export default function OrdersPage() {
         {filteredOrders.map(order => (
           <Card key={order.id} className="overflow-hidden">
             <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
-               <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
+               <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
-                    width={128}
-                    height={128}
+                    width={96}
+                    height={96}
                     className="rounded-md object-cover aspect-square bg-muted"
                 />
                </div>
-              <div className="flex-1 space-y-1">
-                <CardTitle className="text-md sm:text-lg font-headline leading-tight">{order.name}</CardTitle>
-                <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
+              <div className="flex-grow space-y-1">
+                <CardTitle className="text-md font-headline leading-tight">{order.name}</CardTitle>
+                <div className="text-xs text-muted-foreground space-y-0.5">
                     <p>{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
                     <p>{translatedContent.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
                     <p>{translatedContent.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
+                <p className="font-bold text-md pt-1">₹{(order.price * order.quantity).toFixed(2)}</p>
               </div>
-              <div className="flex flex-col items-end gap-2 w-full sm:w-auto self-end sm:self-center">
-                <p className="font-bold text-md sm:text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
+              <div className="flex flex-col items-stretch gap-2 w-full sm:w-auto sm:self-center">
                 <Button onClick={() => handleUpdate(order.id)} size="sm">{translatedContent.updateStatusButton}</Button>
               </div>
             </CardContent>
@@ -203,27 +203,27 @@ export default function OrdersPage() {
       <div className="space-y-4">
         {orderRequests.map((order) => (
           <Card key={order.id} className="overflow-hidden">
-            <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
-              <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
+            <CardContent className="p-3 sm:p-4 flex items-start gap-4">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
-                    width={128}
-                    height={128}
+                    width={96}
+                    height={96}
                     className="rounded-md object-cover aspect-square bg-muted"
                 />
                </div>
               <div className="flex-1">
-                <CardTitle className="text-md sm:text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
+                <CardTitle className="text-md font-headline mb-1 leading-tight">{order.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">{translatedContent.from}: {order.buyerName}</p>
-                <p className="font-bold text-md sm:text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
+                <p className="font-bold text-md my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
                 <p className="text-sm">{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
               </div>
-              <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-                <Button onClick={() => handleAccept(order.id)} className="w-full">
+              <div className="flex flex-col gap-2 mt-0 w-auto">
+                <Button onClick={() => handleAccept(order.id)} size="sm">
                   <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
                 </Button>
-                <Button onClick={() => handleDecline(order.id)} variant="outline" className="w-full">
+                <Button onClick={() => handleDecline(order.id)} variant="outline" size="sm">
                   <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
                 </Button>
               </div>
@@ -277,5 +277,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-
-    
