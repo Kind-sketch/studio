@@ -79,7 +79,7 @@ export function HeaderActions() {
     }
 
     const navKeywords: { [key: string]: string[] } = {
-        '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'],
+        '/artisan/home': ['trends', 'home', 'main', 'start', 'community', 'popular', 'feed', 'feedback', 'review'],
         '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'],
         '/artisan/my-products': ['my products', 'products', 'creations', 'gallery', 'uploaded', 'items', 'inventory'],
         '/artisan/stats': ['statistics', 'stats', 'performance', 'analytics', 'charts', 'data'],
@@ -90,7 +90,7 @@ export function HeaderActions() {
     };
     
     const tamilNavKeywords: { [key: string]: string[] } = {
-        '/artisan/home': ['முகப்பு', 'வீடு', 'தொடங்கு', 'போக்குகள்', 'சமூகம்', 'கருத்து', 'விமர்சனம்', 'ட்ரெண்ட்ஸ்', 'முதன்மை', 'ஆரம்பம்'],
+        '/artisan/home': ['போக்குகள்', 'ட்ரெண்ட்ஸ்', 'முகப்பு', 'வீடு', 'தொடங்கு', 'சமூகம்', 'கருத்து', 'விமர்சனம்', 'முதன்மை', 'ஆரம்பம்'],
         '/artisan/dashboard': ['வருவாய்', 'பணம்', 'சம்பாத்தியம்', 'டாஷ்போர்டு', 'வருமானம்', 'விற்பனை', 'நிதி'],
         '/artisan/my-products': ['என் தயாரிப்புகள்', 'தயாரிப்புகள்', 'படைப்புகள்', 'காட்சியகம்', 'பொருட்கள்', 'சரக்கு'],
         '/artisan/stats': ['புள்ளிவிவரங்கள்', 'தரவு', 'செயல்திறன்', 'விவரங்கள்', 'விளக்கப்படங்கள்', 'பகுப்பாய்வு'],
