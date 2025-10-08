@@ -50,7 +50,7 @@ export default function ArtisanHomePage() {
 
   const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
   const frequentlyBought = [...myProducts].sort((a, b) => b.sales - a.sales);
-  const bestSelling = [...myProducts].sort((a, b) => b.sales - a.likes);
+  const bestSelling = [...myProducts].sort((a, b) => b.likes - a.likes);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -143,8 +143,8 @@ export default function ArtisanHomePage() {
 
   return (
     <div className="flex h-full flex-col bg-muted/40">
-      <div className="flex-1 space-y-6 p-4 md:p-6">
-        <div className="flex items-center justify-between space-y-2">
+      <div className="flex-1 space-y-6">
+        <div className="flex items-center justify-between space-y-2 px-4 md:px-6 pt-4 md:pt-6">
           <div>
             <h2 className="font-headline text-2xl md:text-3xl font-bold tracking-tight">{t.pageTitle}</h2>
             <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
@@ -153,10 +153,10 @@ export default function ArtisanHomePage() {
 
         {/* Frequently Bought Products */}
         <section>
-          <h3 className="font-headline text-xl font-semibold mb-4">{t.frequentlyBought}</h3>
-          <div className="-mx-4 px-4">
+          <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.frequentlyBought}</h3>
+          <div className="w-full">
             <Carousel opts={{ align: 'start' }} className="w-full">
-              <CarouselContent className="-ml-2">
+              <CarouselContent className="-ml-4 pl-4">
                 {frequentlyBought.map((product) => (
                   <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
                      <ProductCard product={product} />
@@ -169,10 +169,10 @@ export default function ArtisanHomePage() {
 
         {/* Bestselling Products */}
         <section>
-            <h3 className="font-headline text-xl font-semibold mb-4">{t.bestselling}</h3>
-            <div className="-mx-4 px-4">
+            <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.bestselling}</h3>
+            <div className="w-full">
                 <Carousel opts={{ align: 'start' }} className="w-full">
-                    <CarouselContent className="-ml-2">
+                    <CarouselContent className="-ml-4 pl-4">
                         {bestSelling.map((product) => (
                             <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
                                 <ProductCard product={product} />
@@ -184,7 +184,7 @@ export default function ArtisanHomePage() {
         </section>
 
         {/* AI Review Section */}
-        <section>
+        <section className="p-4 md:p-6">
              <Card>
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg">{t.aiReviewTitle}</CardTitle>
