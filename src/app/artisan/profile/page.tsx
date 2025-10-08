@@ -14,8 +14,7 @@ import { Loader2, Edit, Save, Star, Eye, EyeOff } from 'lucide-react';
 import { artisans } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -30,7 +29,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { translations } = useTranslation();
+  const t = translations.profile_page;
   
   const [artisan, setArtisan] = useState({
       ...artisans[0],
@@ -38,24 +38,6 @@ export default function ProfilePage() {
       rating: 4.8,
       address: '123 Clay Street, Pottery Town, 45678',
       phone: '987-654-3210'
-  });
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'My Profile',
-    description: 'Manage your artisan profile details.',
-    editProfileButton: 'Edit Profile',
-    fullNameLabel: 'Full Name',
-    professionalDetailsTitle: 'Professional Details',
-    visibleToAll: 'Visible to all buyers and sponsors.',
-    companyNameLabel: 'Company / Brand Name',
-    personalDetailsTitle: 'Personal Details',
-    visibleToSponsors: 'Visible only to your sponsors.',
-    addressLabel: 'Your Address',
-    phoneLabel: 'Phone Number',
-    cancelButton: 'Cancel',
-    saveButton: 'Save Changes',
-    profileUpdatedToast: 'Profile Updated',
-    profileUpdatedToastDesc: 'Your details have been successfully saved.',
   });
 
   const form = useForm<ProfileFormValues>({
@@ -67,21 +49,6 @@ export default function ProfilePage() {
       phone: '',
     },
   });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
 
   useEffect(() => {
     const storedProfile = localStorage.getItem('artisanProfile');
@@ -109,8 +76,8 @@ export default function ProfilePage() {
       setIsLoading(false);
       setIsEditing(false);
       toast({
-        title: translatedContent.profileUpdatedToast,
-        description: translatedContent.profileUpdatedToastDesc,
+        title: t.profileUpdatedToast,
+        description: t.profileUpdatedToastDesc,
       });
     }, 1000);
   };
@@ -134,13 +101,13 @@ export default function ProfilePage() {
     <div className="container mx-auto p-4 md:p-8 max-w-4xl">
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
-          <p className="text-muted-foreground">{translatedContent.description}</p>
+          <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
+          <p className="text-muted-foreground">{t.description}</p>
         </div>
         {!isEditing && (
             <Button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
                 <Edit className="mr-2 h-4 w-4" />
-                {translatedContent.editProfileButton}
+                {t.editProfileButton}
             </Button>
         )}
       </header>
@@ -160,7 +127,7 @@ export default function ProfilePage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{translatedContent.fullNameLabel}</FormLabel>
+                        <FormLabel>{t.fullNameLabel}</FormLabel>
                         <FormControl>
                           <Input {...field} className="text-2xl font-bold font-headline" />
                         </FormControl>
@@ -182,15 +149,15 @@ export default function ProfilePage() {
                 <Separator />
                 
                 <div>
-                    <h3 className="font-headline text-xl font-semibold">{translatedContent.professionalDetailsTitle}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><Eye className="h-4 w-4"/>{translatedContent.visibleToAll}</p>
+                    <h3 className="font-headline text-xl font-semibold">{t.professionalDetailsTitle}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><Eye className="h-4 w-4"/>{t.visibleToAll}</p>
                     <div className="space-y-4">
                         <FormField
                             control={form.control}
                             name="companyName"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{translatedContent.companyNameLabel}</FormLabel>
+                                <FormLabel>{t.companyNameLabel}</FormLabel>
                                 <FormControl>
                                 <Input {...field} disabled={!isEditing} />
                                 </FormControl>
@@ -204,15 +171,15 @@ export default function ProfilePage() {
                 <Separator />
 
                 <div>
-                    <h3 className="font-headline text-xl font-semibold">{translatedContent.personalDetailsTitle}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><EyeOff className="h-4 w-4"/>{translatedContent.visibleToSponsors}</p>
+                    <h3 className="font-headline text-xl font-semibold">{t.personalDetailsTitle}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1"><EyeOff className="h-4 w-4"/>{t.visibleToSponsors}</p>
                     <div className="space-y-4">
                         <FormField
                             control={form.control}
                             name="address"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{translatedContent.addressLabel}</FormLabel>
+                                <FormLabel>{t.addressLabel}</FormLabel>
                                 <FormControl>
                                 <Input {...field} disabled={!isEditing} />
                                 </FormControl>
@@ -225,7 +192,7 @@ export default function ProfilePage() {
                             name="phone"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{translatedContent.phoneLabel}</FormLabel>
+                                <FormLabel>{t.phoneLabel}</FormLabel>
                                 <FormControl>
                                 <Input {...field} disabled={!isEditing} />
                                 </FormControl>
@@ -238,10 +205,10 @@ export default function ProfilePage() {
 
                 {isEditing && (
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>{translatedContent.cancelButton}</Button>
+                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>{t.cancelButton}</Button>
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {translatedContent.saveButton}
+                    {t.saveButton}
                   </Button>
                 </div>
               )}
@@ -252,5 +219,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
