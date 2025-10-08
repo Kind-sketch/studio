@@ -16,8 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -27,44 +26,11 @@ const formSchema = z.object({
 export default function AuthClientPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const t = translations.auth_page;
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
   const [otpSent, setOtpSent] = useState(false);
-  const { language } = useLanguage();
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Welcome',
-    description: 'Join as a Buyer or Sponsor',
-    buyerTab: 'Buyer',
-    sponsorTab: 'Sponsor',
-    mobileLabel: 'Mobile Number',
-    mobilePlaceholder: '10-digit mobile number',
-    sendOtpButton: 'Send OTP',
-    otpLabel: 'One-Time Password (OTP)',
-    otpPlaceholder: 'Enter 5-digit OTP',
-    verifyButton: 'Verify & Login',
-    loginSuccessToast: 'Login Successful',
-    loginSuccessToastDesc: 'Welcome back!',
-    invalidOtpToast: 'Invalid OTP',
-    invalidOtpToastDesc: 'The OTP you entered is incorrect.',
-    termsAndConditions: 'Terms & Conditions',
-  });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,8 +65,8 @@ export default function AuthClientPage() {
       setIsLoading(false);
       // Mock OTP verification - accept any OTP
       toast({
-        title: translatedContent.loginSuccessToast,
-        description: translatedContent.loginSuccessToastDesc,
+        title: t.loginSuccessToast,
+        description: t.loginSuccessToastDesc,
       });
       const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
       router.push(redirectPath);
@@ -114,16 +80,16 @@ export default function AuthClientPage() {
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-2xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t.title}</CardTitle>
           <CardDescription>
-            {translatedContent.description}
+            {t.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="buyer" onValueChange={setUserType} className="w-full mb-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="buyer">{translatedContent.buyerTab}</TabsTrigger>
-              <TabsTrigger value="sponsor">{translatedContent.sponsorTab}</TabsTrigger>
+              <TabsTrigger value="buyer">{t.buyerTab}</TabsTrigger>
+              <TabsTrigger value="sponsor">{t.sponsorTab}</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -134,8 +100,8 @@ export default function AuthClientPage() {
                 name="mobileNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{translatedContent.mobileLabel}</FormLabel>
-                    <FormControl><Input placeholder={translatedContent.mobilePlaceholder} {...field} disabled={otpSent} /></FormControl>
+                    <FormLabel>{t.mobileLabel}</FormLabel>
+                    <FormControl><Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -146,8 +112,8 @@ export default function AuthClientPage() {
                   name="otp"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{translatedContent.otpLabel}</FormLabel>
-                      <FormControl><Input placeholder={translatedContent.otpPlaceholder} {...field} /></FormControl>
+                      <FormLabel>{t.otpLabel}</FormLabel>
+                      <FormControl><Input placeholder={t.otpPlaceholder} {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -156,19 +122,19 @@ export default function AuthClientPage() {
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {translatedContent.verifyButton}
+                    {t.verifyButton}
                 </Button>
               ) : (
                 <Button type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {translatedContent.sendOtpButton}
+                    {t.sendOtpButton}
                 </Button>
               )}
             </form>
           </Form>
         </CardContent>
         <CardFooter className="justify-center text-xs text-muted-foreground">
-          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsAndConditions}</Button>
+          <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>
     </div>
