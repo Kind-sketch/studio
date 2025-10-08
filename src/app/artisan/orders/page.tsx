@@ -12,8 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -33,46 +32,8 @@ export default function OrdersPage() {
   const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
   const { toast } = useToast();
   const router = useRouter();
-  const { language } = useLanguage();
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Manage Orders',
-    description: 'Review requests and track ongoing orders.',
-    orderRequestsTab: 'Order Requests',
-    myOrdersTab: 'My Orders',
-    processingTab: 'Processing',
-    shippedTab: 'Shipped',
-    deliveredTab: 'Delivered',
-    noOrdersInCategory: 'No orders in this category.',
-    quantity: 'Quantity',
-    orderDate: 'Order Date',
-    expectedDelivery: 'Expected Delivery',
-    updateStatusButton: 'Update Status',
-    noNewRequests: 'No new order requests.',
-    checkBackLater: 'Check back later for new opportunities.',
-    from: 'From',
-    acceptButton: 'Accept',
-    declineButton: 'Decline',
-    orderAcceptedToast: 'Order Accepted',
-    orderAcceptedToastDesc: 'The order has been moved to "My Orders".',
-    orderDeclinedToast: 'Order Declined',
-    orderDeclinedToastDesc: 'The order request has been removed.',
-  });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
+  const { translations } = useTranslation();
+  const t = translations.orders_page;
 
 
   useEffect(() => {
@@ -121,8 +82,8 @@ export default function OrdersPage() {
         localStorage.setItem('orderRequests', JSON.stringify(updatedRequests));
 
         toast({
-          title: translatedContent.orderAcceptedToast,
-          description: translatedContent.orderAcceptedToastDesc,
+          title: t.orderAcceptedToast,
+          description: t.orderAcceptedToastDesc,
         });
     }
   };
@@ -134,8 +95,8 @@ export default function OrdersPage() {
 
     toast({
       variant: 'destructive',
-      title: translatedContent.orderDeclinedToast,
-      description: translatedContent.orderDeclinedToastDesc,
+      title: t.orderDeclinedToast,
+      description: t.orderDeclinedToastDesc,
     });
   };
 
@@ -149,7 +110,7 @@ export default function OrdersPage() {
     if (filteredOrders.length === 0) {
       return (
         <div className="text-center text-muted-foreground py-12">
-          <p>{translatedContent.noOrdersInCategory}</p>
+          <p>{t.noOrdersInCategory}</p>
         </div>
       );
     }
@@ -171,14 +132,14 @@ export default function OrdersPage() {
               <div className="flex-grow space-y-1">
                 <CardTitle className="text-md font-headline leading-tight">{order.name}</CardTitle>
                 <div className="text-xs text-muted-foreground space-y-0.5">
-                    <p>{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
-                    <p>{translatedContent.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
-                    <p>{translatedContent.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
+                    <p>{t.quantity}: <span className="font-medium">{order.quantity}</span></p>
+                    <p>{t.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
+                    <p>{t.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
                 <p className="font-bold text-md pt-1">₹{(order.price * order.quantity).toFixed(2)}</p>
               </div>
               <div className="flex flex-col items-stretch gap-2 w-full sm:w-auto sm:self-center">
-                <Button onClick={() => handleUpdate(order.id)} size="sm">{translatedContent.updateStatusButton}</Button>
+                <Button onClick={() => handleUpdate(order.id)} size="sm">{t.updateStatusButton}</Button>
               </div>
             </CardContent>
           </Card>
@@ -192,8 +153,8 @@ export default function OrdersPage() {
       return (
         <Card className="flex items-center justify-center p-12">
             <div className="text-center text-muted-foreground">
-                <p className="text-lg">{translatedContent.noNewRequests}</p>
-                <p>{translatedContent.checkBackLater}</p>
+                <p className="text-lg">{t.noNewRequests}</p>
+                <p>{t.checkBackLater}</p>
             </div>
         </Card>
       );
@@ -215,16 +176,16 @@ export default function OrdersPage() {
                </div>
               <div className="flex-1">
                 <CardTitle className="text-md font-headline mb-1 leading-tight">{order.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">{translatedContent.from}: {order.buyerName}</p>
+                <p className="text-sm text-muted-foreground">{t.from}: {order.buyerName}</p>
                 <p className="font-bold text-md my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
-                <p className="text-sm">{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
+                <p className="text-sm">{t.quantity}: <span className="font-medium">{order.quantity}</span></p>
               </div>
               <div className="flex flex-col gap-2 mt-0 w-auto">
                 <Button onClick={() => handleAccept(order.id)} size="sm" className="whitespace-nowrap">
-                  <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
+                  <Check className="mr-2 h-4 w-4" /> {t.acceptButton}
                 </Button>
                 <Button onClick={() => handleDecline(order.id)} variant="outline" size="sm" className="whitespace-nowrap">
-                  <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
+                  <X className="mr-2 h-4 w-4" /> {t.declineButton}
                 </Button>
               </div>
             </CardContent>
@@ -237,14 +198,14 @@ export default function OrdersPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="requests">{translatedContent.orderRequestsTab}</TabsTrigger>
-          <TabsTrigger value="my-orders">{translatedContent.myOrdersTab}</TabsTrigger>
+          <TabsTrigger value="requests">{t.orderRequestsTab}</TabsTrigger>
+          <TabsTrigger value="my-orders">{t.myOrdersTab}</TabsTrigger>
         </TabsList>
         <TabsContent value="requests">
           {renderRequests()}
@@ -253,13 +214,13 @@ export default function OrdersPage() {
           <Tabs defaultValue="processing" className="w-full">
             <TabsList className="grid w-full grid-cols-3 text-xs">
               <TabsTrigger value="processing" className="px-1 text-center">
-                <Package className="mr-1 h-4 w-4" /> {translatedContent.processingTab}
+                <Package className="mr-1 h-4 w-4" /> {t.processingTab}
               </TabsTrigger>
               <TabsTrigger value="shipped" className="px-1 text-center">
-                <Ship className="mr-1 h-4 w-4" /> {translatedContent.shippedTab}
+                <Ship className="mr-1 h-4 w-4" /> {t.shippedTab}
               </TabsTrigger>
               <TabsTrigger value="delivered" className="px-1 text-center">
-                <CheckCircle className="mr-1 h-4 w-4" /> {translatedContent.deliveredTab}
+                <CheckCircle className="mr-1 h-4 w-4" /> {t.deliveredTab}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="processing">
