@@ -17,9 +17,9 @@ const baseOptions = [
     icon: Upload,
   },
   {
-    name: 'Visit My Page',
-    description: 'View your sales, trends, and statistics.',
-    href: '/artisan/home',
+    name: 'Visit My Products',
+    description: 'View the products you have for sale.',
+    href: '/artisan/my-products',
     icon: LayoutDashboard,
   },
 ];
@@ -90,5 +90,3 @@ export default function ArtisanPostAuthPage() {
     </>
   );
 }
-
-    

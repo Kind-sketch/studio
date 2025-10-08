@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
 import {
-  Home,
   User,
   Package,
   HeartHandshake,
@@ -18,6 +17,7 @@ import {
   X,
   Mic,
   BarChart,
+  LayoutDashboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -95,7 +95,7 @@ export function HeaderActions() {
                 try {
                     const { page } = await interpretNavCommand({ command, language });
                     if (page && page !== 'unknown') {
-                        router.push(`/artisan/${page === 'home' ? 'home' : page}`);
+                        router.push(`/artisan/${page}`);
                         toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
                     } else {
                         toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
@@ -207,7 +207,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     
     const baseNavItems = {
         studio: [
-            { href: '/artisan/home', icon: Home, labelKey: 'trends' },
             { href: '/artisan/my-products', icon: ShoppingBag, labelKey: 'myProducts' },
             { href: '/artisan/saved-collection', icon: Bookmark, labelKey: 'savedCollection' },
         ],
@@ -236,9 +235,6 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     };
     
     const isLinkActive = (href: string) => {
-        if (href === '/artisan/home') {
-            return pathname === href;
-        }
         if (href.endsWith('/sponsors')) {
             return pathname.startsWith('/artisan/sponsors');
         }
@@ -248,7 +244,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     return (
         <div className="flex h-full max-h-screen flex-col bg-sidebar text-sidebar-foreground">
             <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4 lg:h-[60px]">
-                <button onClick={() => handleLinkClick('/artisan/home')} className="flex items-center gap-2 font-semibold">
+                <button onClick={() => handleLinkClick('/artisan/my-products')} className="flex items-center gap-2 font-semibold">
                     <Logo className="h-6 w-6 text-primary lg:h-8 lg:w-8" />
                     <span className="font-headline text-lg lg:text-xl">Artistry Havens</span>
                 </button>
@@ -321,5 +317,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    

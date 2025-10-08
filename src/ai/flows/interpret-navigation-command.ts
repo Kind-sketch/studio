@@ -13,7 +13,7 @@ import { z } from 'genkit';
 
 // Define the valid page slugs the AI can return.
 const pageSlugs = [
-  'home', 'my-products', 'saved-collection', 'dashboard', 'orders', 
+  'my-products', 'saved-collection', 'dashboard', 'orders', 
   'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product'
 ] as const;
 
@@ -45,7 +45,6 @@ The user's command is in the language '{{language}}'.
 The command is: "{{command}}"
 
 Here are the available pages and keywords associated with them:
-- 'home': Trends, ideas, new concepts, inspiration, community feedback.
 - 'my-products': My creations, items I have made, my shop, view my products.
 - 'saved-collection': Inspirations, saved ideas, my collection, bookmarks.
 - 'add-product': Add a new product, upload a creation, new item.
