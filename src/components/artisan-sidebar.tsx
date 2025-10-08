@@ -78,7 +78,6 @@ export function HeaderActions() {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     }
 
-
     const navKeywords: { [key: string]: string[] } = {
         '/artisan/home': ['home', 'main', 'start', 'trends', 'community', 'popular', 'feed', 'feedback', 'review'],
         '/artisan/dashboard': ['revenue', 'money', 'earnings', 'dashboard', 'income', 'finances', 'sales'],
@@ -90,9 +89,21 @@ export function HeaderActions() {
         '/artisan/saved-collection': ['saved', 'collection', 'bookmarks', 'favorites', 'inspirations'],
     };
 
+    const tamilNavKeywords: { [key: string]: string[] } = {
+      '/artisan/home': ['முகப்பு', 'வீடு', 'தொடங்கு', 'போக்குகள்', 'சமூகம்', 'கருத்து', 'விமர்சனம்'],
+      '/artisan/dashboard': ['வருவாய்', 'பணம்', 'சம்பாத்தியம்', 'டாஷ்போர்டு', 'வருமானம்'],
+      '/artisan/my-products': ['என் தயாரிப்புகள்', 'பொருட்கள்', 'படைப்புகள்', 'காட்சியகம்'],
+      '/artisan/stats': ['புள்ளிவிவரங்கள்', 'தரவு', 'செயல்திறன்', 'விவரங்கள்'],
+      '/artisan/profile': ['சுயவிவரம்', 'கணக்கு', 'என் விவரங்கள்'],
+      '/artisan/orders': ['ஆர்டர்கள்', 'கோரிக்கைகள்', 'எனது ஆர்டர்கள்'],
+      '/artisan/sponsors': ['ஸ்பான்சர்கள்', 'ஆதரவாளர்கள்', 'பங்குதாரர்கள்'],
+      '/artisan/saved-collection': ['சேமித்தவை', 'சேகரிப்புகள்', 'புக்மார்க்குகள்', 'பிடித்தவை'],
+    };
+
     const handleVoiceCommand = (command: string): boolean => {
-        for (const path in navKeywords) {
-            if (navKeywords[path].some(keyword => command.includes(keyword))) {
+        const keywords = language === 'ta' ? tamilNavKeywords : navKeywords;
+        for (const path in keywords) {
+            if (keywords[path].some(keyword => command.includes(keyword))) {
                 router.push(path);
                  if (toastIdRef.current) {
                     toast({
@@ -130,9 +141,7 @@ export function HeaderActions() {
 
                     if (event.results[0].isFinal) {
                         const lowerCaseSpokenText = spokenText.toLowerCase();
-                        let commandFound = false;
-                        
-                        commandFound = handleVoiceCommand(lowerCaseSpokenText);
+                        let commandFound = handleVoiceCommand(lowerCaseSpokenText);
 
                         if (!commandFound && language !== 'en') {
                             try {
@@ -140,8 +149,6 @@ export function HeaderActions() {
                                 const translatedCommand = translatedTexts[0];
                                 if (translatedCommand) {
                                     commandFound = handleVoiceCommand(translatedCommand.toLowerCase());
-                                } else {
-                                    throw new Error('Translation failed');
                                 }
                             } catch (e) {
                                  if (toastIdRef.current) {
@@ -294,20 +301,20 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar;
     
-    const translatedNavItems = {
+    const baseNavItems = {
         studio: [
-            { href: '/artisan/home', icon: Home, label: t.navItems[0].label },
-            { href: '/artisan/my-products', icon: ShoppingBag, label: t.navItems[2].label },
-            { href: '/artisan/saved-collection', icon: Bookmark, label: t.savedCollection },
+            { href: '/artisan/home', icon: Home, labelKey: 'trends' },
+            { href: '/artisan/my-products', icon: ShoppingBag, labelKey: 'myProducts' },
+            { href: '/artisan/saved-collection', icon: Bookmark, labelKey: 'savedCollection' },
         ],
         business: [
-            { href: '/artisan/dashboard', icon: DollarSign, label: t.navItems[1].label },
-            { href: '/artisan/orders', icon: Package, label: t.orders },
-            { href: '/artisan/stats', icon: BarChart3, label: t.navItems[3].label },
-            { href: '/artisan/sponsors', icon: HeartHandshake, label: t.sponsors },
+            { href: '/artisan/dashboard', icon: DollarSign, labelKey: 'revenue' },
+            { href: '/artisan/orders', icon: Package, labelKey: 'orders' },
+            { href: '/artisan/stats', icon: BarChart3, labelKey: 'statistics' },
+            { href: '/artisan/sponsors', icon: HeartHandshake, labelKey: 'sponsors' },
         ]
     };
-    
+
     const handleLinkClick = (href: string) => {
         router.push(href);
         if (closeSheet) {
@@ -325,10 +332,13 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     };
     
     const isLinkActive = (href: string) => {
-        if (href.endsWith('/...')) {
-            return pathname.startsWith(href.slice(0, -4));
+        if (href === '/artisan/home') {
+            return pathname === href || pathname === '/artisan/trends';
         }
-        return pathname === href;
+        if (href.endsWith('/sponsors')) {
+            return pathname.startsWith('/artisan/sponsors');
+        }
+        return pathname.startsWith(href);
     };
 
     return (
@@ -348,11 +358,18 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
             <div className="flex-1 overflow-y-auto">
                 <nav className="flex h-full flex-col p-4">
                     <div className="flex-1 space-y-6">
-                        <div className="mb-4">
-                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">Studio</h3>
+                        <div className="space-y-2">
+                             <Button onClick={() => handleLinkClick('/artisan/add-product')} className="w-full">
+                                <Plus className="mr-2 h-4 w-4" />
+                                {t.addProduct}
+                            </Button>
+                        </div>
+
+                        <div>
+                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">{t.studio}</h3>
                             <ul className="space-y-1 mt-2">
-                                {translatedNavItems.studio.map((item) => (
-                                <li key={item.label}>
+                                {baseNavItems.studio.map((item) => (
+                                <li key={item.labelKey}>
                                     <button
                                         onClick={() => handleLinkClick(item.href)}
                                         className={cn(
@@ -361,7 +378,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                                         )}
                                     >
                                         <item.icon className="h-4 w-4" />
-                                        {item.label}
+                                        {t.navItems[item.labelKey]}
                                     </button>
                                 </li>
                                 ))}
@@ -369,10 +386,10 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                         </div>
                         
                         <div>
-                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">Business Tools</h3>
+                            <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">{t.businessTools}</h3>
                             <ul className="space-y-1 mt-2">
-                                {translatedNavItems.business.map((item) => (
-                                <li key={item.label}>
+                                {baseNavItems.business.map((item) => (
+                                <li key={item.labelKey}>
                                     <button
                                         onClick={() => handleLinkClick(item.href)}
                                         className={cn(
@@ -381,7 +398,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                                         )}
                                     >
                                         <item.icon className="h-4 w-4" />
-                                        {item.label}
+                                        {t.navItems[item.labelKey]}
                                     </button>
                                 </li>
                                 ))}
@@ -412,3 +429,5 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
+
+    
