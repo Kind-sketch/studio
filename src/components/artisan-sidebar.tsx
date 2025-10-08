@@ -17,13 +17,14 @@ import {
   Bell,
   DollarSign,
   X,
-  Plus,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import SupportDialog from './support-dialog';
 import {
     DropdownMenu,
@@ -34,8 +35,11 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { artisans } from '@/lib/data';
+import { interpretNavCommand } from '@/ai/flows/interpret-navigation-command';
+
 
 const artisan = artisans[0]; // Mock current user
 
@@ -50,10 +54,16 @@ interface Notification {
 
 export function HeaderActions() {
     const { translations } = useTranslation();
+    const { language } = useLanguage();
+    const router = useRouter();
+    const { toast } = useToast();
     const t = translations.artisan_sidebar.notifications;
+    
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
 
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
         // Mock notifications
@@ -63,7 +73,55 @@ export function HeaderActions() {
             { id: '3', titleKey: 'milestone', descriptionKey: 'milestoneDesc', descriptionParams: { salesCount: 100 }, read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
         ];
         setNotifications(mockNotifications);
-    }, []);
+
+        // Setup speech recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.interimResults = false;
+
+            recognitionRef.current.onstart = () => setIsListening(true);
+            recognitionRef.current.onend = () => setIsListening(false);
+            recognitionRef.current.onerror = (event: any) => {
+                console.error('Speech recognition error:', event.error);
+                toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+                setIsListening(false);
+            };
+
+            recognitionRef.current.onresult = async (event: any) => {
+                const command = event.results[0][0].transcript;
+                toast({ title: 'Heard you say:', description: `"${command}"` });
+                
+                try {
+                    const { page } = await interpretNavCommand({ command, language });
+                    if (page && page !== 'unknown') {
+                        router.push(`/artisan/${page}`);
+                        toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
+                    } else {
+                        toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
+                    }
+                } catch (error) {
+                     console.error('AI navigation error:', error);
+                     toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
+                }
+            };
+        }
+    }, [language, router, toast]);
+
+    const toggleListening = () => {
+        if (!recognitionRef.current) {
+            toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+            return;
+        }
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            recognitionRef.current.lang = language;
+            recognitionRef.current.start();
+        }
+    };
+
 
     const markAsRead = (id: string) => {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
@@ -81,6 +139,15 @@ export function HeaderActions() {
 
     return (
         <div className="ml-auto flex items-center gap-2">
+             <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Voice Command"
+                className={cn("relative rounded-full", isListening && "bg-destructive text-destructive-foreground animate-pulse")}
+                onClick={toggleListening}
+            >
+                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
