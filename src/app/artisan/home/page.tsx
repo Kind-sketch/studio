@@ -141,16 +141,16 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="overflow-hidden h-full flex flex-col">
-      <div className="p-4 flex-shrink-0">
+    <div className="h-full flex flex-col p-4">
+      <div className="flex-shrink-0">
           <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
           <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
       </div>
 
-      <div className="flex-grow overflow-y-auto space-y-4 px-4 pb-4">
+      <div className="flex-grow overflow-y-auto space-y-4 pt-4">
         {/* Frequently Bought Products */}
-        <section className="space-y-3">
-          <h3 className="font-headline text-lg font-semibold">{t.frequentlyBought}</h3>
+        <section className="space-y-2">
+          <h3 className="font-headline text-lg font-semibold truncate">{t.frequentlyBought}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
             plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]} 
@@ -167,8 +167,8 @@ export default function ArtisanHomePage() {
         </section>
 
         {/* Bestselling Products */}
-        <section className="space-y-3">
-            <h3 className="font-headline text-lg font-semibold">{t.bestselling}</h3>
+        <section className="space-y-2">
+            <h3 className="font-headline text-lg font-semibold truncate">{t.bestselling}</h3>
              <Carousel 
               opts={{ align: 'start', loop: true }} 
               plugins={[Autoplay({ delay: 2500, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
@@ -188,7 +188,7 @@ export default function ArtisanHomePage() {
         <section>
              <Card>
               <CardHeader className="pb-4">
-                <CardTitle className="text-md">{t.aiReviewTitle}</CardTitle>
+                <CardTitle className="text-md leading-tight">{t.aiReviewTitle}</CardTitle>
                 <CardDescription className="text-xs">{t.aiReviewDescription}</CardDescription>
               </CardHeader>
               <Form {...form}>
@@ -258,5 +258,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
