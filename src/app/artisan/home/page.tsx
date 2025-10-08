@@ -123,7 +123,7 @@ export default function ArtisanHomePage() {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
-            audio.current.play();
+            audioRef.current.play();
         }
         setIsPlaying(!isPlaying);
     }
@@ -146,8 +146,8 @@ export default function ArtisanHomePage() {
       <div className="flex-1 space-y-6 p-4 md:p-6">
         <div className="flex items-center justify-between space-y-2">
           <div>
-            <h2 className="font-headline text-3xl font-bold tracking-tight">{t.pageTitle}</h2>
-            <p className="text-muted-foreground">{t.pageDescription}</p>
+            <h2 className="font-headline text-2xl md:text-3xl font-bold tracking-tight">{t.pageTitle}</h2>
+            <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
           </div>
         </div>
 
@@ -163,7 +163,7 @@ export default function ArtisanHomePage() {
                >
                 <CarouselContent className="-ml-2">
                   {myMostLiked.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-2/5 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-[3/4]" />
                     </CarouselItem>
                   ))}
@@ -178,7 +178,7 @@ export default function ArtisanHomePage() {
                >
                 <CarouselContent className="-ml-2">
                   {myMostBought.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
+                    <CarouselItem key={product.id} className="basis-2/5 md:basis-1/3 lg:basis-1/4 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton className="aspect-[3/4]" />
                     </CarouselItem>
                   ))}
@@ -301,4 +301,5 @@ export default function ArtisanHomePage() {
   );
 }
 
+    
     
