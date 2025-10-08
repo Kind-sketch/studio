@@ -405,7 +405,7 @@ export const translations = {
         navItems: {
             trends: 'Trends',
             myProducts: 'My Products',
-            savedCollection: 'Inspirations',
+            savedCollection: 'Saved Collection',
             revenue: 'Revenue',
             orders: 'Orders',
             statistics: 'Statistics',
@@ -850,7 +850,7 @@ export const translations = {
       navItems: {
         trends: 'போக்குகள்',
         myProducts: 'என் தயாரிப்புகள்',
-        savedCollection: 'ஸ்பூரத்திகள்',
+        savedCollection: 'சேமித்த சேகரிப்பு',
         revenue: 'வருவாய்',
         orders: 'ஆர்டர்கள்',
         statistics: 'புள்ளிவிவரங்கள்',
@@ -882,3 +882,5 @@ export const translations = {
     ],
   },
 };
+
+    
