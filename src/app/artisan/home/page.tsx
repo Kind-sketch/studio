@@ -155,14 +155,14 @@ export default function ArtisanHomePage() {
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4">Your Top Performers</h3>
           <div className="space-y-6">
-            <div className="mx-2">
+            <div>
               <h4 className="font-semibold text-md mb-2">Most Liked</h4>
                <Carousel 
                 opts={{ align: 'start', loop: true }}
                 plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
                 className="w-full"
                >
-                <CarouselContent className="-ml-1">
+                <CarouselContent>
                   {myMostLiked.map((product) => (
                     <CarouselItem key={product.id} className="basis-2/5 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
@@ -171,14 +171,14 @@ export default function ArtisanHomePage() {
                 </CarouselContent>
               </Carousel>
             </div>
-             <div className="mx-2">
+             <div>
               <h4 className="font-semibold text-md mb-2">Most Bought</h4>
                <Carousel 
                 opts={{ align: 'start', loop: true, direction: 'rtl' }}
                 plugins={[Autoplay({ delay: 2500, stopOnInteraction: true })]}
                 className="w-full"
                >
-                <CarouselContent className="-ml-1">
+                <CarouselContent>
                   {myMostBought.map((product) => (
                     <CarouselItem key={product.id} className="basis-2/5 pl-2">
                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
@@ -261,17 +261,15 @@ export default function ArtisanHomePage() {
         {/* Most Liked of Other Artisans */}
         <section className="mb-6">
             <h3 className="font-headline text-xl font-semibold mb-4">Community Favorites: Most Liked</h3>
-            <div className="mx-2">
-                <Carousel opts={{ align: 'start' }} className="w-full">
-                <CarouselContent className="-ml-2">
-                    {otherMostLiked.slice(0, 8).map((product) => (
-                    <CarouselItem key={product.id} className="basis-2/5 pl-2">
-                        <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
-                    </CarouselItem>
-                    ))}
-                </CarouselContent>
-                </Carousel>
-            </div>
+            <Carousel opts={{ align: 'start' }} className="w-full -mx-2">
+            <CarouselContent>
+                {otherMostLiked.slice(0, 8).map((product) => (
+                <CarouselItem key={product.id} className="basis-2/5 px-2">
+                    <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
+                </CarouselItem>
+                ))}
+            </CarouselContent>
+            </Carousel>
         </section>
 
         {/* Most Bought of Other Artisans */}
