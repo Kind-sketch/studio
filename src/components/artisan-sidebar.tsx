@@ -102,9 +102,9 @@ export function HeaderActions() {
 
     const handleVoiceCommand = (command: string, lang: string): boolean => {
         const keywords = lang === 'ta' ? tamilNavKeywords : navKeywords;
-        const lowerCaseCommand = command.toLowerCase();
+        const lowerCaseCommand = command.toLowerCase().trim();
         for (const path in keywords) {
-            if (keywords[path].some(keyword => lowerCaseCommand.includes(keyword))) {
+            if (keywords[path].some(keyword => lowerCaseCommand.includes(keyword.toLowerCase()))) {
                 router.push(path);
                  if (toastIdRef.current) {
                     toast({
@@ -125,7 +125,7 @@ export function HeaderActions() {
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
-                recognition.interimResults = true;
+                recognition.interimResults = false; // Get final result
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = async (event: any) => {
@@ -139,38 +139,38 @@ export function HeaderActions() {
                         toastIdRef.current = id;
                     }
 
-                    if (event.results[0].isFinal) {
-                        let commandFound = handleVoiceCommand(spokenText, language);
+                    let commandFound = false;
 
-                        // Fallback to English translation if no Tamil keyword was found
-                        if (!commandFound && language === 'ta') {
-                            try {
-                                const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
-                                const translatedCommand = translatedTexts[0];
-                                if (translatedCommand) {
-                                    commandFound = handleVoiceCommand(translatedCommand, 'en');
+                    // Primary check: Use the spoken language directly
+                    commandFound = handleVoiceCommand(spokenText, language);
 
-                                }
-                            } catch (e) {
-                                 if (toastIdRef.current) {
-                                    toast({
-                                        id: toastIdRef.current,
-                                        variant: 'destructive',
-                                        title: 'Translation Error',
-                                        description: 'Could not translate your command.',
-                                    });
-                                }
+                    // Fallback check: If the language is Tamil and no command was found, try translating to English
+                    if (!commandFound && language === 'ta') {
+                        try {
+                            const { translatedTexts } = await translateText({ texts: [spokenText], targetLanguage: 'en' });
+                            const translatedCommand = translatedTexts[0];
+                            if (translatedCommand) {
+                                commandFound = handleVoiceCommand(translatedCommand, 'en');
+                            }
+                        } catch (e) {
+                             if (toastIdRef.current) {
+                                toast({
+                                    id: toastIdRef.current,
+                                    variant: 'destructive',
+                                    title: 'Translation Error',
+                                    description: 'Could not translate your command.',
+                                });
                             }
                         }
+                    }
 
-                        if (!commandFound && toastIdRef.current) {
-                            toast({
-                                id: toastIdRef.current,
-                                variant: 'destructive',
-                                title: 'Command Not Recognized',
-                                description: `Could not find a page for "${spokenText}".`,
-                            });
-                        }
+                    if (!commandFound && toastIdRef.current) {
+                        toast({
+                            id: toastIdRef.current,
+                            variant: 'destructive',
+                            title: 'Command Not Recognized',
+                            description: `Could not find a page for "${spokenText}".`,
+                        });
                     }
                 };
 
@@ -424,7 +424,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    
-
-    
