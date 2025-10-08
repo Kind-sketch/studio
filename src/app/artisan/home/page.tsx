@@ -141,8 +141,8 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-2 space-y-4 flex-1">
+    <div className="flex flex-col h-full overflow-x-hidden">
+      <div className="p-1 space-y-4">
         <div>
             <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
             <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
