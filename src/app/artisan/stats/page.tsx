@@ -166,106 +166,108 @@ export default function StatsPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <header className="mb-6">
-        <h1 className="font-headline text-2xl font-bold">{translatedContent.title}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
-      </header>
+      <div className="max-w-2xl mx-auto">
+        <header className="mb-6">
+          <h1 className="font-headline text-2xl font-bold">{translatedContent.title}</h1>
+          <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
+        </header>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <CardTitle className="text-base">{translatedContent.likesVsSales}</CardTitle>
-              <CardDescription className="text-xs">
-                {translatedContent.showingDataFor} {getPeriodText()} {translatedContent.performance}.
-              </CardDescription>
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <CardTitle className="text-base">{translatedContent.likesVsSales}</CardTitle>
+                <CardDescription className="text-xs">
+                  {translatedContent.showingDataFor} {getPeriodText()} {translatedContent.performance}.
+                </CardDescription>
+              </div>
+              <Tabs defaultValue={period} onValueChange={onPeriodChange} className="w-full sm:w-auto">
+                <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs h-8">
+                  <TabsTrigger value="weekly" className="text-xs px-2">{translatedContent.weekly}</TabsTrigger>
+                  <TabsTrigger value="monthly" className="text-xs px-2">{translatedContent.monthly}</TabsTrigger>
+                  <TabsTrigger value="yearly" className="text-xs px-2">{translatedContent.yearly}</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
-            <Tabs defaultValue={period} onValueChange={onPeriodChange} className="w-full sm:w-auto">
-              <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs h-8">
-                <TabsTrigger value="weekly" className="text-xs px-2">{translatedContent.weekly}</TabsTrigger>
-                <TabsTrigger value="monthly" className="text-xs px-2">{translatedContent.monthly}</TabsTrigger>
-                <TabsTrigger value="yearly" className="text-xs px-2">{translatedContent.yearly}</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="h-[250px] min-w-[500px] pr-4">
-              <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-            <CardTitle className="text-base">{translatedContent.productPerformance}</CardTitle>
-            <CardDescription className="text-xs">{translatedContent.productPerformanceDesc}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-           {products.map(product => (
-              <Card key={product.id} className="overflow-hidden">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-lg object-cover aspect-square bg-muted"/>
-                  <div className="flex-1">
-                    <p className="font-semibold truncate">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">₹{product.price.toFixed(2)}</p>
-                  </div>
-                  <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                          <Button 
-                              size="sm" 
-                              onClick={() => handleAiReview(product)}
-                              className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-9 px-3"
-                          >
-                              <Lightbulb className="mr-2 h-4 w-4" />
-                              <span className="text-xs">{translatedContent.reviewHeader}</span>
-                          </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="max-w-sm">
-                          {isLoadingReview ? (
-                              <div className="flex h-64 flex-col items-center justify-center gap-4 text-center">
-                                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                                  <AlertDialogHeader>
-                                      <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                          {translatedContent.generatingReviewDesc}
-                                      </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                              </div>
-                          ) : reviewResult ? (
-                              <>
-                              <AlertDialogHeader>
-                                  <AlertDialogTitle>{translatedContent.reviewFor} <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      {translatedContent.analysisOfPotential}
-                                  </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <ScrollArea className="h-72 pr-6">
-                                  <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
-                              </ScrollArea>
-                              <AlertDialogFooter>
-                                  <AlertDialogCancel>{translatedContent.close}</AlertDialogCancel>
-                              </AlertDialogFooter>
-                              </>
-                          ) : (
-                              <AlertDialogHeader>
-                                  <AlertDialogTitle>{translatedContent.getInsightsTitle}</AlertDialogTitle>
-                                  <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
-                                      <Sparkles className="h-12 w-12" />
-                                      <p className="mt-4">{translatedContent.getInsightsDesc}</p>
-                                  </div>
-                              </AlertDialogHeader>
-                          )}
-                      </AlertDialogContent>
-                  </AlertDialog>
-                </CardContent>
-              </Card>
-           ))}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="h-[250px] min-w-[500px] pr-4">
+                <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+              <CardTitle className="text-base">{translatedContent.productPerformance}</CardTitle>
+              <CardDescription className="text-xs">{translatedContent.productPerformanceDesc}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {products.map(product => (
+                <Card key={product.id} className="overflow-hidden">
+                  <CardContent className="flex items-center gap-4 p-4">
+                    <Image src={product.image.url} alt={product.name} width={64} height={64} className="rounded-lg object-cover aspect-square bg-muted"/>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">{product.name}</p>
+                      <p className="text-sm text-muted-foreground">₹{product.price.toFixed(2)}</p>
+                    </div>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button 
+                                size="sm" 
+                                onClick={() => handleAiReview(product)}
+                                className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-9 px-3 shrink-0"
+                            >
+                                <Lightbulb className="mr-2 h-4 w-4" />
+                                <span className="text-xs">{translatedContent.reviewHeader}</span>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-sm">
+                            {isLoadingReview ? (
+                                <div className="flex h-64 flex-col items-center justify-center gap-4 text-center">
+                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {translatedContent.generatingReviewDesc}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                </div>
+                            ) : reviewResult ? (
+                                <>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>{translatedContent.reviewFor} <span className="text-primary">{reviewResult.productName}</span></AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        {translatedContent.analysisOfPotential}
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <ScrollArea className="h-72 pr-6">
+                                    <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
+                                </ScrollArea>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>{translatedContent.close}</AlertDialogCancel>
+                                </AlertDialogFooter>
+                                </>
+                            ) : (
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>{translatedContent.getInsightsTitle}</AlertDialogTitle>
+                                    <div className="flex h-64 flex-col items-center justify-center text-center text-muted-foreground">
+                                        <Sparkles className="h-12 w-12" />
+                                        <p className="mt-4">{translatedContent.getInsightsDesc}</p>
+                                    </div>
+                                </AlertDialogHeader>
+                            )}
+                        </AlertDialogContent>
+                    </AlertDialog>
+                  </CardContent>
+                </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
