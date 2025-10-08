@@ -8,9 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Check, X } from 'lucide-react';
 import type { SponsorRequest } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
-
+import { useTranslation } from '@/context/translation-context';
 
 const initialSponsorRequests: SponsorRequest[] = [
     {
@@ -33,50 +31,21 @@ export default function SponsorRequestsPage() {
   const [sponsorRequests, setSponsorRequests] = useState<SponsorRequest[]>([]);
   const [mySponsors, setMySponsors] = useState<SponsorRequest[]>([]);
   const { toast } = useToast();
-  const { language } = useLanguage();
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Sponsor Requests',
-    description: 'Review new sponsorship offers.',
-    offering: 'Offering',
-    acceptButton: 'Accept',
-    declineButton: 'Decline',
-    noRequestsTitle: 'No new sponsor requests.',
-    noRequestsDescription: 'Share your work to attract sponsors!',
-    sponsorAcceptedToast: 'Sponsor Accepted',
-    sponsorAcceptedToastDesc: 'The sponsor has been added to "My Sponsors".',
-    sponsorDeclinedToast: 'Sponsor Declined',
-    sponsorDeclinedToastDesc: 'The sponsor request has been removed.',
-  });
+  const { translations } = useTranslation();
+  const t = translations.sponsor_requests_page;
 
   useEffect(() => {
     const sponsorsFromStorage = JSON.parse(localStorage.getItem('mySponsors') || '[]');
     setMySponsors(sponsorsFromStorage);
 
-    const requestsFromStorage = JSON.parse(localStorage.getItem('sponsorRequests'));
+    const requestsFromStorage = localStorage.getItem('sponsorRequests');
     if (requestsFromStorage) {
-        setSponsorRequests(requestsFromStorage);
+        setSponsorRequests(JSON.parse(requestsFromStorage));
     } else {
         setSponsorRequests(initialSponsorRequests);
         localStorage.setItem('sponsorRequests', JSON.stringify(initialSponsorRequests));
     }
   }, []);
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
-
 
   const handleAccept = (sponsorId: string) => {
     const sponsorToMove = sponsorRequests.find(req => req.id === sponsorId);
@@ -92,8 +61,8 @@ export default function SponsorRequestsPage() {
     localStorage.setItem('sponsorRequests', JSON.stringify(updatedRequests));
 
     toast({
-      title: translatedContent.sponsorAcceptedToast,
-      description: translatedContent.sponsorAcceptedToastDesc,
+      title: t.sponsorAcceptedToast,
+      description: t.sponsorAcceptedToastDesc,
     });
   };
 
@@ -103,8 +72,8 @@ export default function SponsorRequestsPage() {
     localStorage.setItem('sponsorRequests', JSON.stringify(updatedRequests));
     toast({
       variant: 'destructive',
-      title: translatedContent.sponsorDeclinedToast,
-      description: translatedContent.sponsorDeclinedToastDesc,
+      title: t.sponsorDeclinedToast,
+      description: t.sponsorDeclinedToastDesc,
     });
   };
 
@@ -114,8 +83,8 @@ export default function SponsorRequestsPage() {
         return (
             <Card className="flex items-center justify-center p-12">
                 <div className="text-center text-muted-foreground">
-                    <p className="text-lg">{translatedContent.noRequestsTitle}</p>
-                    <p>{translatedContent.noRequestsDescription}</p>
+                    <p className="text-lg">{t.noRequestsTitle}</p>
+                    <p>{t.noRequestsDescription}</p>
                 </div>
             </Card>
         )
@@ -133,7 +102,7 @@ export default function SponsorRequestsPage() {
                 <div>
                     <CardTitle className="text-lg">{request.name}</CardTitle>
                     <CardDescription>
-                        {translatedContent.offering} <Badge variant="secondary">₹{request.contributionAmount}/month</Badge>
+                        {t.offering} <Badge variant="secondary">₹{request.contributionAmount}/month</Badge>
                     </CardDescription>
                 </div>
               </CardHeader>
@@ -142,10 +111,10 @@ export default function SponsorRequestsPage() {
               </CardContent>
               <CardContent className="flex gap-2">
                 <Button onClick={() => handleAccept(request.id)} className="w-full">
-                  <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
+                  <Check className="mr-2 h-4 w-4" /> {t.acceptButton}
                 </Button>
                 <Button onClick={() => handleDecline(request.id)} variant="outline" className="w-full">
-                  <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
+                  <X className="mr-2 h-4 w-4" /> {t.declineButton}
                 </Button>
               </CardContent>
             </Card>
@@ -157,12 +126,10 @@ export default function SponsorRequestsPage() {
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
         {renderRequests()}
     </div>
   );
 }
-
-    
