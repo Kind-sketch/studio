@@ -154,9 +154,9 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4">{t.frequentlyBought}</h3>
-          <div className="overflow-hidden">
+          <div className="-mx-4 px-4">
             <Carousel opts={{ align: 'start' }} className="w-full">
-              <CarouselContent>
+              <CarouselContent className="-ml-2">
                 {frequentlyBought.map((product) => (
                   <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
                      <ProductCard product={product} />
@@ -170,9 +170,9 @@ export default function ArtisanHomePage() {
         {/* Bestselling Products */}
         <section>
             <h3 className="font-headline text-xl font-semibold mb-4">{t.bestselling}</h3>
-            <div className="overflow-hidden">
+            <div className="-mx-4 px-4">
                 <Carousel opts={{ align: 'start' }} className="w-full">
-                    <CarouselContent>
+                    <CarouselContent className="-ml-2">
                         {bestSelling.map((product) => (
                             <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
                                 <ProductCard product={product} />
