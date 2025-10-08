@@ -850,7 +850,7 @@ export const translations = {
       navItems: {
         trends: 'போக்குகள்',
         myProducts: 'என் தயாரிப்புகள்',
-        savedCollection: 'சேமித்த சேகரிப்பு',
+        savedCollection: 'சேமித்த தொகுப்பு',
         revenue: 'வருவாய்',
         orders: 'ஆர்டர்கள்',
         statistics: 'புள்ளிவிவரங்கள்',
