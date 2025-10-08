@@ -168,7 +168,7 @@ export default function StatsPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
+        <h1 className="font-headline text-2xl font-bold">{translatedContent.title}</h1>
         <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
       </header>
 
@@ -176,23 +176,23 @@ export default function StatsPage() {
         <CardHeader>
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>{translatedContent.likesVsSales}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base">{translatedContent.likesVsSales}</CardTitle>
+              <CardDescription className="text-xs">
                 {translatedContent.showingDataFor} {getPeriodText()} {translatedContent.performance}.
               </CardDescription>
             </div>
             <Tabs defaultValue={period} onValueChange={onPeriodChange} className="w-full sm:w-auto">
-              <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs">
-                <TabsTrigger value="weekly">{translatedContent.weekly}</TabsTrigger>
-                <TabsTrigger value="monthly">{translatedContent.monthly}</TabsTrigger>
-                <TabsTrigger value="yearly">{translatedContent.yearly}</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 sm:w-auto text-xs h-8">
+                <TabsTrigger value="weekly" className="text-xs px-2">{translatedContent.weekly}</TabsTrigger>
+                <TabsTrigger value="monthly" className="text-xs px-2">{translatedContent.monthly}</TabsTrigger>
+                <TabsTrigger value="yearly" className="text-xs px-2">{translatedContent.yearly}</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </CardHeader>
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
-            <div className="h-[300px] min-w-[600px] pr-4">
+            <div className="h-[250px] min-w-[500px] pr-4">
               <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
             </div>
             <ScrollBar orientation="horizontal" />
@@ -202,8 +202,8 @@ export default function StatsPage() {
       
       <Card>
         <CardHeader>
-            <CardTitle>{translatedContent.productPerformance}</CardTitle>
-            <CardDescription>{translatedContent.productPerformanceDesc}</CardDescription>
+            <CardTitle className="text-base">{translatedContent.productPerformance}</CardTitle>
+            <CardDescription className="text-xs">{translatedContent.productPerformanceDesc}</CardDescription>
         </CardHeader>
         <CardContent>
             <Table>
@@ -217,8 +217,8 @@ export default function StatsPage() {
                     {products.map(product => (
                         <TableRow key={product.id}>
                             <TableCell className="flex items-center gap-2 p-2">
-                                <Image src={product.image.url} alt={product.name} width={48} height={48} className="rounded-md object-cover aspect-square bg-muted"/>
-                                <div className="flex-1 text-sm">
+                                <Image src={product.image.url} alt={product.name} width={40} height={40} className="rounded-md object-cover aspect-square bg-muted"/>
+                                <div className="flex-1 text-xs">
                                     <p className="font-medium truncate max-w-[120px]">{product.name}</p>
                                     <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                                 </div>
@@ -229,13 +229,13 @@ export default function StatsPage() {
                                         <Button 
                                             size="sm" 
                                             onClick={() => handleAiReview(product)}
-                                            className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700"
+                                            className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 h-8 px-2"
                                         >
-                                            <Lightbulb className="mr-0 sm:mr-2 h-4 w-4" />
-                                            <span className="hidden sm:inline">Review</span>
+                                            <Lightbulb className="mr-1 h-3 w-3" />
+                                            <span className="text-xs">Review</span>
                                         </Button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent className="max-w-2xl">
+                                    <AlertDialogContent className="max-w-sm">
                                         {isLoadingReview ? (
                                             <div className="flex h-64 items-center justify-center">
                                                 <AlertDialogHeader>
@@ -254,7 +254,7 @@ export default function StatsPage() {
                                                     {translatedContent.analysisOfPotential}
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
-                                            <ScrollArea className="h-96 pr-6">
+                                            <ScrollArea className="h-72 pr-6">
                                                 <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{reviewResult.aiReview}</div>
                                             </ScrollArea>
                                             <AlertDialogFooter>
