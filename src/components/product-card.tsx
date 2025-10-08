@@ -2,13 +2,12 @@
 'use client';
 
 import Image from 'next/image';
-import { Heart, Bookmark, BookOpen } from 'lucide-react';
+import { Heart, Bookmark } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/types';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ProductCardProps {
   product: Product;
@@ -37,43 +36,41 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             fill
             className="object-cover"
           />
-          <div className="absolute top-1 right-1 flex flex-col gap-1">
+          <div className="absolute top-2 right-2 flex flex-col gap-2">
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white flex flex-col p-1"
+              className="h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white flex flex-col p-1"
               onClick={handleLike}
             >
               <Heart
                 className={cn(
-                  'h-3 w-3 text-slate-700',
+                  'h-4 w-4 text-slate-700',
                   isLiked && 'fill-red-500 text-red-500'
                 )}
               />
-              <span className="text-[9px] text-slate-700 font-bold">{likeCount}</span>
+              <span className="text-[10px] text-slate-700 font-bold">{likeCount}</span>
             </Button>
             {showSaveButton && onSave && (
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-7 w-7 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
+                    className="h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
                     onClick={onSave}
                 >
-                    <Bookmark className='h-3 w-3 text-slate-700' />
+                    <Bookmark className='h-4 w-4 text-slate-700' />
                 </Button>
             )}
           </div>
         </div>
-        <div className="p-1.5">
-          <h3 className="font-headline text-[11px] font-semibold truncate">{product.name}</h3>
-          <p className="text-[9px] text-muted-foreground truncate">
+        <div className="p-2">
+          <h3 className="font-headline text-sm font-semibold truncate">{product.name}</h3>
+          <p className="text-xs text-muted-foreground truncate">
             by {product.artisan.name}
           </p>
-          <p className="mt-0.5 font-semibold text-xs">₹{product.price.toFixed(2)}</p>
+          <p className="mt-1 font-semibold text-sm">₹{product.price.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>
   );
 }
-
-    

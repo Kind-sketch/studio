@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Lightbulb, Mic, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { Product } from '@/lib/types';
+import type { Product, SavedCollection } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -48,8 +48,7 @@ export default function ArtisanHomePage() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
-  const frequentlyBought = [...myProducts].sort((a, b) => b.sales - a.sales);
-  const bestSelling = [...myProducts].sort((a, b) => b.likes - a.likes);
+  const mostLikedProducts = [...myProducts].sort((a, b) => b.likes - a.likes);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -140,48 +139,48 @@ export default function ArtisanHomePage() {
     }
   };
 
+  const handleSaveProduct = useCallback((productId: string) => {
+    const collections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    let inspirationCollection = collections.find(c => c.name === 'Inspiration');
+    
+    if (!inspirationCollection) {
+        inspirationCollection = { id: `col-${Date.now()}`, name: 'Inspiration', productIds: [] };
+        collections.push(inspirationCollection);
+    }
+
+    if (!inspirationCollection.productIds.includes(productId)) {
+        inspirationCollection.productIds.push(productId);
+        localStorage.setItem('artisanCollections', JSON.stringify(collections));
+        toast({
+            title: t.savedToCollectionToast.replace('{collectionName}', inspirationCollection.name),
+        });
+    }
+  }, [toast, t.savedToCollectionToast]);
+
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col p-4 space-y-4">
       <div>
-        <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
-        <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
+        <h2 className="font-headline text-2xl font-bold tracking-tight truncate">{t.pageTitle}</h2>
+        <p className="text-muted-foreground text-sm truncate">{t.pageDescription}</p>
       </div>
 
       <div className="space-y-4 pt-4">
-        {/* Frequently Bought Products */}
+        {/* Most Liked Products */}
         <section className="space-y-2">
-          <h3 className="font-headline text-lg font-semibold truncate">{t.frequentlyBought}</h3>
+          <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
             plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]} 
             className="w-full"
           >
             <CarouselContent>
-              {frequentlyBought.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/3 pl-2">
-                   <ProductCard product={product} />
+              {mostLikedProducts.map((product) => (
+                <CarouselItem key={product.id} className="basis-1/2 pl-2">
+                   <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
-        </section>
-
-        {/* Bestselling Products */}
-        <section className="space-y-2">
-            <h3 className="font-headline text-lg font-semibold truncate">{t.bestselling}</h3>
-             <Carousel 
-              opts={{ align: 'start', loop: true }} 
-              plugins={[Autoplay({ delay: 2500, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
-              className="w-full"
-            >
-              <CarouselContent>
-                  {bestSelling.map((product) => (
-                      <CarouselItem key={product.id} className="basis-1/3 pl-2">
-                          <ProductCard product={product} />
-                      </CarouselItem>
-                  ))}
-              </CarouselContent>
-            </Carousel>
         </section>
 
         {/* AI Review Section */}
