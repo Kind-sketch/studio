@@ -148,11 +148,11 @@ export default function StatsPage() {
     setIsLoadingReview(true);
     setReviewResult(null);
     try {
-        const response = await getCommunityTrendInsights({
+        const {aiReview} = await getCommunityTrendInsights({
             artisanId: 'artisan-123',
             productDescription: `Product Name: ${product.name}, Category: ${product.category}. This product is made by ${product.artisan.name}.`,
         });
-        setReviewResult({productName: product.name, ...response});
+        setReviewResult({productName: product.name, aiReview});
     } catch (error) {
         console.error('Error generating review:', error);
         toast({
@@ -210,21 +210,21 @@ export default function StatsPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>{translatedContent.productHeader}</TableHead>
-                            <TableHead className="text-right">{translatedContent.reviewHeader}</TableHead>
+                            <TableHead className="py-2 px-1 sm:px-2">{translatedContent.productHeader}</TableHead>
+                            <TableHead className="text-right py-2 px-1 sm:px-2">{translatedContent.reviewHeader}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {products.map(product => (
                             <TableRow key={product.id}>
-                                <TableCell className="flex items-center gap-2 p-2">
+                                <TableCell className="flex items-center gap-2 p-1 sm:p-2">
                                     <Image src={product.image.url} alt={product.name} width={40} height={40} className="rounded-md object-cover aspect-square bg-muted"/>
                                     <div className="flex-1 text-xs">
                                         <p className="font-medium truncate max-w-[120px]">{product.name}</p>
                                         <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-right p-2">
+                                <TableCell className="text-right p-1 sm:p-2">
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button 
@@ -238,14 +238,14 @@ export default function StatsPage() {
                                         </AlertDialogTrigger>
                                         <AlertDialogContent className="max-w-sm">
                                             {isLoadingReview ? (
-                                                <div className="flex h-64 items-center justify-center">
+                                                <div className="flex h-64 flex-col items-center justify-center gap-4 text-center">
+                                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>{translatedContent.generatingReviewTitle}</AlertDialogTitle>
                                                         <AlertDialogDescription>
                                                             {translatedContent.generatingReviewDesc}
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
-                                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
                                                 </div>
                                             ) : reviewResult ? (
                                                 <>
