@@ -1,13 +1,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { buyerAiDesignedProducts } from '@/ai/flows/buyer-ai-designed-products';
 import { productCategories as baseProductCategories } from '@/lib/data';
+import 'regenerator-runtime/runtime';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -15,9 +16,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Send } from 'lucide-react';
+import { Loader2, Sparkles, Send, Mic } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please describe your idea in at least 10 characters.'),
@@ -28,10 +31,13 @@ export default function CustomizePage() {
   const { toast } = useToast();
   const { translations, isTranslating } = useTranslation();
   const t = translations.customize_page;
+  const { language } = useLanguage();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   
   const defaultImage = PlaceHolderImages.find(p => p.id === 'product-5');
 
@@ -42,6 +48,41 @@ export default function CustomizePage() {
       category: '',
     },
   });
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = language;
+
+      recognitionRef.current.onstart = () => setIsListening(true);
+      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        form.setValue('description', transcript);
+      };
+    }
+  }, [language, form, toast]);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
   
   const handleGenerateImage = async () => {
     const { description, category } = form.getValues();
@@ -127,11 +168,22 @@ export default function CustomizePage() {
                 <FormItem>
                   <FormLabel>{t.productDescriptionLabel}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t.productDescriptionPlaceholder}
-                      className="h-32"
-                    />
+                    <div className="relative">
+                      <Textarea
+                        {...field}
+                        placeholder={t.productDescriptionPlaceholder}
+                        className="h-32 pr-12"
+                      />
+                      <Button 
+                        type="button" 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={handleMicClick}
+                        className={cn("absolute right-2 top-1/2 -translate-y-1/2", isListening && "bg-destructive text-destructive-foreground")}
+                      >
+                        <Mic className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
