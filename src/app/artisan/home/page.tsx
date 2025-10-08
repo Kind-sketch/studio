@@ -156,7 +156,7 @@ export default function ArtisanHomePage() {
           <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
             <CarouselContent className="-ml-2">
               {frequentlyBought.map((product, index) => (
-                <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-4">
+                <CarouselItem key={product.id} className="basis-1/2 pl-4">
                    <ProductCard product={product} />
                 </CarouselItem>
               ))}
@@ -172,7 +172,7 @@ export default function ArtisanHomePage() {
             <Carousel opts={{ align: 'start', draggable: false }} className="w-full">
               <CarouselContent className="-ml-2">
                   {bestSelling.map((product, index) => (
-                      <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-4">
+                      <CarouselItem key={product.id} className="basis-1/2 pl-4">
                           <ProductCard product={product} />
                       </CarouselItem>
                   ))}
