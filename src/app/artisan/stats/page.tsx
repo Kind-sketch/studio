@@ -192,7 +192,7 @@ export default function StatsPage() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
-            <div className="h-[300px] w-full min-w-[300px] sm:w-[800px] pr-4">
+            <div className="h-[300px] w-[600px] pr-4">
               <StatsChart data={activeData} config={chartConfig} dataKey={dataKey}/>
             </div>
             <ScrollBar orientation="horizontal" />
@@ -216,14 +216,14 @@ export default function StatsPage() {
                 <TableBody>
                     {products.map(product => (
                         <TableRow key={product.id}>
-                            <TableCell className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4">
+                            <TableCell className="flex items-center gap-2 p-2">
                                 <Image src={product.image.url} alt={product.name} width={48} height={48} className="rounded-md object-cover aspect-square bg-muted"/>
                                 <div className="flex-1 text-sm">
-                                    <p className="font-medium truncate max-w-[120px] sm:max-w-xs">{product.name}</p>
+                                    <p className="font-medium truncate max-w-[120px]">{product.name}</p>
                                     <p className="text-muted-foreground">₹{product.price.toFixed(2)}</p>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-right p-2 sm:p-4">
+                            <TableCell className="text-right p-2">
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <Button 
