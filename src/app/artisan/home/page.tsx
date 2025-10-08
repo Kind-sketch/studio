@@ -170,8 +170,8 @@ export default function ArtisanHomePage() {
         <section className="space-y-2">
             <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
             <Carousel 
-                opts={{ align: 'start', loop: true }}
-                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
+                opts={{ align: 'start', loop: true, direction: 'rtl' }}
+                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
                 className="w-full"
             >
                 <CarouselContent>
@@ -190,8 +190,8 @@ export default function ArtisanHomePage() {
         <section className="space-y-2">
           <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
            <Carousel 
-            opts={{ align: 'start', loop: true, direction: 'rtl' }}
-            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
+            opts={{ align: 'start', loop: true }}
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
             className="w-full"
           >
             <CarouselContent>
@@ -280,3 +280,5 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    
