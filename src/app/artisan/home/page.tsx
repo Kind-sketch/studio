@@ -142,7 +142,7 @@ export default function ArtisanHomePage() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-muted/40">
+    <div className="flex h-full flex-col bg-muted/40 overflow-x-hidden">
       <div className="flex-1 space-y-6">
         <div className="flex items-center justify-between space-y-2 px-4 md:px-6 pt-4 md:pt-6">
           <div>
@@ -154,33 +154,29 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section>
           <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.frequentlyBought}</h3>
-          <div className="w-full">
-            <Carousel opts={{ align: 'start' }} className="w-full">
-              <CarouselContent className="-ml-4 pl-4">
-                {frequentlyBought.map((product) => (
-                  <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
-                     <ProductCard product={product} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <Carousel opts={{ align: 'start' }} className="w-full">
+            <CarouselContent className="pl-4 -ml-1">
+              {frequentlyBought.map((product) => (
+                <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+                   <ProductCard product={product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </section>
 
         {/* Bestselling Products */}
         <section>
             <h3 className="font-headline text-xl font-semibold mb-4 px-4 md:px-6">{t.bestselling}</h3>
-            <div className="w-full">
-                <Carousel opts={{ align: 'start' }} className="w-full">
-                    <CarouselContent className="-ml-4 pl-4">
-                        {bestSelling.map((product) => (
-                            <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
-                                <ProductCard product={product} />
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                </Carousel>
-            </div>
+            <Carousel opts={{ align: 'start' }} className="w-full">
+              <CarouselContent className="pl-4 -ml-1">
+                  {bestSelling.map((product) => (
+                      <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 pl-2">
+                          <ProductCard product={product} />
+                      </CarouselItem>
+                  ))}
+              </CarouselContent>
+            </Carousel>
         </section>
 
         {/* AI Review Section */}
