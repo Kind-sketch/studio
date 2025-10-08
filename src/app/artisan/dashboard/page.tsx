@@ -34,7 +34,7 @@ export default function ArtisanDashboard() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{t.welcome}</h1>
+        <h1 className="font-headline text-2xl font-bold">{t.welcome}</h1>
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>
       </header>
 
@@ -106,36 +106,38 @@ export default function ArtisanDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px] sm:w-[100px]">{t.productHeader}</TableHead>
-                  <TableHead>{t.sponsorHeader}</TableHead>
-                  <TableHead className="hidden sm:table-cell">{t.sponsorShareHeader}</TableHead>
-                  <TableHead className="text-right">{t.sharedAmountHeader}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sponsoredProducts.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                       <Image
-                        src={item.image.url}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        className="rounded-md object-cover aspect-square"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{item.sponsor.name}</TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                        <Badge variant="secondary">{item.sponsorShare}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[80px]">{t.productHeader}</TableHead>
+                    <TableHead>{t.sponsorHeader}</TableHead>
+                    <TableHead>{t.sponsorShareHeader}</TableHead>
+                    <TableHead className="text-right">{t.sharedAmountHeader}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {sponsoredProducts.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                         <Image
+                          src={item.image.url}
+                          alt={item.name}
+                          width={64}
+                          height={64}
+                          className="rounded-md object-cover aspect-square"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">{item.sponsor.name}</TableCell>
+                      <TableCell>
+                          <Badge variant="secondary">{item.sponsorShare}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">₹{item.sharedAmount.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
