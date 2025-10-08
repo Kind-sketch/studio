@@ -85,5 +85,3 @@ export default function ProductCard({ product, onSave, showSaveButton, className
     </Card>
   );
 }
-
-    
