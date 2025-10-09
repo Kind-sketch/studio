@@ -71,7 +71,19 @@ export default function ArtisanHomePage() {
       recognitionRef.current.onend = () => setIsListening(false);
       recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
-        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        if (event.error === 'network') {
+          toast({
+            variant: 'destructive',
+            title: 'Voice Service Unavailable',
+            description: 'Please check your network connection.',
+          });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Voice Error',
+            description: 'Could not recognize your voice.',
+          });
+        }
         setIsListening(false);
       };
 
