@@ -100,11 +100,7 @@ export default function SponsorSidebar() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
-    <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0">
-        <NavContent />
-      </aside>
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4">
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -120,6 +116,5 @@ export default function SponsorSidebar() {
             <MainHeader />
         </div>
       </header>
-    </>
   );
 }
