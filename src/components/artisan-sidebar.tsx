@@ -1,7 +1,6 @@
 
 'use client';
 
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import 'regenerator-runtime/runtime';
 import {
@@ -20,6 +19,7 @@ import {
   LayoutDashboard,
   TrendingUp,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
@@ -52,6 +52,23 @@ interface Notification {
     createdAt: Date;
 }
 
+// Explicit nav label keys to make indexing t.navItems type-safe
+type NavLabelKey =
+  | 'trends'
+  | 'myProducts'
+  | 'savedCollection'
+  | 'revenue'
+  | 'orders'
+  | 'statistics'
+  | 'sponsors'
+  | 'profile';
+
+interface NavItem {
+  href: string;
+  icon: LucideIcon;
+  labelKey: NavLabelKey;
+}
+
 export function HeaderActions() {
     const { translations } = useTranslation();
     const { language } = useLanguage();
@@ -74,12 +91,13 @@ export function HeaderActions() {
         ];
         setNotifications(mockNotifications);
 
-        // Setup speech recognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
+        // Setup speech recognition (TS-safe, supports webkit prefix)
+        const SpeechRecognitionConstructor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognitionConstructor) {
+            recognitionRef.current = new SpeechRecognitionConstructor();
             recognitionRef.current.continuous = false;
             recognitionRef.current.interimResults = false;
+            recognitionRef.current.lang = language;
 
             recognitionRef.current.onstart = () => setIsListening(true);
             recognitionRef.current.onend = () => setIsListening(false);
@@ -154,7 +172,7 @@ export function HeaderActions() {
                         variant="ghost"
                         size="icon"
                         aria-label="Notifications"
-                        className="relative rounded-full"
+                        className="relative rounded-full h-10 w-10 md:h-9 md:w-9"
                     >
                         <Bell className="h-5 w-5" />
                         {hasUnread && (
@@ -162,7 +180,7 @@ export function HeaderActions() {
                         )}
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuContent align="end" className="w-72 md:w-80">
                     <DropdownMenuLabel>{t.title}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {notifications.length > 0 ? (
@@ -171,7 +189,7 @@ export function HeaderActions() {
                                 {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
                                 <div className={cn(!n.read && 'pl-1')}>
                                     <p className="font-semibold">{t[n.titleKey]}</p>
-                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t[n.descriptionKey], n.descriptionParams)}</p>
+                                    <p className="text-xs md:text-sm text-muted-foreground">{formatNotificationDescription(t[n.descriptionKey], n.descriptionParams)}</p>
                                 </div>
                             </DropdownMenuItem>
                         ))
@@ -206,7 +224,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar;
     
-    const baseNavItems = {
+    const baseNavItems: { studio: NavItem[]; business: NavItem[] } = {
         studio: [
             { href: '/artisan/home', icon: TrendingUp, labelKey: 'trends' },
             { href: '/artisan/my-products', icon: ShoppingBag, labelKey: 'myProducts' },
@@ -263,12 +281,12 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                                     <button
                                         onClick={() => handleLinkClick(item.href)}
                                         className={cn(
-                                            'w-full flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                            'w-full flex items-center gap-4 md:gap-3 rounded-md px-3 py-3 md:py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                                             isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
                                         )}
                                     >
-                                        <item.icon className="h-4 w-4" />
-                                        {t.navItems[item.labelKey]}
+                                        <item.icon className="h-5 w-5 md:h-4 md:w-4" />
+                                        <span className="text-base md:text-sm">{t.navItems[item.labelKey]}</span>
                                     </button>
                                 </li>
                                 ))}
@@ -283,12 +301,12 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                                     <button
                                         onClick={() => handleLinkClick(item.href)}
                                         className={cn(
-                                            'w-full flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
+                                            'w-full flex items-center gap-4 md:gap-3 rounded-md px-3 py-3 md:py-2 text-sidebar-foreground/80 transition-all hover:text-primary hover:bg-sidebar-accent',
                                             isLinkActive(item.href) && 'bg-sidebar-accent text-primary font-semibold'
                                         )}
                                     >
-                                        <item.icon className="h-4 w-4" />
-                                        {t.navItems[item.labelKey]}
+                                        <item.icon className="h-5 w-5 md:h-4 md:w-4" />
+                                        <span className="text-base md:text-sm">{t.navItems[item.labelKey]}</span>
                                     </button>
                                 </li>
                                 ))}
@@ -298,12 +316,12 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                     
                     <div className="mt-auto -mx-4 border-t border-sidebar-border">
                         <div className="flex items-center justify-between p-4">
-                            <button onClick={() => handleLinkClick('/artisan/profile')} className="flex items-center gap-3 w-full">
-                                <Avatar className="h-9 w-9">
+                            <button onClick={() => handleLinkClick('/artisan/profile')} className="flex items-center gap-4 md:gap-3 w-full">
+                                <Avatar className="h-10 w-10 md:h-9 md:w-9">
                                     <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
                                     <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium truncate">{artisan.name}</span>
+                                <span className="text-base md:text-sm font-medium truncate">{artisan.name}</span>
                             </button>
                             <button
                                 onClick={handleLogout}

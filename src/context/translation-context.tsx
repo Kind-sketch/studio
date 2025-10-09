@@ -20,19 +20,11 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setIsTranslating(true);
-    if (language === 'en') {
-      setTranslations(allTranslations.en);
-      setIsTranslating(false);
-    } else if (language in allTranslations) {
-      setTranslations(allTranslations[language as keyof typeof allTranslations]);
-      setIsTranslating(false);
-    } else {
-      // Fallback for languages not hardcoded
-      // This part is kept for potential future dynamic additions,
-      // but our primary method is now the hardcoded translations.
-      setTranslations(allTranslations.en);
-      setIsTranslating(false);
-    }
+    // Treat allTranslations as a typed map to Translations to satisfy TS
+    const translationsMap = allTranslations as unknown as Record<string, Translations>;
+    const next = translationsMap[language] ?? translationsMap['en'];
+    setTranslations(next);
+    setIsTranslating(false);
   }, [language]);
 
   return (

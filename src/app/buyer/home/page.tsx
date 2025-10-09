@@ -11,6 +11,7 @@ import type { Category, Product } from '@/lib/types';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslation } from '@/context/translation-context';
+import CollapsibleDiv from '@/components/collapsible-div';
 
 export default function BuyerHomePage() {
   const { translations } = useTranslation();
@@ -31,6 +32,16 @@ export default function BuyerHomePage() {
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-6">
+      {/* Collapsible Demo Section */}
+      <section className="mb-6">
+        <CollapsibleDiv title="Quick Info" initialExpanded={false}>
+          <p>
+            This is a collapsible panel. Click the toggle to expand or
+            collapse. The button rotates and the content smoothly transitions
+            in and out.
+          </p>
+        </CollapsibleDiv>
+      </section>
       
       {/* Artisans Showcase Section */}
       <section className="mb-8">

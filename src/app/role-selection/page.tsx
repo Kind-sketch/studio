@@ -63,7 +63,7 @@ export default function RoleSelectionPage() {
         </div>
         <div className="grid grid-cols-1 gap-4">
           {roles.map((role, index) => (
-            <Link href={role.href} key={role.name} passHref>
+            <Link href={role.href} key={role.name} passHref prefetch={false}>
               <Card className="transform-gpu cursor-pointer text-left transition-transform hover:scale-105 hover:shadow-xl">
                 <CardHeader className="flex flex-row items-center gap-4 p-4">
                   <role.icon className="h-8 w-8 text-primary" />

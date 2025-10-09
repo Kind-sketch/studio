@@ -60,9 +60,10 @@ export default function ArtisanHomePage() {
   const recognitionRef = useRef<any>(null);
 
    useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
+    // Safely detect SpeechRecognition across browsers (TS-friendly)
+    const SpeechRecognitionConstructor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognitionConstructor) {
+      recognitionRef.current = new SpeechRecognitionConstructor();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = language;
@@ -181,13 +182,14 @@ export default function ArtisanHomePage() {
         <section className="space-y-2">
             <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
             <Carousel 
-                opts={{ align: 'start', loop: true, direction: 'rtl' }}
-                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
+                opts={{ align: 'start', loop: true }}
+                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true })]} 
+                dir="rtl"
                 className="w-full"
             >
                 <CarouselContent>
                 {frequentlyBoughtProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                    <CarouselItem key={product.id} className="basis-3/4 sm:basis-1/2 md:basis-1/3 pl-2">
                     <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                     </CarouselItem>
                 ))}
@@ -202,12 +204,12 @@ export default function ArtisanHomePage() {
           <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
-            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true })]} 
             className="w-full"
           >
             <CarouselContent>
               {mostLikedProducts.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                <CarouselItem key={product.id} className="basis-3/4 sm:basis-1/2 md:basis-1/3 pl-2">
                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                 </CarouselItem>
               ))}

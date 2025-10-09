@@ -34,6 +34,7 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             alt={product.name}
             data-ai-hint={product.image.hint}
             fill
+            sizes="(max-width: 640px) 75vw, (max-width: 768px) 50vw, 33vw"
             className="object-cover"
           />
         </div>

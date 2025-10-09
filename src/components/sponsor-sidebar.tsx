@@ -96,12 +96,22 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     );
 }
 
-export default function SponsorSidebar() {
+interface SponsorSidebarProps {
+  showDesktopAside?: boolean;
+}
+
+export default function SponsorSidebar({ showDesktopAside = true }: SponsorSidebarProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
     <>
-      <aside className="hidden w-64 flex-col border-r md:flex h-full sticky top-0">
+      <aside
+        className={cn(
+          "hidden md:flex flex-col border-r h-full md:sticky md:top-0 transition-[width] duration-300 overflow-y-auto scroll-smooth",
+          showDesktopAside ? "md:w-64" : "md:w-0"
+        )}
+        aria-hidden={!showDesktopAside}
+      >
         <NavContent />
       </aside>
       <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden">
