@@ -23,7 +23,7 @@ export default function ArtisanLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="relative flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
