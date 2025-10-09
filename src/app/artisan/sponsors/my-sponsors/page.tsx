@@ -19,52 +19,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 export default function MySponsorsPage() {
   const [mySponsors, setMySponsors] = useState<SponsorRequest[]>([]);
   const { toast } = useToast();
-  const { language } = useLanguage();
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'My Sponsors',
-    description: 'Manage your current sponsorships.',
-    sponsorshipActive: 'Sponsorship active',
-    contribution: 'Contribution',
-    chatButton: 'Chat',
-    terminateButton: 'Terminate',
-    noSponsorsTitle: 'No current sponsors.',
-    noSponsorsDescription: 'Accepted sponsor requests will appear here.',
-    terminateDialogTitle: 'Are you sure?',
-    terminateDialogDescription: 'This will permanently terminate your sponsorship with {sponsorName}. This action cannot be undone.',
-    cancelButton: 'Cancel',
-    sponsorshipTerminatedToast: 'Sponsorship Terminated',
-    sponsorshipTerminatedToastDesc: 'The sponsor has been removed from your list.',
-    chatToastTitle: 'Starting chat with {sponsorName}',
-    chatToastDesc: 'Chat functionality is not yet implemented.',
-  });
+  const { translations } = useTranslation();
+  const t = translations.my_sponsors_page;
 
   useEffect(() => {
     const sponsorsFromStorage = JSON.parse(localStorage.getItem('mySponsors') || '[]');
     setMySponsors(sponsorsFromStorage);
   }, []);
   
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
-
   const handleTerminate = (sponsorId: string) => {
     const updatedSponsors = mySponsors.filter(sponsor => sponsor.id !== sponsorId);
     localStorage.setItem('mySponsors', JSON.stringify(updatedSponsors));
@@ -72,23 +39,23 @@ export default function MySponsorsPage() {
 
     toast({
       variant: 'destructive',
-      title: translatedContent.sponsorshipTerminatedToast,
-      description: translatedContent.sponsorshipTerminatedToastDesc,
+      title: t.sponsorshipTerminatedToast,
+      description: t.sponsorshipTerminatedToastDesc,
     });
   };
 
   const handleChat = (sponsorName: string) => {
     toast({
-        title: translatedContent.chatToastTitle.replace('{sponsorName}', sponsorName),
-        description: translatedContent.chatToastDesc,
+        title: t.chatToastTitle.replace('{sponsorName}', sponsorName),
+        description: t.chatToastDesc,
     });
   }
 
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
 
       {mySponsors.length > 0 ? (
@@ -102,36 +69,36 @@ export default function MySponsorsPage() {
                 </Avatar>
                 <div>
                   <CardTitle className="text-lg">{sponsor.name}</CardTitle>
-                  <CardDescription>{translatedContent.sponsorshipActive}</CardDescription>
+                  <CardDescription>{t.sponsorshipActive}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow space-y-2">
                 <p className="text-sm">
-                  <span className="font-semibold">{translatedContent.contribution}: </span>
+                  <span className="font-semibold">{t.contribution}: </span>
                   <Badge variant="secondary">₹{sponsor.contributionAmount}/month</Badge>
                 </p>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
               <CardContent className="flex gap-2">
                  <Button onClick={() => handleChat(sponsor.name)} variant="outline" className="w-full">
-                    <MessageCircle className="mr-2 h-4 w-4" /> {translatedContent.chatButton}
+                    <MessageCircle className="mr-2 h-4 w-4" /> {t.chatButton}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" className="w-full">
-                      <X className="mr-2 h-4 w-4" /> {translatedContent.terminateButton}
+                      <X className="mr-2 h-4 w-4" /> {t.terminateButton}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>{translatedContent.terminateDialogTitle}</AlertDialogTitle>
+                      <AlertDialogTitle>{t.terminateDialogTitle}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {translatedContent.terminateDialogDescription.replace('{sponsorName}', sponsor.name)}
+                        {t.terminateDialogDescription.replace('{sponsorName}', sponsor.name)}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>{translatedContent.cancelButton}</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleTerminate(sponsor.id)}>{translatedContent.terminateButton}</AlertDialogAction>
+                      <AlertDialogCancel>{t.cancelButton}</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleTerminate(sponsor.id)}>{t.terminateButton}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -142,13 +109,11 @@ export default function MySponsorsPage() {
       ) : (
          <Card className="flex items-center justify-center p-12">
             <div className="text-center text-muted-foreground">
-                <p className="text-lg">{translatedContent.noSponsorsTitle}</p>
-                <p>{translatedContent.noSponsorsDescription}</p>
+                <p className="text-lg">{t.noSponsorsTitle}</p>
+                <p>{t.noSponsorsDescription}</p>
             </div>
         </Card>
       )}
     </div>
   );
 }
-
-    

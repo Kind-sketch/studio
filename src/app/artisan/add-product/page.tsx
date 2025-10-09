@@ -21,11 +21,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye } from 'lucide-react';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import ProductCard from '@/components/product-card';
+import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
 
 
 const formSchema = z.object({
@@ -39,57 +39,22 @@ const formSchema = z.object({
 export default function AddProductPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const { language } = useLanguage();
+  const t = translations.add_product_page;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
-  const { language } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [useCamera, setUseCamera] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [productCategories, setProductCategories] = useState(baseProductCategories);
   const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Add a New Product',
-    description: 'Upload a photo, and let AI help you with the details.',
-    uploadButton: 'Upload Photo',
-    cameraButton: 'Use Camera',
-    productNameLabel: 'Product Name',
-    productCategoryLabel: 'Product Category',
-    productDescriptionLabel: 'Product Description',
-    productStoryLabel: 'Product Story',
-    priceLabel: 'Price (₹)',
-    pricePlaceholder: 'e.g., 49.99',
-    generateDetailsButton: 'Generate with AI',
-    generatingDetailsButton: 'Generating...',
-    saveProductButton: 'Save Product',
-    savingProductButton: 'Saving...',
-    detailsGeneratedToast: 'Product Details Generated!',
-    detailsGeneratedToastDesc: 'Review and edit the details below.',
-    generationFailedToast: 'Generation Failed',
-    generationFailedToastDesc: 'Could not generate details from the image.',
-    productSavedToast: 'Product Saved!',
-    productSavedToastDesc: 'Your new product has been added to your page.',
-    noImageToast: 'No Image Provided',
-    noImageToastDesc: 'Please upload or capture an image first.',
-    captureButton: 'Capture Photo',
-    cameraAccessRequired: 'Camera Access Required',
-    cameraAccessDescription: 'Please allow camera access to use this feature.',
-    cameraError: 'Error accessing camera:',
-    cameraAccessDenied: 'Camera Access Denied',
-    cameraAccessDeniedDesc: 'Please enable camera permissions in your browser settings to use this app.',
-    uploadPlaceholder: 'Click "Upload Photo" or "Use Camera"',
-    backButton: 'Back',
-    previewButton: 'Preview',
-    previewTitle: 'Product Preview',
-    previewDescription: "This is how your product will look to buyers.",
-    selectCategoryPlaceholder: 'Select a category',
-  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,25 +70,6 @@ export default function AddProductPage() {
   const formValues = form.watch();
 
   useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: [...values, ...baseProductCategories], targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-        setProductCategories(translatedTexts.slice(values.length));
-
-      } else {
-        setProductCategories(baseProductCategories);
-      }
-    };
-    translate();
-  }, [language]);
-
-  useEffect(() => {
     if (useCamera) {
       const getCameraPermission = async () => {
         if (typeof window !== 'undefined' && navigator.mediaDevices) {
@@ -135,13 +81,13 @@ export default function AddProductPage() {
             }
             setHasCameraPermission(true);
           } catch (error) {
-            console.error(translatedContent.cameraError, error);
+            console.error(t.cameraError, error);
             setHasCameraPermission(false);
             setUseCamera(false);
             toast({
               variant: 'destructive',
-              title: translatedContent.cameraAccessDenied,
-              description: translatedContent.cameraAccessDeniedDesc,
+              title: t.cameraAccessDenied,
+              description: t.cameraAccessDeniedDesc,
             });
           }
         } else {
@@ -156,7 +102,7 @@ export default function AddProductPage() {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [useCamera, stream, translatedContent.cameraAccessDenied, translatedContent.cameraAccessDeniedDesc, translatedContent.cameraError, toast]);
+  }, [useCamera, stream, t.cameraAccessDenied, t.cameraAccessDeniedDesc, t.cameraError, toast]);
 
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,38 +144,33 @@ export default function AddProductPage() {
     if (!imageData) {
       toast({
         variant: 'destructive',
-        title: translatedContent.noImageToast,
-        description: translatedContent.noImageToastDesc,
+        title: t.noImageToast,
+        description: t.noImageToastDesc,
       });
       return;
     }
     setIsGenerating(true);
     try {
-      const result = await generateProductDetails({ photoDataUri: imageData });
+      const result = await generateProductDetails({ 
+        photoDataUri: imageData,
+        targetLanguage: language,
+      });
       
-      if (language !== 'en') {
-        const textsToTranslate = [result.productName, result.productDescription, result.productStory];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        form.setValue('productName', translatedTexts[0]);
-        form.setValue('productDescription', translatedTexts[1]);
-        form.setValue('productStory', translatedTexts[2]);
-      } else {
-        form.setValue('productName', result.productName);
-        form.setValue('productDescription', result.productDescription);
-        form.setValue('productStory', result.productStory);
-      }
+      form.setValue('productName', result.productName);
+      form.setValue('productDescription', result.productDescription);
+      form.setValue('productStory', result.productStory);
       form.setValue('productCategory', result.productCategory);
 
       toast({
-        title: translatedContent.detailsGeneratedToast,
-        description: translatedContent.detailsGeneratedToastDesc,
+        title: t.detailsGeneratedToast,
+        description: t.detailsGeneratedToastDesc,
       });
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: translatedContent.generationFailedToast,
-        description: translatedContent.generationFailedToastDesc,
+        title: t.generationFailedToast,
+        description: t.generationFailedToastDesc,
       });
     } finally {
       setIsGenerating(false);
@@ -264,8 +205,8 @@ export default function AddProductPage() {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: translatedContent.productSavedToast,
-        description: translatedContent.productSavedToastDesc,
+        title: t.productSavedToast,
+        description: t.productSavedToastDesc,
       });
       router.push('/artisan/my-products');
     }, 1000);
@@ -294,28 +235,10 @@ export default function AddProductPage() {
   
   const handlePreview = async () => {
     const { productName, productDescription, productStory, productCategory, price } = form.getValues();
-    
-    let translatedProduct = {
-      name: productName,
-      description: productDescription,
-      story: productStory,
-    };
-    
-    if (language !== 'en') {
-      const { translatedTexts } = await translateText({
-        texts: [productName, productDescription, productStory],
-        targetLanguage: language
-      });
-      translatedProduct = {
-        name: translatedTexts[0],
-        description: translatedTexts[1],
-        story: translatedTexts[2],
-      };
-    }
 
     setPreviewProduct({
       id: 'preview',
-      name: translatedProduct.name || 'Product Name',
+      name: productName || 'Product Name',
       artisan: artisans[0],
       price: price || 0,
       image: {
@@ -323,8 +246,8 @@ export default function AddProductPage() {
         hint: 'product preview'
       },
       category: productCategory || 'Category',
-      description: translatedProduct.description || 'Description',
-      story: translatedProduct.story || 'Your story about this product...',
+      description: productDescription || 'Description',
+      story: productStory || 'Your story about this product...',
       likes: 0,
       sales: 0
     });
@@ -332,8 +255,8 @@ export default function AddProductPage() {
 
   const getCategoryDisplayValue = (value: string) => {
     const index = baseProductCategories.findIndex(c => c === value);
-    if (index !== -1 && productCategories.length > index) {
-      return productCategories[index];
+    if (index !== -1 && translations.product_categories.length > index) {
+      return translations.product_categories[index];
     }
     return value;
   };
@@ -341,14 +264,14 @@ export default function AddProductPage() {
 
   return (
     <div className="p-4">
-      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
+      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
         <ChevronLeft className="h-6 w-6" />
       </Button>
       <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
           <div className="text-center">
-              <CardTitle className="font-headline text-xl md:text-2xl">{translatedContent.title}</CardTitle>
-              <CardDescription>{translatedContent.description}</CardDescription>
+              <CardTitle className="font-headline text-xl md:text-2xl">{t.title}</CardTitle>
+              <CardDescription>{t.description}</CardDescription>
           </div>
         </CardHeader>
 
@@ -361,8 +284,8 @@ export default function AddProductPage() {
                 {hasCameraPermission === false && (
                   <div className="absolute inset-0 flex items-center justify-center p-4">
                     <Alert variant="destructive">
-                      <AlertTitle>{translatedContent.cameraAccessRequired}</AlertTitle>
-                      <AlertDescription>{translatedContent.cameraAccessDescription}</AlertDescription>
+                      <AlertTitle>{t.cameraAccessRequired}</AlertTitle>
+                      <AlertDescription>{t.cameraAccessDescription}</AlertDescription>
                     </Alert>
                   </div>
                 )}
@@ -374,7 +297,7 @@ export default function AddProductPage() {
             ) : (
               <div className="flex flex-col items-center justify-center text-muted-foreground">
                 <Upload className="w-8 h-8 mb-2" />
-                <p className="text-sm font-semibold">{translatedContent.uploadPlaceholder}</p>
+                <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
               </div>
             )}
             <canvas ref={canvasRef} className="hidden" />
@@ -386,15 +309,15 @@ export default function AddProductPage() {
             {useCamera && stream ? (
                  <Button onClick={handleCapture} className="w-full">
                     <Camera className="mr-2 h-4 w-4" />
-                    {translatedContent.captureButton}
+                    {t.captureButton}
                 </Button>
             ) : (
                 <>
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-                        <Upload className="mr-2 h-4 w-4" />{translatedContent.uploadButton}
+                        <Upload className="mr-2 h-4 w-4" />{t.uploadButton}
                     </Button>
                     <Button onClick={startCamera} variant="outline">
-                        <Camera className="mr-2 h-4 w-4" />{translatedContent.cameraButton}
+                        <Camera className="mr-2 h-4 w-4" />{t.cameraButton}
                     </Button>
                 </>
             )}
@@ -402,7 +325,7 @@ export default function AddProductPage() {
 
         <CardContent>
             <Button onClick={handleGenerateDetails} disabled={isGenerating || !imageData} className="w-full">
-                {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{translatedContent.generatingDetailsButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{translatedContent.generateDetailsButton}</>}
+                {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.generatingDetailsButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.generateDetailsButton}</>}
             </Button>
         </CardContent>
         
@@ -411,18 +334,18 @@ export default function AddProductPage() {
             <CardContent className="space-y-4">
               <FormField control={form.control} name="productName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.productNameLabel}</FormLabel>
+                  <FormLabel>{t.productNameLabel}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>
                <FormField control={form.control} name="productCategory" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.productCategoryLabel}</FormLabel>
+                  <FormLabel>{t.productCategoryLabel}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder={translatedContent.selectCategoryPlaceholder}>
+                            <SelectValue placeholder={t.selectCategoryPlaceholder}>
                                 {getCategoryDisplayValue(field.value)}
                             </SelectValue>
                         </SelectTrigger>
@@ -430,7 +353,7 @@ export default function AddProductPage() {
                         <SelectContent>
                         {baseProductCategories.map((cat, index) => (
                             <SelectItem key={cat} value={cat}>
-                                {productCategories[index] || cat}
+                                {translations.product_categories[index] || cat}
                             </SelectItem>
                         ))}
                         </SelectContent>
@@ -440,22 +363,22 @@ export default function AddProductPage() {
               )}/>
                <FormField control={form.control} name="productDescription" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
+                  <FormLabel>{t.productDescriptionLabel}</FormLabel>
                   <FormControl><Textarea {...field} className="h-24" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>
                <FormField control={form.control} name="productStory" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.productStoryLabel}</FormLabel>
+                  <FormLabel>{t.productStoryLabel}</FormLabel>
                   <FormControl><Textarea {...field} className="h-24" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>
               <FormField control={form.control} name="price" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{translatedContent.priceLabel}</FormLabel>
-                  <FormControl><Input type="number" placeholder={translatedContent.pricePlaceholder} {...field} /></FormControl>
+                  <FormLabel>{t.priceLabel}</FormLabel>
+                  <FormControl><Input type="number" placeholder={t.pricePlaceholder} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>
@@ -465,12 +388,12 @@ export default function AddProductPage() {
                 <DialogTrigger asChild>
                   <Button variant="outline" className="w-full" onClick={handlePreview}>
                     <Eye className="mr-2 h-4 w-4" />
-                    {translatedContent.previewButton}
+                    {t.previewButton}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-full w-full h-full max-h-full p-0 flex flex-col">
                     <div className="relative p-4 border-b">
-                        <DialogTitle className="text-center font-headline">{translatedContent.previewTitle}</DialogTitle>
+                        <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
                          <DialogClose className="absolute right-2 top-1/2 -translate-y-1/2">
                             <Button variant="ghost" size="icon">
                                 <ChevronLeft className="h-6 w-6" />
@@ -484,7 +407,7 @@ export default function AddProductPage() {
               </Dialog>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? translatedContent.savingProductButton : translatedContent.saveProductButton}
+                {isLoading ? t.savingProductButton : t.saveProductButton}
               </Button>
             </CardFooter>
           </form>
@@ -493,5 +416,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    

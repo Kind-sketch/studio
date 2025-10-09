@@ -1,226 +1,242 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { buyerAiDesignedProducts } from '@/ai/flows/buyer-ai-designed-products';
+import { productCategories as baseProductCategories } from '@/lib/data';
+import 'regenerator-runtime/runtime';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Upload, Sparkles } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2, Sparkles, Send, Mic } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
-  prompt: z.string().min(10, {
-    message: 'Please describe your desired design in at least 10 characters.',
-  }),
-  style: z.string().optional(),
+  description: z.string().min(10, 'Please describe your idea in at least 10 characters.'),
+  category: z.string().min(1, 'Please select a category.'),
 });
 
-export default function BuyerCustomizePage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<{
-    designedProductImage: string;
-    description: string;
-  } | null>(null);
+export default function CustomizePage() {
   const { toast } = useToast();
+  const { translations, isTranslating } = useTranslation();
+  const t = translations.customize_page;
+  const { language } = useLanguage();
 
-  const translatedContent = {
-    mainTitle: 'Design with AI',
-    mainDescription: 'Bring your ideas to life. Let our AI help you create a unique product.',
-    cardTitle: 'Create Your Design',
-    cardDescription: 'Describe what you want to create, and our AI will generate it for you.',
-    promptLabel: 'Design Prompt',
-    promptPlaceholder: 'e.g., A ceramic mug with a galaxy pattern, deep blues and purples...',
-    styleLabel: 'Style',
-    stylePlaceholder: 'Select a style',
-    styles: ['Realistic', 'Cartoon', 'Watercolor', 'Abstract', 'Minimalist'],
-    generateButton: 'Generate Design',
-    generatingButton: 'Generating...',
-    resultTitle: 'Your AI-Generated Design',
-    purchaseButton: 'Purchase This Design',
-    generatingText: 'Your design is being created...',
-    placeholderText: 'Your generated design will appear here.',
-    errorToast: 'Design Generation Failed',
-    errorToastDesc: 'There was an error generating your custom design. Please try again.',
-  };
-
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  
+  const defaultImage = PlaceHolderImages.find(p => p.id === 'product-5');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      prompt: '',
-      style: '',
+      description: '',
+      category: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    setResult(null);
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = language;
+
+      recognitionRef.current.onstart = () => setIsListening(true);
+      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        form.setValue('description', transcript);
+      };
+    }
+  }, [language, form, toast]);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
+  
+  const handleGenerateImage = async () => {
+    const { description, category } = form.getValues();
+    if (!description || !category) {
+        toast({
+            variant: 'destructive',
+            title: t.missingInfoToast,
+            description: t.missingInfoDesc,
+        });
+        return;
+    }
+    
+    setIsGenerating(true);
+    setGeneratedImage(null);
     try {
-      const response = await buyerAiDesignedProducts({
-        prompt: values.prompt,
-        style: values.style,
+      const imageUrl = await buyerAiDesignedProducts({
+        prompt: description,
+        style: category,
       });
-      setResult(response);
+      setGeneratedImage(imageUrl);
+      toast({
+        title: t.imageGeneratedToast,
+        description: t.imageGeneratedDesc,
+      });
     } catch (error) {
-      console.error('Error generating design:', error);
+      console.error(error);
+      setGeneratedImage(defaultImage?.imageUrl || '');
       toast({
         variant: 'destructive',
-        title: translatedContent.errorToast,
-        description: translatedContent.errorToastDesc,
+        title: t.generationFailedToast,
+        description: t.generationFailedDesc,
       });
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!generatedImage) {
+        toast({
+            variant: 'destructive',
+            title: t.noImageToast,
+            description: t.noImageDesc,
+        });
+        return;
+    }
+    
+    setIsSubmitting(true);
+    // Simulate sending the request to an artisan
+    console.log('Submitting request:', { ...values, imageUrl: generatedImage });
+    
+    setTimeout(() => {
+        setIsSubmitting(false);
+        toast({
+            title: t.requestSentToast,
+            description: t.requestSentDesc,
+        });
+        form.reset();
+        setGeneratedImage(null);
+    }, 1500);
   }
 
-  return (
-    <div className="container mx-auto px-4 py-6">
-      <header className="mb-6 text-center">
-        <h1 className="font-headline text-3xl font-bold">
-          {translatedContent.mainTitle}
-        </h1>
-        <p className="mt-1 text-md text-muted-foreground">
-          {translatedContent.mainDescription}
-        </p>
-      </header>
+  const getCategoryDisplayValue = (value: string) => {
+    const index = baseProductCategories.findIndex(c => c === value);
+    if (index !== -1 && translations.product_categories.length > index) {
+      return translations.product_categories[index];
+    }
+    return value;
+  };
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-xl">
-              {translatedContent.cardTitle}
-            </CardTitle>
-            <CardDescription>
-              {translatedContent.cardDescription}
-            </CardDescription>
-          </CardHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="prompt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{translatedContent.promptLabel}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={translatedContent.promptPlaceholder}
-                          {...field}
-                          className="h-24"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="style"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{translatedContent.styleLabel}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+  return (
+    <div className="container mx-auto p-4 max-w-2xl">
+      <Card className="w-full shadow-lg">
+        <CardHeader>
+            <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>
+            <CardDescription>{t.description}</CardDescription>
+        </CardHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardContent className="space-y-6">
+              <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.productDescriptionLabel}</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Textarea
+                        {...field}
+                        placeholder={t.productDescriptionPlaceholder}
+                        className="h-32 pr-12"
+                      />
+                      <Button 
+                        type="button" 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={handleMicClick}
+                        className={cn("absolute right-2 top-1/2 -translate-y-1/2", isListening && "bg-destructive text-destructive-foreground")}
                       >
+                        <Mic className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+               <FormField control={form.control} name="category" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.craftCategoryLabel}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={translatedContent.stylePlaceholder} />
-                          </SelectTrigger>
+                        <SelectTrigger>
+                            <SelectValue placeholder={t.selectCategoryPlaceholder}>
+                                {getCategoryDisplayValue(field.value)}
+                            </SelectValue>
+                        </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="realistic">{translatedContent.styles[0]}</SelectItem>
-                          <SelectItem value="cartoon">{translatedContent.styles[1]}</SelectItem>
-                          <SelectItem value="watercolor">{translatedContent.styles[2]}</SelectItem>
-                          <SelectItem value="abstract">{translatedContent.styles[3]}</SelectItem>
-                          <SelectItem value="minimalist">{translatedContent.styles[4]}</SelectItem>
+                        {baseProductCategories.map((cat, index) => (
+                            <SelectItem key={cat} value={cat}>
+                                {translations.product_categories[index] || cat}
+                            </SelectItem>
+                        ))}
                         </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {translatedContent.generatingButton}
-                    </>
-                  ) : (
-                    translatedContent.generateButton
-                  )}
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </Card>
+                    </Select>
+                  <FormMessage />
+                </FormItem>
+              )}/>
 
-        <Card className="flex flex-col items-center justify-center">
-          <CardContent className="p-4 text-center w-full">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                <p className="mt-4 text-muted-foreground">
-                  {translatedContent.generatingText}
-                </p>
+              <Button type="button" onClick={handleGenerateImage} disabled={isGenerating} className="w-full">
+                  {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.generatingImageButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.generateImageButton}</>}
+              </Button>
+
+              <div className="relative flex flex-col items-center justify-center w-full aspect-square border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
+                {isGenerating ? (
+                    <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                ) : generatedImage ? (
+                    <Image src={generatedImage} alt="AI generated craft" fill className="object-cover"/>
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-muted-foreground text-center p-4">
+                        <Sparkles className="w-8 h-8 mb-2" />
+                        <p className="text-sm font-semibold">{t.imagePlaceholder}</p>
+                    </div>
+                )}
               </div>
-            ) : result ? (
-              <div className="space-y-4">
-                <h3 className="font-headline text-xl font-semibold">{translatedContent.resultTitle}</h3>
-                <div className="aspect-square w-full relative bg-muted rounded-lg overflow-hidden">
-                    <Image
-                        src={result.designedProductImage}
-                        alt="AI generated product"
-                        fill
-                        className="object-contain"
-                    />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {result.description}
-                </p>
-                <Button className="w-full">{translatedContent.purchaseButton}</Button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                <Sparkles className="h-16 w-16 mb-4" />
-                <p>{translatedContent.placeholderText}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !generatedImage}>
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.sendingRequestButton}</> : <><Send className="mr-2 h-4 w-4" />{t.sendRequestButton}</>}
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

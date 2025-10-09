@@ -18,7 +18,7 @@ const baseOptions = [
   },
   {
     name: 'Visit My Page',
-    description: 'View your sales, trends, and statistics.',
+    description: 'View your trends, and bestsellers.',
     href: '/artisan/home',
     icon: LayoutDashboard,
   },
@@ -61,7 +61,7 @@ export default function ArtisanPostAuthPage() {
   return (
     <>
     <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:hidden sticky top-0 z-40">
-        <HeaderActions />
+        
     </header>
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <div className="w-full max-w-xs text-center">
@@ -90,5 +90,3 @@ export default function ArtisanPostAuthPage() {
     </>
   );
 }
-
-    

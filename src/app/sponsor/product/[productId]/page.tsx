@@ -10,22 +10,27 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft } from 'lucide-react';
 import Reviews from '@/components/reviews';
+import { useTranslation } from '@/context/translation-context';
+import { useState, useEffect } from 'react';
+
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const t = translations.sponsor_product_page;
   const productId = params.productId as string;
   const product = products.find(p => p.id === productId);
 
   if (!product) {
-    return <div className="p-4 text-center">Product not found.</div>;
+    return <div className="p-4 text-center">{t.productNotFound}</div>;
   }
 
   const handleSponsor = () => {
     toast({
-      title: 'Sponsorship Sent!',
-      description: `Your request to sponsor ${product.artisan.name} has been sent.`,
+      title: t.toastTitle,
+      description: t.toastDescription.replace('{artisanName}', product.artisan.name),
     });
   };
 
@@ -33,7 +38,7 @@ export default function ProductDetailPage() {
     <div className="p-4">
        <Button onClick={() => router.back()} variant="ghost" className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" />
-        Back
+        {t.backButton}
       </Button>
       <Card className="overflow-hidden">
         <CardContent className="p-0">
@@ -56,27 +61,27 @@ export default function ProductDetailPage() {
         <CardContent>
             <Separator className="my-4" />
              <div>
-                <h3 className="font-headline text-lg font-semibold mb-2">Artisan Details</h3>
-                <p className="text-muted-foreground">Name: {product.artisan.name}</p>
-                {product.artisan.phone && <p className="text-muted-foreground">Phone: {product.artisan.phone}</p>}
+                <h3 className="font-headline text-lg font-semibold mb-2">{t.artisanDetails}</h3>
+                <p className="text-muted-foreground">{t.name}: {product.artisan.name}</p>
+                {product.artisan.phone && <p className="text-muted-foreground">{t.phone}: {product.artisan.phone}</p>}
             </div>
             <Separator className="my-4" />
             <div>
-                <h3 className="font-headline text-lg font-semibold mb-2">Description</h3>
+                <h3 className="font-headline text-lg font-semibold mb-2">{t.description}</h3>
                 <p className="text-muted-foreground">{product.description}</p>
             </div>
             {product.story && (
                 <>
                     <Separator className="my-4" />
                     <div>
-                        <h3 className="font-headline text-lg font-semibold mb-2">The Story Behind</h3>
+                        <h3 className="font-headline text-lg font-semibold mb-2">{t.story}</h3>
                         <p className="text-muted-foreground italic">"{product.story}"</p>
                     </div>
                 </>
             )}
         </CardContent>
         <CardContent>
-            <Button onClick={handleSponsor} className="w-full">Sponsor Artisan</Button>
+            <Button onClick={handleSponsor} className="w-full">{t.sponsorButton}</Button>
         </CardContent>
       </Card>
     </div>

@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/context/language-context';
+import { TranslationProvider } from '@/context/translation-context';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -38,14 +40,16 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased flex items-center justify-center bg-zinc-200 dark:bg-zinc-800" suppressHydrationWarning>
+      <body className="font-body antialiased" suppressHydrationWarning>
         <LanguageProvider>
-          <div className="relative w-full max-w-[420px] h-screen bg-background shadow-2xl overflow-hidden">
-            <div className="h-full w-full overflow-y-auto">
-              {children}
+          <TranslationProvider>
+            <div className="min-h-screen w-full sm:block flex items-center justify-center">
+                <div className="relative w-full bg-background max-w-[390px] min-h-screen shadow-2xl overflow-visible sm:max-w-none sm:min-h-0 sm:h-auto sm:max-h-none sm:shadow-none">
+                    {children}
+                    {isClient && <Toaster />}
+                </div>
             </div>
-            {isClient && <Toaster />}
-          </div>
+          </TranslationProvider>
         </LanguageProvider>
       </body>
     </html>

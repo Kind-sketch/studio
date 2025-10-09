@@ -7,24 +7,19 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, Artisan, Category } from "@/lib/types";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
+import { useTranslation } from "@/context/translation-context";
 
 export default function SponsorDashboardPage() {
   const { toast } = useToast();
-  const categories: Category[] = baseCategories;
-  
-  const translatedContent = {
-    title: 'Welcome, Sponsor!',
-    description: "Invest in culture, empower creators, and share in the success of India's finest artisans.",
-    discoverTitle: 'Discover Artisans to Sponsor',
-    viewArtisanButton: 'View Artisan',
-    by: 'by',
-    specializesIn: 'specializes in',
-    supportCraft: 'Support their craft to see more creations like this.',
-    toastTitle: 'Sponsorship Sent!',
-    toastDescription: 'Your request to sponsor {artisanName} has been sent.',
-  };
+  const { translations } = useTranslation();
+  const t = translations.sponsor_dashboard_page;
+
+  const categories = baseCategories.map((category, index) => ({
+    ...category,
+    name: translations.product_categories[index] || category.name,
+  }));
 
   const productsByCategory = (categoryName: string) => {
     return products.filter(p => p.category === categoryName);
@@ -33,15 +28,18 @@ export default function SponsorDashboardPage() {
   return (
     <div className="flex-1 overflow-y-auto p-4">
       <header className="mb-6 text-center">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
-        <p className="text-md text-muted-foreground max-w-lg mx-auto">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
+        <p className="text-md text-muted-foreground max-w-lg mx-auto">{t.description}</p>
       </header>
 
       <section className="my-10">
-        <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{translatedContent.discoverTitle}</h2>
+        <h2 className="font-headline text-2xl font-semibold mb-6 text-center">{t.discoverTitle}</h2>
         <div className="space-y-8">
           {categories.map((category) => {
-            const categoryProducts = productsByCategory(category.name);
+            const originalCategory = baseCategories.find(c => c.id === category.id);
+            if (!originalCategory) return null;
+
+            const categoryProducts = productsByCategory(originalCategory.name);
             if (categoryProducts.length === 0) return null;
 
             return (
@@ -61,16 +59,16 @@ export default function SponsorDashboardPage() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
                           <div className="absolute bottom-0 left-0 p-3">
                             <h4 className="font-bold text-md text-white font-headline">{product.name}</h4>
-                            <p className="text-sm text-white/90">{translatedContent.by} {product.artisan.name}</p>
+                            <p className="text-sm text-white/90">{t.by} {product.artisan.name}</p>
                           </div>
                         </div>
                       </CardContent>
                       <CardContent className="p-3">
                         <p className="text-sm text-muted-foreground mb-3 h-10 overflow-hidden">
-                          {product.artisan.name} {translatedContent.specializesIn} {product.category}. {translatedContent.supportCraft}
+                          {product.artisan.name} {t.specializesIn} {category.name}. {t.supportCraft}
                         </p>
                         <Link href={`/sponsor/product/${product.id}`} passHref>
-                          <Button className="w-full">{translatedContent.viewArtisanButton}</Button>
+                          <Button className="w-full">{t.viewArtisanButton}</Button>
                         </Link>
                       </CardContent>
                     </Card>

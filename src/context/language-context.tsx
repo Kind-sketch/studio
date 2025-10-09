@@ -11,22 +11,16 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Initialize state directly from localStorage if available, otherwise default to 'en'
-  const [language, setLanguageState] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('language') || 'en';
-    }
-    return 'en';
-  });
+  // Initialize with a default value. The client will update this after mounting.
+  const [language, setLanguageState] = useState('en');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // This effect ensures that if the component re-mounts on the client,
-    // it re-reads from localStorage. This is a fallback.
-    const storedLanguage = localStorage.getItem('language');
-    if (storedLanguage && storedLanguage !== language) {
-      setLanguageState(storedLanguage);
-    }
-  }, [language]);
+    // This effect runs only on the client, after the initial render.
+    const storedLanguage = localStorage.getItem('language') || 'en';
+    setLanguageState(storedLanguage);
+    setIsInitialized(true);
+  }, []);
 
   const setLanguage = (lang: string) => {
     setLanguageState(lang);
@@ -34,6 +28,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('language', lang);
     }
   };
+  
+  if (!isInitialized) {
+    // Render nothing or a loading state until the language is determined on the client
+    return null;
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>
