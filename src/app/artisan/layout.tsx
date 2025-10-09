@@ -24,24 +24,24 @@ export default function ArtisanLayout({
 
   return (
     <div className="relative flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-            >
-              <PanelLeft className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col p-0">
-             <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
-          </SheetContent>
-        </Sheet>
-        <HeaderActions />
-      </header>
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0"
+              >
+                <PanelLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+          <HeaderActions />
+        </header>
+        <SheetContent side="left" className="flex flex-col p-0">
+          <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+        </SheetContent>
+      </Sheet>
       <main className="flex-1 overflow-y-auto bg-muted/40 relative">
         {children}
          <Link href="/artisan/add-product" passHref>
