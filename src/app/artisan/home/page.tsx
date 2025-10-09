@@ -75,10 +75,9 @@ export default function ArtisanHomePage() {
         setIsListening(false);
       };
 
-      recognitionRef.current.onresult = async (event: any) => {
+      recognitionRef.current.onresult = (event: any) => {
         const command = event.results[0][0].transcript;
         form.setValue('productDescription', command);
-        await onSubmit({ productDescription: command });
       };
     }
   }, [language, form, toast]);
