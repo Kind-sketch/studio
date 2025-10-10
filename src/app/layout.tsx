@@ -1,12 +1,12 @@
 
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/context/language-context';
 import { TranslationProvider } from '@/context/translation-context';
-import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const metadata: Metadata = {
