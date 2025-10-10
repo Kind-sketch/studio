@@ -67,6 +67,7 @@ const interpretNavCommandFlow = ai.defineFlow(
     name: 'interpretNavCommandFlow',
     inputSchema: InterpretNavCommandInputSchema,
     outputSchema: InterpretNavCommandOutputSchema,
+    model: 'googleai/gemini-1.5-flash-preview',
   },
   async (input) => {
     try {

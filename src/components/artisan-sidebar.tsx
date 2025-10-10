@@ -84,6 +84,11 @@ export function HeaderActions() {
             recognitionRef.current.onstart = () => setIsListening(true);
             recognitionRef.current.onend = () => setIsListening(false);
             recognitionRef.current.onerror = (event: any) => {
+                if (event.error === 'no-speech') {
+                    // This error is common, so we can ignore it to prevent user confusion.
+                    setIsListening(false);
+                    return;
+                }
                 console.error('Speech recognition error:', event.error);
                 toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
                 setIsListening(false);
