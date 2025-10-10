@@ -70,6 +70,10 @@ export default function ArtisanHomePage() {
       recognitionRef.current.onstart = () => setIsListening(true);
       recognitionRef.current.onend = () => setIsListening(false);
       recognitionRef.current.onerror = (event: any) => {
+        if (event.error === 'no-speech') {
+          setIsListening(false);
+          return;
+        }
         console.error('Speech recognition error:', event.error);
         if (event.error === 'network') {
           toast({
@@ -77,7 +81,7 @@ export default function ArtisanHomePage() {
             title: 'Voice Service Unavailable',
             description: 'Please check your network connection.',
           });
-        } else if (event.error !== 'no-speech') {
+        } else {
           toast({
             variant: 'destructive',
             title: 'Voice Error',
@@ -291,7 +295,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
-
-    
