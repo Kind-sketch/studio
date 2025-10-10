@@ -65,7 +65,7 @@ export function HeaderActions() {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
 
-    useEffect(() => {
+     useEffect(() => {
         // Mock notifications
         const mockNotifications: Notification[] = [
             { id: '1', titleKey: 'newOrder', descriptionKey: 'newOrderDesc', descriptionParams: { productName: "Ceramic Dawn Vase"}, read: false, createdAt: new Date(Date.now() - 1000 * 60 * 5) },
@@ -80,14 +80,13 @@ export function HeaderActions() {
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = false;
             recognitionRef.current.interimResults = false;
-            recognitionRef.current.lang = language; // Set initial language
 
             recognitionRef.current.onstart = () => setIsListening(true);
             recognitionRef.current.onend = () => setIsListening(false);
+            
             recognitionRef.current.onerror = (event: any) => {
-                // Ignore 'no-speech' error which is common
-                if (event.error === 'no-speech') {
-                    return;
+                if (event.error === 'no-speech' || event.error === 'aborted') {
+                    return; // Ignore common, non-critical errors.
                 }
                 console.error('Speech recognition error:', event.error);
                 if (event.error === 'network') {
@@ -126,7 +125,7 @@ export function HeaderActions() {
         }
     }, [language, router, toast]);
 
-    const toggleListening = () => {
+    const toggleListening = useCallback(() => {
         if (!recognitionRef.current) {
             toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
             return;
@@ -134,11 +133,10 @@ export function HeaderActions() {
         if (isListening) {
             recognitionRef.current.stop();
         } else {
-            // Ensure the language is up-to-date before starting
             recognitionRef.current.lang = language;
             recognitionRef.current.start();
         }
-    };
+    }, [isListening, language, toast]);
 
 
     const markAsRead = (id: string) => {
