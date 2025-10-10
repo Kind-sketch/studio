@@ -37,12 +37,12 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             className="object-cover"
           />
         </div>
-        <div className="p-2">
-          <h3 className="font-headline text-sm font-semibold truncate">{product.name}</h3>
+        <div className="p-2 space-y-1">
+          <h3 className="font-headline text-sm font-semibold truncate leading-tight">{product.name}</h3>
           <p className="text-xs text-muted-foreground truncate">
             by {product.artisan.name}
           </p>
-          <div className="mt-2 flex justify-between items-center">
+          <div className="flex justify-between items-center pt-1">
             <p className="font-semibold text-sm">₹{product.price.toFixed(2)}</p>
             <div className="flex items-center gap-1">
                <Button

@@ -170,25 +170,25 @@ export default function ArtisanHomePage() {
   }, [toast, t.savedToCollectionToast]);
 
   return (
-    <div className="flex flex-col p-4 space-y-4">
+    <div className="flex flex-col p-4 space-y-6">
       <div>
-        <h2 className="font-headline text-2xl font-bold tracking-tight truncate">{t.pageTitle}</h2>
-        <p className="text-muted-foreground text-sm truncate">{t.pageDescription}</p>
+        <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
+        <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div className="space-y-8">
         {/* Frequently Bought Products */}
-        <section className="space-y-2">
-            <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
+        <section className="space-y-3">
+            <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
             <Carousel 
                 opts={{ align: 'start', loop: true, direction: 'rtl' }}
                 plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
                 className="w-full"
             >
-                <CarouselContent>
+                <CarouselContent className="-ml-2">
                 {frequentlyBoughtProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/3 pl-2">
-                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 lg:basis-1/4 pl-2">
+                      <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                     </CarouselItem>
                 ))}
                 </CarouselContent>
@@ -198,16 +198,16 @@ export default function ArtisanHomePage() {
         </section>
 
         {/* Most Liked Products */}
-        <section className="space-y-2">
-          <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
+        <section className="space-y-3">
+          <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
            <Carousel 
             opts={{ align: 'start', loop: true }}
             plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
             className="w-full"
           >
-            <CarouselContent>
+            <CarouselContent className="-ml-2">
               {mostLikedProducts.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 lg:basis-1/4 pl-2">
                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                 </CarouselItem>
               ))}
