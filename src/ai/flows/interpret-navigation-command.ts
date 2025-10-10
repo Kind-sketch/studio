@@ -46,7 +46,7 @@ The user's command is in the language '{{language}}'.
 The command is: "{{command}}"
 
 Here are the available pages and keywords associated with them:
-- 'home': Trends, inspirational products, popular items.
+- 'home': Trends, inspirational products, popular items, home page, main page.
 - 'my-products': My creations, items I have made, my shop, view my products.
 - 'saved-collection': Inspirations, saved ideas, my collection, bookmarks.
 - 'add-product': Add a new product, upload a creation, new item.
