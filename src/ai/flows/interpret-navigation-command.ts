@@ -14,7 +14,8 @@ import { z } from 'genkit';
 // Define the valid page slugs the AI can return.
 const pageSlugs = [
   'my-products', 'saved-collection', 'dashboard', 'orders', 
-  'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product'
+  'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product',
+  'statistics'
 ] as const;
 
 const InterpretNavCommandInputSchema = z.object({
@@ -50,12 +51,13 @@ Here are the available pages and keywords associated with them:
 - 'add-product': Add a new product, upload a creation, new item.
 - 'dashboard': Revenue, earnings, money, income, sales overview.
 - 'orders': Manage orders, new orders, track shipments.
+- 'statistics': Performance, stats, analytics, charts, graphs.
 - 'sponsors': Manage sponsors, find sponsors.
 - 'sponsors/requests': Sponsor requests, new sponsors, people who want to donate, funding requests.
 - 'sponsors/my-sponsors': My current sponsors, existing partnerships.
 - 'profile': My account, my details, edit profile.
 
-Analyze the user's command, considering synonyms and context. For example, if the user says "I want to see people who want to give me money for my art", you should map this to 'sponsors/requests'. If they say "புதிய ஸ்பான்சர்களைப் பார்க்க வேண்டும்" (I want to see new sponsors) in Tamil, it should also map to 'sponsors/requests'. If the command is unclear, return 'unknown'.
+Analyze the user's command, considering synonyms and context. For example, if the user says "I want to see people who want to give me money for my art", you should map this to 'sponsors/requests'. If they say "புதிய ஸ்பான்சர்களைப் பார்க்க வேண்டும்" (I want to see new sponsors) in Tamil, it should also map to 'sponsors/requests'. If they say "show my performance", it should map to 'statistics'. If the command is unclear, return 'unknown'.
 
 Based on the command, identify the single most relevant page slug from the list.
 `,
