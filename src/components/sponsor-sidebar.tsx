@@ -51,7 +51,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
             title: "Logged Out",
             description: "You have been successfully logged out."
         });
-        window.location.href = '/'; 
+        router.push('/'); 
     };
 
     return (
