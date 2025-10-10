@@ -114,7 +114,7 @@ export default function SponsorsPage() {
   const renderRequests = () => {
       if (sponsorRequests.length === 0) {
         return (
-            <Card className="flex items-center justify-center p-12">
+            <Card className="flex items-center justify-center p-12 mt-6">
                 <div className="text-center text-muted-foreground">
                     <p className="text-lg">{t.noRequestsTitle}</p>
                     <p>{t.noRequestsDescription}</p>
@@ -124,7 +124,7 @@ export default function SponsorsPage() {
       }
 
       return (
-        <div className="space-y-4">
+        <div className="space-y-4 mt-6">
           {sponsorRequests.map((request) => (
             <Card key={request.id}>
               <CardHeader className="flex-row items-center gap-4 pb-4">
@@ -159,7 +159,7 @@ export default function SponsorsPage() {
   const renderMySponsors = () => {
     if (mySponsors.length === 0) {
         return (
-            <Card className="flex items-center justify-center p-12">
+            <Card className="flex items-center justify-center p-12 mt-6">
                 <div className="text-center text-muted-foreground">
                     <p className="text-lg">{t.noSponsorsTitle}</p>
                     <p>{t.noSponsorsDescription}</p>
@@ -169,7 +169,7 @@ export default function SponsorsPage() {
       }
 
       return (
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 mt-6">
           {mySponsors.map((sponsor) => (
             <Card key={sponsor.id} className="flex flex-col">
               <CardHeader className="flex-row items-center gap-4 pb-4">
@@ -221,13 +221,13 @@ export default function SponsorsPage() {
 
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
+      <header className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 h-auto">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="requests">{t.requestsTab}</TabsTrigger>
           <TabsTrigger value="my-sponsors">{t.mySponsorsTab}</TabsTrigger>
         </TabsList>
@@ -241,5 +241,3 @@ export default function SponsorsPage() {
     </div>
   );
 }
-
-    

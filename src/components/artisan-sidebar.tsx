@@ -112,7 +112,8 @@ export function HeaderActions() {
                 try {
                     const { page } = await interpretNavCommand({ command, language });
                     if (page && page !== 'unknown') {
-                        router.push(`/artisan/${page}`);
+                        const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
+                        router.push(path);
                         toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
                     } else {
                         toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
@@ -256,7 +257,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         if (href.endsWith('/sponsors')) {
             return pathname.startsWith('/artisan/sponsors');
         }
-        return pathname.startsWith(href);
+        return pathname === href;
     };
 
     return (
