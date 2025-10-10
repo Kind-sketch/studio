@@ -77,7 +77,7 @@ export default function ArtisanHomePage() {
             title: 'Voice Service Unavailable',
             description: 'Please check your network connection.',
           });
-        } else {
+        } else if (event.error !== 'no-speech') {
           toast({
             variant: 'destructive',
             title: 'Voice Error',
@@ -291,5 +291,7 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    
 
     
