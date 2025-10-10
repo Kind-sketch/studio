@@ -80,6 +80,7 @@ export function HeaderActions() {
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = false;
             recognitionRef.current.interimResults = false;
+            recognitionRef.current.lang = language; // Set initial language
 
             recognitionRef.current.onstart = () => setIsListening(true);
             recognitionRef.current.onend = () => setIsListening(false);
@@ -89,7 +90,19 @@ export function HeaderActions() {
                     return;
                 }
                 console.error('Speech recognition error:', event.error);
-                toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+                if (event.error === 'network') {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Voice Service Unavailable',
+                    description: 'Please check your network connection.',
+                  });
+                } else {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Voice Error',
+                    description: 'Could not recognize your voice.',
+                  });
+                }
                 setIsListening(false);
             };
 
@@ -121,6 +134,7 @@ export function HeaderActions() {
         if (isListening) {
             recognitionRef.current.stop();
         } else {
+            // Ensure the language is up-to-date before starting
             recognitionRef.current.lang = language;
             recognitionRef.current.start();
         }
