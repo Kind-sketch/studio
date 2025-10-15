@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -16,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Send, Mic } from 'lucide-react';
+import { Loader2, Sparkles, Send, Mic, ChevronLeft } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
@@ -28,6 +29,7 @@ const formSchema = z.object({
 });
 
 export default function CustomizePage() {
+  const router = useRouter();
   const { toast } = useToast();
   const { translations, isTranslating } = useTranslation();
   const t = translations.customize_page;
@@ -155,6 +157,9 @@ export default function CustomizePage() {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
+      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
       <Card className="w-full shadow-lg">
         <CardHeader>
             <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>
