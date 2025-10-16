@@ -64,6 +64,7 @@ export function HeaderActions() {
 
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const [spokenCommand, setSpokenCommand] = useState<string | null>(null);
 
     useEffect(() => {
         // Mock notifications
@@ -88,7 +89,10 @@ export function HeaderActions() {
         recognition.interimResults = false;
 
         recognition.onstart = () => setIsListening(true);
-        recognition.onend = () => setIsListening(false);
+        recognition.onend = () => {
+            setIsListening(false);
+            setSpokenCommand(null); // Reset command after processing
+        };
         
         recognition.onerror = (event: any) => {
             if (event.error === 'no-speech' || event.error === 'aborted') {
@@ -108,31 +112,46 @@ export function HeaderActions() {
                 description: 'Could not recognize your voice.',
                 });
             }
+            setIsListening(false);
         };
 
-        recognition.onresult = async (event: any) => {
+        recognition.onresult = (event: any) => {
             const command = event.results[0][0].transcript;
-            toast({ title: 'Heard you say:', description: `"${command}"` });
-            
-            try {
-                // The language is passed directly here instead of relying on useEffect dependency
-                const { page } = await interpretNavCommand({ command, language: recognition.lang });
-                if (page && page !== 'unknown') {
-                    const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
-                    router.push(path);
-                    toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
-                } else {
-                    toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
-                }
-            } catch (error) {
-                    console.error('AI navigation error:', error);
-                    toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
-            }
+            setSpokenCommand(command);
         };
 
         recognitionRef.current = recognition;
 
-    }, [router, toast]); // router and toast are stable, language will be set on toggle
+    }, [toast]);
+
+    useEffect(() => {
+        if (!spokenCommand) {
+            return;
+        }
+
+        const processCommand = async () => {
+            toast({ title: 'Heard you say:', description: `"${spokenCommand}"` });
+            
+            try {
+                const recognition = recognitionRef.current;
+                const { page } = await interpretNavCommand({ command: spokenCommand, language: recognition.lang });
+                
+                if (page && page !== 'unknown') {
+                    const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
+                    toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
+                    router.push(path);
+                } else {
+                    toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
+                }
+            } catch (error) {
+                console.error('AI navigation error:', error);
+                toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
+            }
+        };
+
+        processCommand();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [spokenCommand, router, toast]);
 
     const toggleListening = useCallback(() => {
         const recognition = recognitionRef.current;
