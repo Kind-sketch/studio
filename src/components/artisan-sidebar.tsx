@@ -65,7 +65,7 @@ export function HeaderActions() {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
 
-     useEffect(() => {
+    useEffect(() => {
         // Mock notifications
         const mockNotifications: Notification[] = [
             { id: '1', titleKey: 'newOrder', descriptionKey: 'newOrderDesc', descriptionParams: { productName: "Ceramic Dawn Vase"}, read: false, createdAt: new Date(Date.now() - 1000 * 60 * 5) },
@@ -73,69 +73,79 @@ export function HeaderActions() {
             { id: '3', titleKey: 'milestone', descriptionKey: 'milestoneDesc', descriptionParams: { salesCount: 100 }, read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
         ];
         setNotifications(mockNotifications);
+    }, []);
 
-        // Setup speech recognition
+    // Setup speech recognition only once.
+    useEffect(() => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-
-            recognitionRef.current.onstart = () => setIsListening(true);
-            recognitionRef.current.onend = () => setIsListening(false);
-            
-            recognitionRef.current.onerror = (event: any) => {
-                if (event.error === 'no-speech' || event.error === 'aborted') {
-                    return; // Ignore common, non-critical errors.
-                }
-                console.error('Speech recognition error:', event.error);
-                if (event.error === 'network') {
-                  toast({
-                    variant: 'destructive',
-                    title: 'Voice Service Unavailable',
-                    description: 'Please check your network connection.',
-                  });
-                } else {
-                  toast({
-                    variant: 'destructive',
-                    title: 'Voice Error',
-                    description: 'Could not recognize your voice.',
-                  });
-                }
-                setIsListening(false);
-            };
-
-            recognitionRef.current.onresult = async (event: any) => {
-                const command = event.results[0][0].transcript;
-                toast({ title: 'Heard you say:', description: `"${command}"` });
-                
-                try {
-                    const { page } = await interpretNavCommand({ command, language });
-                    if (page && page !== 'unknown') {
-                        const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
-                        router.push(path);
-                        toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
-                    } else {
-                        toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
-                    }
-                } catch (error) {
-                     console.error('AI navigation error:', error);
-                     toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
-                }
-            };
+        if (!SpeechRecognition) {
+            console.warn('Speech recognition not supported.');
+            return;
         }
-    }, [language, router, toast]);
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        
+        recognition.onerror = (event: any) => {
+            if (event.error === 'no-speech' || event.error === 'aborted') {
+                return; // Ignore common, non-critical errors.
+            }
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'network') {
+                toast({
+                variant: 'destructive',
+                title: 'Voice Service Unavailable',
+                description: 'Please check your network connection.',
+                });
+            } else {
+                toast({
+                variant: 'destructive',
+                title: 'Voice Error',
+                description: 'Could not recognize your voice.',
+                });
+            }
+        };
+
+        recognition.onresult = async (event: any) => {
+            const command = event.results[0][0].transcript;
+            toast({ title: 'Heard you say:', description: `"${command}"` });
+            
+            try {
+                // The language is passed directly here instead of relying on useEffect dependency
+                const { page } = await interpretNavCommand({ command, language: recognition.lang });
+                if (page && page !== 'unknown') {
+                    const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
+                    router.push(path);
+                    toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
+                } else {
+                    toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
+                }
+            } catch (error) {
+                    console.error('AI navigation error:', error);
+                    toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
+            }
+        };
+
+        recognitionRef.current = recognition;
+
+    }, [router, toast]); // router and toast are stable, language will be set on toggle
 
     const toggleListening = useCallback(() => {
-        if (!recognitionRef.current) {
+        const recognition = recognitionRef.current;
+        if (!recognition) {
             toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
             return;
         }
         if (isListening) {
-            recognitionRef.current.stop();
+            recognition.stop();
         } else {
-            recognitionRef.current.lang = language;
-            recognitionRef.current.start();
+            // Set language just before starting
+            recognition.lang = language; 
+            recognition.start();
         }
     }, [isListening, language, toast]);
 
@@ -336,3 +346,5 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
+
+    
