@@ -91,12 +91,13 @@ export function HeaderActions() {
         recognition.onstart = () => setIsListening(true);
         recognition.onend = () => {
             setIsListening(false);
-            setSpokenCommand(null); // Reset command after processing
         };
         
         recognition.onerror = (event: any) => {
             if (event.error === 'no-speech' || event.error === 'aborted') {
-                return; // Ignore common, non-critical errors.
+                // These are common, non-critical errors. Don't show a toast.
+                console.log('Speech recognition aborted or no speech detected.');
+                return; 
             }
             console.error('Speech recognition error:', event.error);
             if (event.error === 'network') {
@@ -109,7 +110,7 @@ export function HeaderActions() {
                 toast({
                 variant: 'destructive',
                 title: 'Voice Error',
-                description: 'Could not recognize your voice.',
+                description: 'Could not recognize your voice. Please check microphone permissions.',
                 });
             }
             setIsListening(false);
@@ -146,12 +147,14 @@ export function HeaderActions() {
             } catch (error) {
                 console.error('AI navigation error:', error);
                 toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
+            } finally {
+                setSpokenCommand(null); // Reset command after processing
             }
         };
 
         processCommand();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [spokenCommand, router, toast]);
+    }, [spokenCommand, router]);
 
     const toggleListening = useCallback(() => {
         const recognition = recognitionRef.current;
