@@ -46,6 +46,34 @@ function AuthClientPageComponent() {
     setUserType(type);
   }, [searchParams]);
 
+  useEffect(() => {
+    const auth = getAuth();
+    try {
+      if (!(window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'normal',
+          'callback': () => {},
+          'expired-callback': () => {
+            toast({
+              variant: 'destructive',
+              title: 'reCAPTCHA Expired',
+              description: 'Please solve the reCAPTCHA again.',
+            });
+          }
+        });
+        (window as any).recaptchaVerifier.render();
+      }
+    } catch (error: any) {
+        console.error("reCAPTCHA initialization error:", error);
+        toast({
+            variant: 'destructive',
+            title: "reCAPTCHA Error",
+            description: "Failed to initialize reCAPTCHA. Please refresh the page.",
+        });
+    }
+  }, [toast]);
+
+
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
@@ -59,32 +87,21 @@ function AuthClientPageComponent() {
     try {
         const auth = getAuth();
         const phoneNumber = `+91${mobileNumber}`;
+        const appVerifier = (window as any).recaptchaVerifier;
 
-        const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'normal',
-            'callback': async () => {
-                try {
-                    const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-                    setConfirmationResult(result);
-                    setOtpSent(true);
-                    toast({
-                        title: 'OTP Sent',
-                        description: 'An OTP has been sent to your mobile number.',
-                    });
-                } catch (error: any) {
-                    console.error("signInWithPhoneNumber Error:", error);
-                    toast({ variant: 'destructive', title: 'Error', description: error.message });
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        });
+        const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
         
-        recaptchaVerifier.render();
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: 'OTP Sent',
+            description: 'An OTP has been sent to your mobile number.',
+        });
 
     } catch (error: any) {
-        console.error("reCAPTCHA render error:", error);
-        toast({ variant: 'destructive', title: 'reCAPTCHA Error', description: error.message });
+        console.error("signInWithPhoneNumber Error:", error);
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
+    } finally {
         setIsLoading(false);
     }
   }
@@ -151,7 +168,7 @@ function AuthClientPageComponent() {
                   </FormItem>
                 )}
               />
-              {otpSent && (
+              {otpSent ? (
                 <FormField
                   control={form.control}
                   name="otp"
@@ -163,9 +180,9 @@ function AuthClientPageComponent() {
                     </FormItem>
                   )}
                 />
+              ) : (
+                <div id="recaptcha-container" className="flex justify-center"></div>
               )}
-
-              {!otpSent && <div id="recaptcha-container" className="flex justify-center"></div>}
               
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>

@@ -40,11 +40,45 @@ export default function ArtisanRegisterPage() {
     },
   });
 
+  useEffect(() => {
+    const auth = getAuth();
+    // This effect runs once on mount to set up the verifier
+    try {
+      // To avoid re-creating the verifier on every render
+      if (!(window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'normal',
+          'callback': () => {
+            // This callback is for when the reCAPTCHA is solved.
+            // The actual OTP sending is now triggered by the user clicking the button,
+            // which then calls `verify()`. We can leave this empty or handle specific UI changes.
+          },
+          'expired-callback': () => {
+            toast({
+              variant: 'destructive',
+              title: 'reCAPTCHA Expired',
+              description: 'Please solve the reCAPTCHA again.',
+            });
+          }
+        });
+        (window as any).recaptchaVerifier.render(); // Render it on mount
+      }
+    } catch (error: any) {
+        console.error("reCAPTCHA initialization error:", error);
+        toast({
+            variant: 'destructive',
+            title: "reCAPTCHA Error",
+            description: "Failed to initialize reCAPTCHA. Please refresh the page.",
+        });
+    }
+  }, [toast]);
+
+
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
-     if (!mobileResult.success) {
+    if (!mobileResult.success) {
       form.setError('mobileNumber', { message: t.invalidNumber });
       return;
     }
@@ -54,43 +88,29 @@ export default function ArtisanRegisterPage() {
     try {
       const auth = getAuth();
       const phoneNumber = `+91${mobileNumber}`;
+      const appVerifier = (window as any).recaptchaVerifier;
 
-      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'normal',
-        'callback': async () => {
-           try {
-            const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-            setConfirmationResult(result);
-            setOtpSent(true);
-            toast({
-                title: t.otpSentToast,
-                description: t.otpSentToastDesc,
-            });
-           } catch (error: any) {
-             console.error("signInWithPhoneNumber error:", error);
-             toast({
-                 variant: 'destructive',
-                 title: "Error",
-                 description: error.message,
-             });
-           } finally {
-              setIsLoading(false);
-           }
-        }
-      });
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       
-      recaptchaVerifier.render();
+      setConfirmationResult(result);
+      setOtpSent(true);
+      toast({
+          title: t.otpSentToast,
+          description: t.otpSentToastDesc,
+      });
 
     } catch (error: any) {
-      console.error("reCAPTCHA render error:", error);
+      console.error("signInWithPhoneNumber error:", error);
       toast({
           variant: 'destructive',
-          title: "reCAPTCHA Error",
+          title: "Error",
           description: error.message,
       });
+    } finally {
       setIsLoading(false);
     }
   }
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent || !values.otp || values.otp.length !== 6) {
@@ -163,7 +183,8 @@ export default function ArtisanRegisterPage() {
                     )}
                 />
               
-              {otpSent && <FormField
+              {otpSent ? (
+                 <FormField
                   control={form.control}
                   name="otp"
                   render={({ field }) => (
@@ -175,9 +196,10 @@ export default function ArtisanRegisterPage() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />}
-                
-                {!otpSent && <div id="recaptcha-container" className="flex justify-center"></div>}
+                />
+              ) : (
+                <div id="recaptcha-container" className="flex justify-center"></div>
+              )}
             </CardContent>
             <CardContent>
               {otpSent ? (
