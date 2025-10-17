@@ -45,9 +45,8 @@ export default function ArtisanHomePage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
-  const mostLikedProducts = [...myProducts].sort((a, b) => b.likes - a.likes);
-  const frequentlyBoughtProducts = [...myProducts].sort((a, b) => b.sales - a.sales);
+  const mostLikedProducts = [...allProducts].sort((a, b) => b.likes - a.likes).slice(0, 10);
+  const frequentlyBoughtProducts = [...allProducts].sort((a, b) => b.sales - a.sales).slice(0, 10);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -178,7 +177,7 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section className="space-y-3">
             <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {frequentlyBoughtProducts.map((product) => (
                     <ProductCard key={product.id} product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                 ))}
@@ -188,7 +187,7 @@ export default function ArtisanHomePage() {
         {/* Most Liked Products */}
         <section className="space-y-3">
           <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
-           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {mostLikedProducts.map((product) => (
                    <ProductCard key={product.id} product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
               ))}

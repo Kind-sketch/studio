@@ -69,8 +69,20 @@
     {
       "id": "product-11",
       "description": "Earthenware pitcher set",
-      "imageUrl": "https://images.unsplash.com/photo-1544941951-5f054a863895?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageUrl": "https://images.unsplash.com/photo-1555554317-766219b6e80b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "pottery pitcher"
+    },
+    {
+      "id": "product-12",
+      "description": "Cityscape at Dusk Painting",
+      "imageUrl": "https://images.unsplash.com/photo-1502422557929-4346e2978a69?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "cityscape painting"
+    },
+    {
+      "id": "product-13",
+      "description": "Silver Tree of Life Pendant",
+      "imageUrl": "https://images.unsplash.com/photo-1616847039324-a0da05e4d293?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "silver pendant"
     },
     {
       "id": "artisan-1",

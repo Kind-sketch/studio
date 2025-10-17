@@ -172,6 +172,32 @@ export const products: Product[] = [
     sales: 40,
     reviews: { rating: 4.8, count: 39 },
     story: "This set is designed for sharing moments. Whether it's morning coffee or evening tea, it’s made for connection and conversation."
+  },
+  {
+    id: '12',
+    name: 'Cityscape at Dusk',
+    artisan: artisans[3],
+    price: 450.0,
+    image: getImage('product-12'),
+    category: 'Paintings',
+    description: 'An evocative oil painting that captures the mood of a city as day turns to night. The warm glow of streetlights reflects on wet pavement, creating a sense of both energy and intimacy. A perfect piece for a contemporary living space.',
+    likes: 520,
+    sales: 10,
+    reviews: { rating: 4.9, count: 18 },
+    story: "I love the city's dual personality. This painting is my attempt to capture that magical moment when the bustling day gives way to the electric energy of the night."
+  },
+  {
+    id: '13',
+    name: 'Tree of Life Pendant',
+    artisan: artisans[4],
+    price: 150.0,
+    image: getImage('product-13'),
+    category: 'Jewelry',
+    description: 'A beautifully detailed silver pendant depicting the Tree of Life, symbolizing connection, family, and growth. This intricate piece is hung on a sturdy silver chain and makes a meaningful gift.',
+    likes: 480,
+    sales: 95,
+    reviews: { rating: 4.9, count: 150 },
+    story: 'The Tree of Life is a powerful symbol that connects us all. I crafted this pendant as a reminder that we are all rooted together in this world.'
   }
 ];
 
@@ -225,3 +251,5 @@ export const statsData = {
     { year: "2024", likes: 18000, sales: 3500 },
   ],
 };
+
+    

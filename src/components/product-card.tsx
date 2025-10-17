@@ -20,9 +20,19 @@ export default function ProductCard({ product, onSave, showSaveButton, className
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(product.likes);
 
-  const handleLike = () => {
+  const handleLike = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
       setIsLiked(!isLiked);
       setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  }
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if(onSave) {
+      onSave();
+    }
   }
 
   return (
@@ -63,7 +73,7 @@ export default function ProductCard({ product, onSave, showSaveButton, className
                         size="sm"
                         variant="outline"
                         className="h-6 px-1.5 py-0.5 text-[10px]"
-                        onClick={onSave}
+                        onClick={handleSaveClick}
                     >
                         Save
                     </Button>
@@ -75,3 +85,5 @@ export default function ProductCard({ product, onSave, showSaveButton, className
     </Card>
   );
 }
+
+    
