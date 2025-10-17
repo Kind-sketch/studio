@@ -55,7 +55,7 @@ function AuthClientPageComponent() {
 
   function onCaptchaVerify() {
     if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-button', {
         'size': 'invisible',
         'callback': (response: any) => {},
         'expired-callback': () => {}
@@ -140,7 +140,6 @@ function AuthClientPageComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
-        <div id="recaptcha-container"></div>
         <CardHeader className="text-center">
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
@@ -180,7 +179,7 @@ function AuthClientPageComponent() {
                     {t.verifyButton}
                 </Button>
               ) : (
-                <Button type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
+                <Button id="send-otp-button" type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {t.sendOtpButton}
                 </Button>

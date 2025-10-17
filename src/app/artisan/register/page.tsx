@@ -51,7 +51,7 @@ export default function ArtisanRegisterPage() {
 
   function onCaptchaVerify() {
     if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-button', {
         'size': 'invisible',
         'callback': (response: any) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
@@ -159,7 +159,6 @@ export default function ArtisanRegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
-        <div id="recaptcha-container"></div>
         <CardHeader className="text-center">
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
@@ -208,7 +207,7 @@ export default function ArtisanRegisterPage() {
                   {t.verifyButton}
                 </Button>
               ) : (
-                <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
+                <Button id="send-otp-button" type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t.sendOtpButton}
                 </Button>
