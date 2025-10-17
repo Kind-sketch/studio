@@ -34,13 +34,6 @@ export default function ArtisanRegisterPage() {
 
   const auth = getAuth();
 
-  useEffect(() => {
-    // If user is already logged in, redirect them
-    if (auth.currentUser) {
-        router.push('/artisan/post-auth');
-    }
-  }, [auth, router]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

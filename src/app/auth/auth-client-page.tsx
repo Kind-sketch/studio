@@ -41,12 +41,7 @@ function AuthClientPageComponent() {
     const role = searchParams.get('role');
     const type = role === 'sponsor' ? 'sponsor' : 'buyer';
     setUserType(type);
-
-    if (auth.currentUser) {
-        const redirectPath = type === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
-        router.push(redirectPath);
-    }
-  }, [searchParams, auth, router]);
+  }, [searchParams]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,6 +74,16 @@ function AuthClientPageComponent() {
         const phoneNumber = `+91${mobileNumber}`;
         const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
         
+        if (auth.currentUser) {
+            toast({
+                title: t.loginSuccessToast,
+                description: t.loginSuccessToastDesc,
+            });
+            const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
+            router.push(redirectPath);
+            return;
+        }
+
         setConfirmationResult(result);
         setOtpSent(true);
         toast({
