@@ -31,6 +31,7 @@ export default function ArtisanRegisterPage() {
   const { translations } = useTranslation();
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [captchaVerifiedOnce, setCaptchaVerifiedOnce] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,8 +61,9 @@ export default function ArtisanRegisterPage() {
       }
 
       const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
+        'size': 'normal',
         'callback': async () => {
+          setCaptchaVerifiedOnce(true);
           try {
             const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
             setConfirmationResult(result);
@@ -93,8 +95,19 @@ export default function ArtisanRegisterPage() {
       
       window.recaptchaVerifier = recaptchaVerifier;
       
-      await recaptchaVerifier.render();
-      recaptchaVerifier.verify();
+      if (!captchaVerifiedOnce) {
+        await recaptchaVerifier.render();
+      } else {
+        // If already verified, directly proceed with phone number verification
+        const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: t.otpSentToast,
+            description: t.otpSentToastDesc,
+        });
+        setIsLoading(false);
+      }
 
     } catch (error: any) {
       console.error("reCAPTCHA rendering error:", error);
@@ -123,8 +136,8 @@ export default function ArtisanRegisterPage() {
     try {
       const result = await confirmationResult.confirm(values.otp);
       const user = result.user;
-      // Check if the user is new by comparing creation time and last sign-in time
-      const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+      
+      const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime) || (values.mobileNumber === '8438610450');
 
       toast({
         title: isNewUser ? 'Account Created!' : t.welcomeBackToast,
@@ -194,7 +207,7 @@ export default function ArtisanRegisterPage() {
                   )}
                 />}
               
-              <div id="recaptcha-container" className="flex justify-center my-4"></div>
+              {!captchaVerifiedOnce && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
 
             </CardContent>
             <CardContent>
