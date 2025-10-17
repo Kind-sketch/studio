@@ -16,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
 import { getAuth, signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 
 const formSchema = z.object({
@@ -29,6 +30,7 @@ export default function ArtisanRegisterPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   
@@ -42,36 +44,27 @@ export default function ArtisanRegisterPage() {
 
   useEffect(() => {
     const auth = getAuth();
-    // This effect runs once on mount to set up the verifier
-    try {
-      // To avoid re-creating the verifier on every render
-      if (!(window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'normal',
-          'callback': () => {
-            // This callback is for when the reCAPTCHA is solved.
-            // The actual OTP sending is now triggered by the user clicking the button,
-            // which then calls `verify()`. We can leave this empty or handle specific UI changes.
-          },
-          'expired-callback': () => {
-            toast({
-              variant: 'destructive',
-              title: 'reCAPTCHA Expired',
-              description: 'Please solve the reCAPTCHA again.',
-            });
-          }
+    auth.languageCode = language;
+
+    if (!(window as any).recaptchaVerifier) {
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal',
+            'callback': async (response: any) => {
+                 // reCAPTCHA solved, allow signInWithPhoneNumber.
+                 // This callback is executed when reCAPTCHA is solved.
+            },
+            'expired-callback': () => {
+                toast({
+                    variant: 'destructive',
+                    title: 'reCAPTCHA Expired',
+                    description: 'Please solve the reCAPTCHA again.',
+                });
+            }
         });
-        (window as any).recaptchaVerifier.render(); // Render it on mount
-      }
-    } catch (error: any) {
-        console.error("reCAPTCHA initialization error:", error);
-        toast({
-            variant: 'destructive',
-            title: "reCAPTCHA Error",
-            description: "Failed to initialize reCAPTCHA. Please refresh the page.",
-        });
+        (window as any).recaptchaVerifier = verifier;
+        verifier.render();
     }
-  }, [toast]);
+  }, [toast, language]);
 
 
   async function handleSendOtp() {
@@ -101,6 +94,10 @@ export default function ArtisanRegisterPage() {
 
     } catch (error: any) {
       console.error("signInWithPhoneNumber error:", error);
+      // Reset reCAPTCHA
+       if ((window as any).grecaptcha) {
+        (window as any).grecaptcha.reset();
+      }
       toast({
           variant: 'destructive',
           title: "Error",

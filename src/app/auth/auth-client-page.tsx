@@ -16,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
+import { useLanguage } from '@/context/language-context';
 import { getAuth, signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 
 const formSchema = z.object({
@@ -29,6 +30,7 @@ function AuthClientPageComponent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.auth_page;
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
@@ -48,30 +50,26 @@ function AuthClientPageComponent() {
 
   useEffect(() => {
     const auth = getAuth();
-    try {
-      if (!(window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'normal',
-          'callback': () => {},
-          'expired-callback': () => {
-            toast({
-              variant: 'destructive',
-              title: 'reCAPTCHA Expired',
-              description: 'Please solve the reCAPTCHA again.',
-            });
-          }
+    auth.languageCode = language;
+
+    if (!(window as any).recaptchaVerifier) {
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal',
+            'callback': (response: any) => {
+                 // reCAPTCHA solved, allow signInWithPhoneNumber.
+            },
+            'expired-callback': () => {
+                toast({
+                    variant: 'destructive',
+                    title: 'reCAPTCHA Expired',
+                    description: 'Please solve the reCAPTCHA again.',
+                });
+            }
         });
-        (window as any).recaptchaVerifier.render();
-      }
-    } catch (error: any) {
-        console.error("reCAPTCHA initialization error:", error);
-        toast({
-            variant: 'destructive',
-            title: "reCAPTCHA Error",
-            description: "Failed to initialize reCAPTCHA. Please refresh the page.",
-        });
+        (window as any).recaptchaVerifier = verifier;
+        verifier.render();
     }
-  }, [toast]);
+  }, [toast, language]);
 
 
   async function handleSendOtp() {
@@ -100,6 +98,9 @@ function AuthClientPageComponent() {
 
     } catch (error: any) {
         console.error("signInWithPhoneNumber Error:", error);
+        if ((window as any).grecaptcha) {
+          (window as any).grecaptcha.reset();
+        }
         toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
         setIsLoading(false);
