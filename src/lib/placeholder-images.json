@@ -55,24 +55,6 @@
       "imageHint": "silk scarf"
     },
     {
-      "id": "product-9",
-      "description": "Bronze leaf sculpture",
-      "imageUrl": "https://images.unsplash.com/photo-1617463228912-a4a34b3e8a7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnQlMjBzY3VscHR1cmV8ZW58MHx8fHwxNzYwMjExNDI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "art sculpture"
-    },
-    {
-      "id": "product-10",
-      "description": "Forged iron candlesticks",
-      "imageUrl": "https://images.unsplash.com/photo-1596181636294-f82b7f0951a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYW5kbGVzdGlja3N8ZW58MHx8fHwxNzYwMjExNDc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "candlesticks"
-    },
-    {
-      "id": "product-11",
-      "description": "Earthenware pitcher set",
-      "imageUrl": "https://images.unsplash.com/photo-1555554317-766219b6e80b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "pottery pitcher"
-    },
-    {
       "id": "product-12",
       "description": "Cityscape at Dusk Painting",
       "imageUrl": "https://images.unsplash.com/photo-1502422557929-4346e2978a69?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",

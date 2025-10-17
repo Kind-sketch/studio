@@ -135,45 +135,6 @@ export const products: Product[] = [
     story: "Each stitch is a tribute to the resilient flowers in my garden. This scarf is a wearable piece of nature's artistry."
   },
   {
-    id: '9',
-    name: 'Bronze Leaf Sculpture',
-    artisan: artisans[3],
-    price: 320.0,
-    image: getImage('product-9'),
-    category: 'Sculpture',
-    description: 'A stunning bronze sculpture of a cluster of leaves, capturing the delicate details of nature in a permanent form. This piece has a classic, timeless appeal and will enhance any home or office decor.',
-    likes: 180,
-    sales: 12,
-    reviews: { rating: 4.9, count: 15 },
-    story: "I found a perfect leaf on a walk and was inspired to preserve its fleeting beauty in bronze. This is my homage to the elegance of nature."
-  },
-  {
-    id: '10',
-    name: 'Forged Iron Candlesticks',
-    artisan: artisans[4],
-    price: 90.0,
-    image: getImage('product-10'),
-    category: 'Metalwork',
-    description: 'A pair of hand-forged iron candlesticks with a rustic, textured finish. Their sturdy and elegant design provides a perfect accent for a mantlepiece or dining table, adding a touch of old-world charm.',
-    likes: 85,
-    sales: 32,
-    reviews: { rating: 4.6, count: 25 },
-    story: "Hammered and shaped by hand, these candlesticks carry the mark of the fire and the anvil. They are built to last for generations."
-  },
-  {
-    id: '11',
-    name: 'Earthenware Pitcher Set',
-    artisan: artisans[0],
-    price: 75.0,
-    image: getImage('product-11'),
-    category: 'Pottery',
-    description: 'A charming set of an earthenware pitcher and two matching cups. The pieces are finished with a speckled, cream-colored glaze. Ideal for serving beverages or for use as a decorative set.',
-    likes: 155,
-    sales: 40,
-    reviews: { rating: 4.8, count: 39 },
-    story: "This set is designed for sharing moments. Whether it's morning coffee or evening tea, it’s made for connection and conversation."
-  },
-  {
     id: '12',
     name: 'Cityscape at Dusk',
     artisan: artisans[3],
