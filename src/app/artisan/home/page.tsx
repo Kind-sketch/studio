@@ -192,8 +192,8 @@ export default function ArtisanHomePage() {
                         </CarouselItem>
                     ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-                    <CarouselNext className="absolute right-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
                 </Carousel>
             </section>
         </div>
@@ -214,8 +214,8 @@ export default function ArtisanHomePage() {
                         </CarouselItem>
                     ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-                    <CarouselNext className="absolute right-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
                 </Carousel>
             </section>
         </div>
@@ -299,3 +299,6 @@ export default function ArtisanHomePage() {
 
     
 
+
+
+    
