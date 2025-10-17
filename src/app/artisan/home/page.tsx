@@ -214,7 +214,7 @@ export default function ArtisanHomePage() {
 
         {/* AI Review Section */}
         <section>
-             <Card>
+             <Card className="max-w-sm mx-auto">
               <CardHeader className="pb-4">
                 <CardTitle className="text-md leading-tight">{t.aiReviewTitle}</CardTitle>
                 <CardDescription className="text-xs">{t.aiReviewDescription}</CardDescription>
@@ -258,7 +258,7 @@ export default function ArtisanHomePage() {
             </Card>
             
             {result && (
-              <Card className="mt-4">
+              <Card className="mt-4 max-w-sm mx-auto">
                 <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-md">{t.aiGeneratedInsightsTitle}</CardTitle>
