@@ -157,8 +157,9 @@ export default function CustomizePage() {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
-      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
-        <ChevronLeft className="h-6 w-6" />
+      <Button onClick={() => router.back()} variant="ghost" className="mb-4">
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        Back
       </Button>
       <Card className="w-full shadow-lg">
         <CardHeader>
