@@ -35,8 +35,6 @@ function AuthClientPageComponent() {
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
-  const auth = getAuth();
-
   useEffect(() => {
     const role = searchParams.get('role');
     const type = role === 'sponsor' ? 'sponsor' : 'buyer';
@@ -44,6 +42,7 @@ function AuthClientPageComponent() {
   }, [searchParams]);
 
   useEffect(() => {
+    const auth = getAuth();
     if (!(window as any).recaptchaVerifier) {
       (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
@@ -57,7 +56,7 @@ function AuthClientPageComponent() {
         verifier.clear();
       }
     };
-  }, [auth]);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,6 +74,7 @@ function AuthClientPageComponent() {
 
     setIsLoading(true);
     try {
+        const auth = getAuth();
         const appVerifier = (window as any).recaptchaVerifier;
         const phoneNumber = `+91${mobileNumber}`;
         const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
