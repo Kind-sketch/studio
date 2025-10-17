@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
@@ -48,6 +48,7 @@ export default function ArtisanRegisterPage() {
         'size': 'invisible',
         'callback': (response: any) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
+          // This callback can be used to handle automatic sign-in if needed.
         },
         'expired-callback': () => {
           // Response expired. Ask user to solve reCAPTCHA again.
@@ -71,7 +72,20 @@ export default function ArtisanRegisterPage() {
       onCaptchaVerify();
       const appVerifier = window.recaptchaVerifier;
       const phoneNumber = `+91${mobileNumber}`;
+      
+      // The signInWithPhoneNumber can sometimes sign in the user directly
+      // if they are on a trusted device, without sending an OTP.
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      
+      // Check if user is already signed in (silent re-auth)
+      if (auth.currentUser) {
+          toast({
+              title: t.welcomeBackToast,
+              description: "You've been securely signed in.",
+          });
+          router.push('/artisan/post-auth');
+          return;
+      }
       
       setConfirmationResult(result);
       setOtpSent(true);
