@@ -20,7 +20,7 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationRes
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
-  otp: z.string().min(5, 'OTP must be 5 digits.').optional(),
+  otp: z.string().length(6, 'OTP must be 6 digits.').optional(),
 });
 
 
@@ -106,8 +106,8 @@ function AuthClientPageComponent() {
       return;
     }
 
-    if (!values.otp || values.otp.length < 5) {
-      form.setError('otp', { message: 'OTP must be at least 5 digits.' });
+    if (!values.otp || values.otp.length !== 6) {
+      form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;
     }
     
@@ -175,7 +175,7 @@ function AuthClientPageComponent() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t.otpLabel}</FormLabel>
-                      <FormControl><Input placeholder={t.otpPlaceholder} {...field} /></FormControl>
+                      <FormControl><Input placeholder="Enter 6-digit OTP" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
