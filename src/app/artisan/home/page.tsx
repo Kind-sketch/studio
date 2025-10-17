@@ -20,7 +20,7 @@ import { useTranslation } from '@/context/translation-context';
 import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 
 
@@ -192,6 +192,8 @@ export default function ArtisanHomePage() {
                         </CarouselItem>
                     ))}
                     </CarouselContent>
+                    <CarouselPrevious className="absolute left-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
                 </Carousel>
             </section>
         </div>
@@ -212,6 +214,8 @@ export default function ArtisanHomePage() {
                         </CarouselItem>
                     ))}
                     </CarouselContent>
+                    <CarouselPrevious className="absolute left-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-[-0.5rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
                 </Carousel>
             </section>
         </div>
@@ -294,3 +298,4 @@ export default function ArtisanHomePage() {
     
 
     
+
