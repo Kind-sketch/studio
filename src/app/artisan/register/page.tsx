@@ -79,7 +79,7 @@ export default function ArtisanRegisterPage() {
         }
       });
       
-      await recaptchaVerifier.render();
+      recaptchaVerifier.render();
 
     } catch (error: any) {
       console.error("reCAPTCHA render error:", error);

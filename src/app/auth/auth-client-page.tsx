@@ -80,7 +80,7 @@ function AuthClientPageComponent() {
             }
         });
         
-        await recaptchaVerifier.render();
+        recaptchaVerifier.render();
 
     } catch (error: any) {
         console.error("reCAPTCHA render error:", error);
@@ -89,7 +89,7 @@ function AuthClientPageComponent() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent || !values.otp || values.otp.length !== 6) {
       form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;
