@@ -11,12 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
-
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -30,6 +30,18 @@ export default function ArtisanRegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { translations } = useTranslation();
   const t = translations.artisan_register_page;
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    // This effect is to handle cleanup of the reCAPTCHA verifier
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
+    };
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,7 +51,21 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  function handleSendOtp() {
+  function onCaptchaVerify() {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        },
+        'expired-callback': () => {
+          // Response expired. Ask user to solve reCAPTCHA again.
+        }
+      });
+    }
+  }
+
+  async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
@@ -50,17 +76,31 @@ export default function ArtisanRegisterPage() {
 
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      onCaptchaVerify();
+      const appVerifier = window.recaptchaVerifier;
+      const phoneNumber = `+91${mobileNumber}`;
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      
+      setConfirmationResult(result);
       setOtpSent(true);
       toast({
           title: t.otpSentToast,
           description: t.otpSentToastDesc,
       });
-    }, 1000);
+    } catch (error: any) {
+      console.error("OTP sending error:", error);
+      toast({
+          variant: 'destructive',
+          title: "Error",
+          description: error.message,
+      });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent) {
       handleSendOtp();
       return;
@@ -71,21 +111,46 @@ export default function ArtisanRegisterPage() {
       return;
     }
 
+    if (!confirmationResult) {
+        toast({ variant: 'destructive', title: 'Error', description: 'OTP confirmation context is missing.' });
+        return;
+    }
+
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Mock OTP verification - accept any OTP
+    try {
+      const result = await confirmationResult.confirm(values.otp);
+      const user = result.user;
+      const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+
       toast({
         title: t.welcomeBackToast,
         description: t.welcomeBackToastDesc,
       });
-      router.push('/artisan/category-selection');
-    }, 1000);
+      
+      if (isNewUser) {
+        // Store temp phone and redirect to complete registration
+        localStorage.setItem('tempPhone', values.mobileNumber);
+        router.push('/artisan/register-recovery');
+      } else {
+        router.push('/artisan/post-auth');
+      }
+
+    } catch (error: any) {
+        console.error("OTP verification error:", error);
+        toast({
+            variant: 'destructive',
+            title: t.invalidOtpToast,
+            description: error.message || t.invalidOtpToastDesc,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
+        <div id="recaptcha-container"></div>
         <CardHeader className="text-center">
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />

@@ -16,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -32,6 +33,18 @@ function AuthClientPageComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState('buyer');
   const [otpSent, setOtpSent] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    // Cleanup reCAPTCHA
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const role = searchParams.get('role');
@@ -47,19 +60,47 @@ function AuthClientPageComponent() {
     defaultValues: { mobileNumber: '', otp: '' },
   });
 
-  function handleSendOtp() {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setOtpSent(true);
-      toast({
-        title: 'OTP Sent',
-        description: 'An OTP has been sent to your mobile number.',
+  function onCaptchaVerify() {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {},
+        'expired-callback': () => {}
       });
-    }, 1000);
+    }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function handleSendOtp() {
+    const { mobileNumber } = form.getValues();
+    const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
+
+     if (!mobileResult.success) {
+      form.setError('mobileNumber', { message: 'Please enter a valid 10-digit mobile number.' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+        onCaptchaVerify();
+        const appVerifier = window.recaptchaVerifier;
+        const phoneNumber = `+91${mobileNumber}`;
+        const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+        
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: 'OTP Sent',
+            description: 'An OTP has been sent to your mobile number.',
+        });
+    } catch (error: any) {
+        console.error("OTP Error:", error);
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent) {
       handleSendOtp();
       return;
@@ -69,18 +110,31 @@ function AuthClientPageComponent() {
       form.setError('otp', { message: 'OTP must be at least 5 digits.' });
       return;
     }
+    
+    if (!confirmationResult) {
+        toast({ variant: 'destructive', title: 'Error', description: 'OTP confirmation context is missing.' });
+        return;
+    }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Mock OTP verification - accept any OTP
-      toast({
-        title: t.loginSuccessToast,
-        description: t.loginSuccessToastDesc,
-      });
-      const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
-      router.push(redirectPath);
-    }, 1000);
+    try {
+        await confirmationResult.confirm(values.otp);
+        toast({
+            title: t.loginSuccessToast,
+            description: t.loginSuccessToastDesc,
+        });
+        const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
+        router.push(redirectPath);
+    } catch (error: any) {
+        console.error("OTP Verification Error:", error);
+        toast({
+            variant: 'destructive',
+            title: t.invalidOtpToast,
+            description: error.message || t.invalidOtpToastDesc,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
   
   const getTitle = () => {
@@ -93,6 +147,7 @@ function AuthClientPageComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
+        <div id="recaptcha-container"></div>
         <CardHeader className="text-center">
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />

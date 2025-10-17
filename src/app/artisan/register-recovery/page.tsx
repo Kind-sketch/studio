@@ -16,11 +16,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/services/translation-service';
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult, PhoneAuthProvider, linkWithCredential, PhoneAuthCredential } from 'firebase/auth';
 
 const formSchema = z.object({
   recoveryNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit recovery number.'),
-  primaryOtp: z.string().length(5, 'OTP must be 5 digits.'),
-  recoveryOtp: z.string().length(5, 'OTP must be 5 digits.'),
+  recoveryOtp: z.string().length(6, 'OTP must be 6 digits.'),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions.',
   }),
@@ -42,25 +42,39 @@ export default function ArtisanRegisterRecoveryPage() {
   const [primaryNumber, setPrimaryNumber] = useState('');
   const { language } = useLanguage();
   const [termsAndConditions, setTermsAndConditions] = useState(baseTerms);
+  const [otpSent, setOtpSent] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+
+  const auth = getAuth();
+  
+  useEffect(() => {
+    // This effect is to handle cleanup of the reCAPTCHA verifier
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
+    };
+  }, []);
+
 
   const [translatedContent, setTranslatedContent] = useState({
       title: 'Complete Your Registration',
-      description: 'Enter a recovery number and verify both numbers to secure your account.',
+      description: 'Add a recovery number to secure your account.',
       primaryNumberLabel: 'Primary Number',
-      primaryOtpLabel: 'OTP for Primary Number',
-      otpPlaceholder: 'Enter 5-digit OTP',
       recoveryNumberLabel: 'Recovery Mobile Number',
       recoveryNumberPlaceholder: '10-digit recovery number',
+      sendOtpButton: 'Send OTP to Recovery Number',
       recoveryOtpLabel: 'OTP for Recovery Number',
+      otpPlaceholder: 'Enter 6-digit OTP',
       termsLabel: 'Terms and Conditions',
       agreeToTermsLabel: 'I agree to the terms and conditions.',
-      verifyButton: 'Verify & Create Account',
-      otpSentToast: 'OTPs Sent',
-      otpSentToastDesc: 'OTPs have been sent to both primary and recovery numbers.',
-      verificationSuccessToast: 'Verification Successful',
+      verifyButton: 'Link Recovery Number & Create Account',
+      otpSentToast: 'OTP Sent',
+      otpSentToastDesc: 'An OTP has been sent to your recovery number.',
+      verificationSuccessToast: 'Account Created!',
       verificationSuccessToastDesc: "Let's get you started.",
       invalidOtpToast: 'Invalid OTP',
-      invalidOtpToastDesc: 'One or both of the OTPs entered are incorrect. Please try again.',
+      invalidOtpToastDesc: 'The OTP you entered is incorrect. Please try again.',
   });
 
   useEffect(() => {
@@ -68,6 +82,7 @@ export default function ArtisanRegisterRecoveryPage() {
     if (phone) {
         setPrimaryNumber(phone);
     } else {
+        // Redirect if primary number is not found, as it's required.
         router.push('/artisan/register');
     }
   }, [router]);
@@ -75,47 +90,31 @@ export default function ArtisanRegisterRecoveryPage() {
   useEffect(() => {
     const translateContent = async () => {
       if (language !== 'en') {
-        const textsToTranslate = [
-            'Complete Your Registration',
-            'Enter a recovery number and verify both numbers to secure your account.',
-            'Primary Number',
-            'OTP for Primary Number',
-            'Enter 5-digit OTP',
-            'Recovery Mobile Number',
-            '10-digit recovery number',
-            'OTP for Recovery Number',
-            'Terms and Conditions',
-            'I agree to the terms and conditions.',
-            'Verify & Create Account',
-            'OTPs Sent',
-            'OTPs have been sent to both primary and recovery numbers.',
-            'Verification Successful',
-            "Let's get you started.",
-            'Invalid OTP',
-            'One or both of the OTPs entered are incorrect. Please try again.',
-            ...baseTerms,
-        ];
+        const textsToTranslate = Object.values(translatedContent).flat();
         const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        setTranslatedContent({
-            title: translatedTexts[0],
-            description: translatedTexts[1],
-            primaryNumberLabel: translatedTexts[2],
-            primaryOtpLabel: translatedTexts[3],
-            otpPlaceholder: translatedTexts[4],
-            recoveryNumberLabel: translatedTexts[5],
-            recoveryNumberPlaceholder: translatedTexts[6],
-            recoveryOtpLabel: translatedTexts[7],
-            termsLabel: translatedTexts[8],
-            agreeToTermsLabel: translatedTexts[9],
-            verifyButton: translatedTexts[10],
-            otpSentToast: translatedTexts[11],
-            otpSentToastDesc: translatedTexts[12],
-            verificationSuccessToast: translatedTexts[13],
-            verificationSuccessToastDesc: translatedTexts[14],
-            invalidOtpToast: translatedTexts[15],
-            invalidOtpToastDesc: translatedTexts[16],
-        });
-        setTermsAndConditions(translatedTexts.slice(17));
+        
+        let i = 0;
+        const newContent: any = {
+            title: translatedTexts[i++],
+            description: translatedTexts[i++],
+            primaryNumberLabel: translatedTexts[i++],
+            recoveryNumberLabel: translatedTexts[i++],
+            recoveryNumberPlaceholder: translatedTexts[i++],
+            sendOtpButton: translatedTexts[i++],
+            recoveryOtpLabel: translatedTexts[i++],
+            otpPlaceholder: translatedTexts[i++],
+            termsLabel: translatedTexts[i++],
+            agreeToTermsLabel: translatedTexts[i++],
+            verifyButton: translatedTexts[i++],
+            otpSentToast: translatedTexts[i++],
+            otpSentToastDesc: translatedTexts[i++],
+            verificationSuccessToast: translatedTexts[i++],
+            verificationSuccessToastDesc: translatedTexts[i++],
+            invalidOtpToast: translatedTexts[i++],
+            invalidOtpToastDesc: translatedTexts[i++],
+        };
+        setTranslatedContent(newContent);
+        setTermsAndConditions(baseTerms); // Assuming terms are not translated for now
       } else {
         setTermsAndConditions(baseTerms);
       }
@@ -123,58 +122,96 @@ export default function ArtisanRegisterRecoveryPage() {
     translateContent();
   }, [language]);
 
-  useEffect(() => {
-    if (primaryNumber) {
-        toast({
-            title: translatedContent.otpSentToast,
-            description: translatedContent.otpSentToastDesc,
-        });
-    }
-  }, [primaryNumber, toast, translatedContent.otpSentToast, translatedContent.otpSentToastDesc]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       recoveryNumber: '',
-      primaryOtp: '',
       recoveryOtp: '',
       agreeToTerms: false,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    setTimeout(() => {
-      // Mock OTP verification
-      if (values.primaryOtp === '12345' && values.recoveryOtp === '54321') {
-        const existingUsers = JSON.parse(localStorage.getItem('artisanUsers') || '{}');
-        const newUser = {
-            phone: primaryNumber,
-            recovery: values.recoveryNumber,
-        };
-        existingUsers[primaryNumber] = newUser;
-        localStorage.setItem('artisanUsers', JSON.stringify(existingUsers));
-        localStorage.removeItem('tempPhone');
+  function onCaptchaVerify() {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {},
+        'expired-callback': () => {}
+      });
+    }
+  }
 
-        toast({
-          title: translatedContent.verificationSuccessToast,
-          description: translatedContent.verificationSuccessToastDesc,
-        });
-        router.push('/artisan/category-selection');
-      } else {
-        setIsLoading(false);
-        toast({
-          variant: 'destructive',
-          title: translatedContent.invalidOtpToast,
-          description: translatedContent.invalidOtpToastDesc,
-        });
-      }
-    }, 1000);
+  async function handleSendOtp() {
+    const { recoveryNumber } = form.getValues();
+    const recoveryResult = z.string().regex(/^\d{10}$/).safeParse(recoveryNumber);
+    if (!recoveryResult.success) {
+      form.setError('recoveryNumber', { message: 'Please enter a valid 10-digit recovery number.' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      onCaptchaVerify();
+      const appVerifier = window.recaptchaVerifier;
+      const phoneNumber = `+91${recoveryNumber}`;
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      
+      setConfirmationResult(result);
+      setOtpSent(true);
+      toast({
+        title: translatedContent.otpSentToast,
+        description: translatedContent.otpSentToastDesc,
+      });
+    } catch (error: any) {
+      console.error("OTP sending error:", error);
+      toast({ variant: 'destructive', title: "Error", description: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!confirmationResult) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please send an OTP first.' });
+        return;
+    }
+    
+    setIsLoading(true);
+    try {
+        const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, values.recoveryOtp);
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+            await linkWithCredential(currentUser, credential);
+            
+            // In a real app, you would save the primary and recovery numbers to your database here.
+            localStorage.removeItem('tempPhone');
+
+            toast({
+              title: translatedContent.verificationSuccessToast,
+              description: translatedContent.verificationSuccessToastDesc,
+            });
+            router.push('/artisan/category-selection');
+        } else {
+             throw new Error("No primary user found to link account.");
+        }
+
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error("Recovery linking error:", error);
+      toast({
+        variant: 'destructive',
+        title: translatedContent.invalidOtpToast,
+        description: error.message || translatedContent.invalidOtpToastDesc,
+      });
+    }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-md shadow-lg">
+        <div id="recaptcha-container"></div>
         <CardHeader>
           <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
           <CardDescription>
@@ -190,31 +227,18 @@ export default function ArtisanRegisterRecoveryPage() {
                 </div>
                 <FormField
                     control={form.control}
-                    name="primaryOtp"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{translatedContent.primaryOtpLabel}</FormLabel>
-                        <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                 <FormField
-                    control={form.control}
                     name="recoveryNumber"
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translatedContent.recoveryNumberLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.recoveryNumberPlaceholder} {...field} />
+                        <Input placeholder={translatedContent.recoveryNumberPlaceholder} {...field} disabled={otpSent} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
-                 <FormField
+                 {otpSent && <FormField
                     control={form.control}
                     name="recoveryOtp"
                     render={({ field }) => (
@@ -226,7 +250,7 @@ export default function ArtisanRegisterRecoveryPage() {
                         <FormMessage />
                     </FormItem>
                     )}
-                />
+                />}
                  <div className="space-y-2">
                     <FormLabel>{translatedContent.termsLabel}</FormLabel>
                     <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
@@ -254,10 +278,17 @@ export default function ArtisanRegisterRecoveryPage() {
                 </div>
             </CardContent>
             <CardContent>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {translatedContent.verifyButton}
-                </Button>
+                {otpSent ? (
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {translatedContent.verifyButton}
+                    </Button>
+                ) : (
+                    <Button type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {translatedContent.sendOtpButton}
+                    </Button>
+                )}
             </CardContent>
           </form>
         </Form>
@@ -268,5 +299,3 @@ export default function ArtisanRegisterRecoveryPage() {
     </div>
   );
 }
-
-    

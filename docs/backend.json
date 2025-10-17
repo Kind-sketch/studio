@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Artisan": {
@@ -141,8 +142,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "phone"
     ]
   },
   "firestore": {
