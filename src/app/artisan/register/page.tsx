@@ -34,27 +34,30 @@ export default function ArtisanRegisterPage() {
 
   const auth = getAuth();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      mobileNumber: '',
-      otp: '',
-    },
-  });
-
-  function onCaptchaVerify() {
+  useEffect(() => {
+    // This ensures that the Recaptcha Verifier is initialized only once
+    // and is cleaned up properly when the component unmounts.
     if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-button', {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
         'callback': (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          // reCAPTCHA solved.
         },
         'expired-callback': () => {
-          // Response expired. Ask user to solve reCAPTCHA again.
+          // Response expired.
         }
       });
     }
-  }
+
+    return () => {
+      // Cleanup the verifier when the component unmounts
+      const verifier = (window as any).recaptchaVerifier;
+      if (verifier) {
+        verifier.clear();
+      }
+    };
+  }, [auth]);
+
 
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
@@ -68,7 +71,6 @@ export default function ArtisanRegisterPage() {
     setIsLoading(true);
     
     try {
-      onCaptchaVerify();
       const appVerifier = (window as any).recaptchaVerifier;
       const phoneNumber = `+91${mobileNumber}`;
       
@@ -153,6 +155,7 @@ export default function ArtisanRegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
+            <div id="recaptcha-container"></div>
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
             </Link>

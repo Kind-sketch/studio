@@ -43,20 +43,26 @@ function AuthClientPageComponent() {
     setUserType(type);
   }, [searchParams]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { mobileNumber: '', otp: '' },
-  });
-
-  function onCaptchaVerify() {
+  useEffect(() => {
     if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-button', {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
         'callback': (response: any) => {},
         'expired-callback': () => {}
       });
     }
-  }
+     return () => {
+      const verifier = (window as any).recaptchaVerifier;
+      if (verifier) {
+        verifier.clear();
+      }
+    };
+  }, [auth]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { mobileNumber: '', otp: '' },
+  });
 
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
@@ -69,7 +75,6 @@ function AuthClientPageComponent() {
 
     setIsLoading(true);
     try {
-        onCaptchaVerify();
         const appVerifier = (window as any).recaptchaVerifier;
         const phoneNumber = `+91${mobileNumber}`;
         const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
@@ -146,6 +151,7 @@ function AuthClientPageComponent() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
+          <div id="recaptcha-container"></div>
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </Link>
