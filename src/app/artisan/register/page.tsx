@@ -34,15 +34,6 @@ export default function ArtisanRegisterPage() {
 
   const auth = getAuth();
 
-  useEffect(() => {
-    // This effect is to handle cleanup of the reCAPTCHA verifier
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-    };
-  }, []);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
