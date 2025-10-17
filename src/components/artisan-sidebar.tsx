@@ -42,7 +42,7 @@ import { interpretNavCommand } from '@/ai/flows/interpret-navigation-command';
 import { getAuth, signOut } from 'firebase/auth';
 
 
-const artisan = artisans[0]; // Mock current user
+const defaultArtisan = artisans[0];
 
 interface Notification {
     id: string;
@@ -257,6 +257,22 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const t = translations.artisan_sidebar;
     const auth = getAuth();
     
+    const [artisanProfile, setArtisanProfile] = useState({
+      name: defaultArtisan.name,
+      avatar: defaultArtisan.avatar,
+    });
+
+    useEffect(() => {
+        const storedProfile = localStorage.getItem('artisanProfile');
+        if (storedProfile) {
+            const profileData = JSON.parse(storedProfile);
+            setArtisanProfile(prev => ({
+                ...prev,
+                name: profileData.name || prev.name,
+            }));
+        }
+    }, [pathname]); // Rerun on path change to catch updates
+
     const baseNavItems = {
         studio: [
             { href: '/artisan/home', icon: TrendingUp, labelKey: 'trends' },
@@ -362,10 +378,10 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                         <div className="flex items-center justify-between p-4">
                             <button onClick={() => handleLinkClick('/artisan/profile')} className="flex items-center gap-3 w-full">
                                 <Avatar className="h-9 w-9">
-                                    <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
-                                    <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={artisanProfile.avatar.url} alt={artisanProfile.name} />
+                                    <AvatarFallback>{artisanProfile.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium truncate">{artisan.name}</span>
+                                <span className="text-sm font-medium truncate">{artisanProfile.name}</span>
                             </button>
                             <button
                                 onClick={handleLogout}
@@ -381,5 +397,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    
