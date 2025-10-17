@@ -32,8 +32,6 @@ export default function ArtisanRegisterPage() {
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
-  const auth = getAuth();
-  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,14 +41,7 @@ export default function ArtisanRegisterPage() {
   });
 
   useEffect(() => {
-    if (auth.currentUser) {
-      router.push('/artisan/post-auth');
-    }
-  }, [auth, router]);
-
-  useEffect(() => {
-    // This ensures that the Recaptcha Verifier is initialized only once
-    // and is cleaned up properly when the component unmounts.
+    const auth = getAuth();
     if (!(window as any).recaptchaVerifier) {
       (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
@@ -63,14 +54,9 @@ export default function ArtisanRegisterPage() {
       });
     }
 
-    return () => {
-      // Cleanup the verifier when the component unmounts
-      const verifier = (window as any).recaptchaVerifier;
-      if (verifier) {
-        verifier.clear();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Cleanup is not strictly necessary here as Firebase handles it, 
+    // and incorrect cleanup was causing errors.
+    // Let the verifier persist for the app's lifecycle on this page.
   }, []);
 
 
@@ -86,6 +72,7 @@ export default function ArtisanRegisterPage() {
     setIsLoading(true);
     
     try {
+      const auth = getAuth();
       const appVerifier = (window as any).recaptchaVerifier;
       const phoneNumber = `+91${mobileNumber}`;
       
@@ -137,6 +124,7 @@ export default function ArtisanRegisterPage() {
 
     setIsLoading(true);
     try {
+      const auth = getAuth();
       const result = await confirmationResult.confirm(values.otp);
       const user = result.user;
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
