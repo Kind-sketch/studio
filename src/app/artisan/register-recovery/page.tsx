@@ -47,16 +47,6 @@ export default function ArtisanRegisterRecoveryPage() {
 
   const auth = getAuth();
   
-  useEffect(() => {
-    // This effect is to handle cleanup of the reCAPTCHA verifier
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-    };
-  }, []);
-
-
   const [translatedContent, setTranslatedContent] = useState({
       title: 'Complete Your Registration',
       description: 'Add a recovery number to secure your account.',
