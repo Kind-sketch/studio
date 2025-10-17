@@ -31,8 +31,8 @@ export default function ArtisanRegisterPage() {
   const { translations } = useTranslation();
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [captchaVerifiedOnce, setCaptchaVerifiedOnce] = useState(false);
-
+  const [appVerifier, setAppVerifier] = useState<RecaptchaVerifier | null>(null);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,6 +40,32 @@ export default function ArtisanRegisterPage() {
       otp: '',
     },
   });
+
+  useEffect(() => {
+    const auth = getAuth();
+    // This effect runs once on mount to create the verifier
+    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'normal',
+      'callback': () => {
+        // reCAPTCHA solved, allow user to submit phone number
+      },
+      'expired-callback': () => {
+        toast({
+            variant: 'destructive',
+            title: "reCAPTCHA Expired",
+            description: "Please solve the reCAPTCHA again.",
+        });
+      }
+    });
+  
+    setAppVerifier(verifier);
+  
+    // Cleanup function to clear the verifier when the component unmounts
+    return () => {
+      verifier.clear();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs only once
 
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
@@ -49,73 +75,34 @@ export default function ArtisanRegisterPage() {
       form.setError('mobileNumber', { message: t.invalidNumber });
       return;
     }
+    if (!appVerifier) {
+        toast({ variant: 'destructive', title: 'Error', description: 'reCAPTCHA not ready. Please wait a moment and try again.'});
+        return;
+    }
 
     setIsLoading(true);
     
     try {
       const auth = getAuth();
       const phoneNumber = `+91${mobileNumber}`;
-
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-
-      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'normal',
-        'callback': async () => {
-          setCaptchaVerifiedOnce(true);
-          try {
-            const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-            setConfirmationResult(result);
-            setOtpSent(true);
-            toast({
-                title: t.otpSentToast,
-                description: t.otpSentToastDesc,
-            });
-          } catch (error: any) {
-             console.error("signInWithPhoneNumber error:", error);
-              toast({
-                  variant: 'destructive',
-                  title: "Error",
-                  description: error.message,
-              });
-          } finally {
-            setIsLoading(false);
-          }
-        },
-        'expired-callback': () => {
-           toast({
-              variant: 'destructive',
-              title: "reCAPTCHA Expired",
-              description: "Please solve the reCAPTCHA again.",
-          });
-          setIsLoading(false);
-        }
+      
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      
+      setConfirmationResult(result);
+      setOtpSent(true);
+      toast({
+          title: t.otpSentToast,
+          description: t.otpSentToastDesc,
       });
-      
-      window.recaptchaVerifier = recaptchaVerifier;
-      
-      if (!captchaVerifiedOnce) {
-        await recaptchaVerifier.render();
-      } else {
-        // If already verified, directly proceed with phone number verification
-        const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-        setConfirmationResult(result);
-        setOtpSent(true);
-        toast({
-            title: t.otpSentToast,
-            description: t.otpSentToastDesc,
-        });
-        setIsLoading(false);
-      }
 
     } catch (error: any) {
-      console.error("reCAPTCHA rendering error:", error);
+      console.error("signInWithPhoneNumber error:", error);
       toast({
           variant: 'destructive',
           title: "Error",
           description: error.message,
       });
+    } finally {
       setIsLoading(false);
     }
   }
@@ -207,7 +194,7 @@ export default function ArtisanRegisterPage() {
                   )}
                 />}
               
-              {!captchaVerifiedOnce && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
+              <div id="recaptcha-container" className="flex justify-center my-4"></div>
 
             </CardContent>
             <CardContent>
