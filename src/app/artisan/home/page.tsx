@@ -177,40 +177,44 @@ export default function ArtisanHomePage() {
 
       <div className="space-y-8">
         {/* Frequently Bought Products */}
-        <section className="space-y-3">
-            <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
-            <Carousel
-                opts={{ align: 'start', loop: true }}
-                plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
-                className="-mx-2"
-            >
-                <CarouselContent className="-ml-2">
-                {frequentlyBoughtProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/8 pl-2">
-                        <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-            </Carousel>
-        </section>
+        <div className="overflow-hidden">
+            <section className="space-y-3">
+                <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
+                <Carousel
+                    opts={{ align: 'start', loop: true }}
+                    plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
+                    className="-mx-2"
+                >
+                    <CarouselContent className="-ml-2">
+                    {frequentlyBoughtProducts.map((product) => (
+                        <CarouselItem key={product.id} className="basis-1/8 pl-2">
+                            <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                </Carousel>
+            </section>
+        </div>
 
         {/* Most Liked Products */}
-        <section className="space-y-3">
-          <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
-           <Carousel
-                opts={{ align: 'start', loop: true }}
-                plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
-                className="-mx-2"
-            >
-                <CarouselContent className="-ml-2">
-                {mostLikedProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/8 pl-2">
-                        <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-            </Carousel>
-        </section>
+        <div className="overflow-hidden">
+            <section className="space-y-3">
+              <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
+               <Carousel
+                    opts={{ align: 'start', loop: true }}
+                    plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
+                    className="-mx-2"
+                >
+                    <CarouselContent className="-ml-2">
+                    {mostLikedProducts.map((product) => (
+                        <CarouselItem key={product.id} className="basis-1/8 pl-2">
+                            <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                </Carousel>
+            </section>
+        </div>
 
         {/* AI Review Section */}
         <section>
