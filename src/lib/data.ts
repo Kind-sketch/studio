@@ -226,7 +226,6 @@ export const languages: Language[] = [
     { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
     { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
     { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
-    { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
     { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
 ];
 
@@ -252,4 +251,5 @@ export const statsData = {
   ],
 };
 
+    
     
