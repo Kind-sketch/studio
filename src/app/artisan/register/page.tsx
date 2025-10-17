@@ -123,11 +123,12 @@ export default function ArtisanRegisterPage() {
     try {
       const result = await confirmationResult.confirm(values.otp);
       const user = result.user;
+      // Check if the user is new by comparing creation time and last sign-in time
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
 
       toast({
-        title: t.welcomeBackToast,
-        description: t.welcomeBackToastDesc,
+        title: isNewUser ? 'Account Created!' : t.welcomeBackToast,
+        description: isNewUser ? 'Let\'s complete your registration.' : t.welcomeBackToastDesc,
       });
       
       if (isNewUser) {
