@@ -11,6 +11,7 @@ import type { Category, Product } from '@/lib/types';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslation } from '@/context/translation-context';
+import Link from 'next/link';
 
 export default function BuyerHomePage() {
   const { translations } = useTranslation();
@@ -100,7 +101,9 @@ export default function BuyerHomePage() {
           </h2>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:grid-cols-3 lg:grid-cols-4">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+               <Link href={`/buyer/product/${product.id}`} key={product.id}>
+                <ProductCard product={product} />
+              </Link>
             ))}
           </div>
         </section>
@@ -119,7 +122,9 @@ export default function BuyerHomePage() {
               <CarouselContent className="-ml-2">
                 {trendingProducts.map((product) => (
                   <CarouselItem key={product.id} className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 pl-2">
-                    <ProductCard product={product} />
+                    <Link href={`/buyer/product/${product.id}`}>
+                      <ProductCard product={product} />
+                    </Link>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -133,7 +138,9 @@ export default function BuyerHomePage() {
             </h2>
             <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:grid-cols-3 lg:grid-cols-4">
               {bestSellingProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <Link href={`/buyer/product/${product.id}`} key={product.id}>
+                  <ProductCard product={product} />
+                </Link>
               ))}
             </div>
           </section>
