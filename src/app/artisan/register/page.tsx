@@ -55,27 +55,15 @@ export default function ArtisanRegisterPage() {
       const auth = getAuth();
       const phoneNumber = `+91${mobileNumber}`;
 
-      // Ensure previous verifier is cleared if it exists
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
       }
 
       const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'normal',
+        'size': 'invisible',
         'callback': async () => {
           try {
             const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-      
-            // This handles instant verification where no OTP is needed.
-            if (auth.currentUser) {
-                toast({
-                    title: t.welcomeBackToast,
-                    description: "You've been securely signed in.",
-                });
-                router.push('/artisan/post-auth');
-                return;
-            }
-            
             setConfirmationResult(result);
             setOtpSent(true);
             toast({
@@ -103,10 +91,10 @@ export default function ArtisanRegisterPage() {
         }
       });
       
-      // Store verifier on window to access it for clearing
       window.recaptchaVerifier = recaptchaVerifier;
       
       await recaptchaVerifier.render();
+      recaptchaVerifier.verify();
 
     } catch (error: any) {
       console.error("reCAPTCHA rendering error:", error);
@@ -205,7 +193,7 @@ export default function ArtisanRegisterPage() {
                   )}
                 />}
               
-              {!otpSent && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
+              <div id="recaptcha-container" className="flex justify-center my-4"></div>
 
             </CardContent>
             <CardContent>

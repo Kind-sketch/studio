@@ -65,21 +65,11 @@ function AuthClientPageComponent() {
         }
 
         const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'normal',
+            'size': 'invisible',
             'callback': async () => {
                 try {
                     const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
                     
-                    if (auth.currentUser) {
-                        toast({
-                            title: t.loginSuccessToast,
-                            description: t.loginSuccessToastDesc,
-                        });
-                        const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
-                        router.push(redirectPath);
-                        return;
-                    }
-
                     setConfirmationResult(result);
                     setOtpSent(true);
                     toast({
@@ -105,6 +95,7 @@ function AuthClientPageComponent() {
 
         window.recaptchaVerifier = recaptchaVerifier;
         await recaptchaVerifier.render();
+        recaptchaVerifier.verify();
 
     } catch (error: any) {
         console.error("reCAPTCHA Error:", error);
@@ -189,7 +180,7 @@ function AuthClientPageComponent() {
                 />
               )}
 
-              {!otpSent && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
+              <div id="recaptcha-container" className="flex justify-center my-4"></div>
               
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
