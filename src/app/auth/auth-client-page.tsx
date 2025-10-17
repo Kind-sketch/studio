@@ -58,8 +58,8 @@ function AuthClientPageComponent() {
     setIsLoading(true);
     try {
         const auth = getAuth();
-        // In a production app, you would use a real App Check provider.
-        // For this sample, we use a mock verifier.
+        // This is crucial for OTP-only flow in development.
+        // In production, you would configure App Check.
         auth.settings.appVerificationDisabledForTesting = true;
         const phoneNumber = `+91${mobileNumber}`;
 
@@ -162,7 +162,7 @@ function AuthClientPageComponent() {
                     {t.verifyButton}
                 </Button>
               ) : (
-                <Button id="send-otp-button" type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
+                <Button type="button" onClick={handleSendOtp} className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {t.sendOtpButton}
                 </Button>

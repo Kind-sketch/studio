@@ -53,8 +53,8 @@ export default function ArtisanRegisterPage() {
     
     try {
       const auth = getAuth();
-      // In a production app, you would use a real App Check provider.
-      // For this sample, we use a mock verifier.
+      // This is crucial for OTP-only flow in development.
+      // In production, you would configure App Check.
       auth.settings.appVerificationDisabledForTesting = true;
       const phoneNumber = `+91${mobileNumber}`;
       
@@ -172,7 +172,7 @@ export default function ArtisanRegisterPage() {
                   {t.verifyButton}
                 </Button>
               ) : (
-                <Button id="send-otp-button" type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
+                <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t.sendOtpButton}
                 </Button>
