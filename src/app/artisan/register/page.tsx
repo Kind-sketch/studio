@@ -33,6 +33,20 @@ export default function ArtisanRegisterPage() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   const auth = getAuth();
+  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      mobileNumber: '',
+      otp: '',
+    },
+  });
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      router.push('/artisan/post-auth');
+    }
+  }, [auth, router]);
 
   useEffect(() => {
     // This ensures that the Recaptcha Verifier is initialized only once
