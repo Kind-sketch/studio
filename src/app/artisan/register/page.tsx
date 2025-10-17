@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
@@ -34,6 +34,13 @@ export default function ArtisanRegisterPage() {
 
   const auth = getAuth();
 
+  useEffect(() => {
+    // If user is already logged in, redirect them
+    if (auth.currentUser) {
+        router.push('/artisan/post-auth');
+    }
+  }, [auth, router]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,12 +50,11 @@ export default function ArtisanRegisterPage() {
   });
 
   function onCaptchaVerify() {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
         'callback': (response: any) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // This callback can be used to handle automatic sign-in if needed.
         },
         'expired-callback': () => {
           // Response expired. Ask user to solve reCAPTCHA again.
@@ -70,14 +76,12 @@ export default function ArtisanRegisterPage() {
     
     try {
       onCaptchaVerify();
-      const appVerifier = window.recaptchaVerifier;
+      const appVerifier = (window as any).recaptchaVerifier;
       const phoneNumber = `+91${mobileNumber}`;
       
-      // The signInWithPhoneNumber can sometimes sign in the user directly
-      // if they are on a trusted device, without sending an OTP.
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       
-      // Check if user is already signed in (silent re-auth)
+      // This handles instant verification where no OTP is needed.
       if (auth.currentUser) {
           toast({
               title: t.welcomeBackToast,

@@ -58,13 +58,21 @@ export default function ArtisanRegisterRecoveryPage() {
   });
 
   useEffect(() => {
+     // If user is not logged in or didn't come from register page, redirect
+    if (!auth.currentUser) {
+        router.push('/artisan/register');
+        return;
+    }
+
     const phone = localStorage.getItem('tempPhone');
     if (phone) {
         setPrimaryNumber(phone);
     } else {
-        router.push('/artisan/register');
+        // If the tempPhone is not in storage, it implies they didn't just register.
+        // But if they ARE logged in, they shouldn't be on this page.
+        router.push('/artisan/post-auth');
     }
-  }, [router]);
+  }, [router, auth]);
 
   useEffect(() => {
     const translateContent = async () => {

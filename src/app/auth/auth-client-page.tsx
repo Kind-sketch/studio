@@ -38,22 +38,15 @@ function AuthClientPageComponent() {
   const auth = getAuth();
 
   useEffect(() => {
-    // Cleanup reCAPTCHA
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const role = searchParams.get('role');
-    if (role === 'sponsor') {
-      setUserType('sponsor');
-    } else {
-      setUserType('buyer');
+    const type = role === 'sponsor' ? 'sponsor' : 'buyer';
+    setUserType(type);
+
+    if (auth.currentUser) {
+        const redirectPath = type === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
+        router.push(redirectPath);
     }
-  }, [searchParams]);
+  }, [searchParams, auth, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,8 +54,8 @@ function AuthClientPageComponent() {
   });
 
   function onCaptchaVerify() {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
         'callback': (response: any) => {},
         'expired-callback': () => {}
@@ -82,7 +75,7 @@ function AuthClientPageComponent() {
     setIsLoading(true);
     try {
         onCaptchaVerify();
-        const appVerifier = window.recaptchaVerifier;
+        const appVerifier = (window as any).recaptchaVerifier;
         const phoneNumber = `+91${mobileNumber}`;
         const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
         
