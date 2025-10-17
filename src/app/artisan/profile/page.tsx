@@ -118,15 +118,16 @@ function ProfilePageComponent() {
         data = JSON.parse(storedProfile);
         setArtisan(prev => ({...prev, ...data}));
     } else {
+        const tempPhone = isSetupMode ? localStorage.getItem('tempPhone') : null;
         data = {
             name: artisan.name,
             companyName: artisan.companyName,
             address: artisan.address,
-            phone: artisan.phone,
+            phone: tempPhone || artisan.phone,
         };
     }
     form.reset(data);
-  }, [form, artisan.name, artisan.companyName, artisan.address, artisan.phone]);
+  }, [form, artisan.name, artisan.companyName, artisan.address, artisan.phone, isSetupMode]);
 
 
   const onSubmit = (data: ProfileFormValues) => {
@@ -142,6 +143,7 @@ function ProfilePageComponent() {
       });
 
       if (isSetupMode) {
+        localStorage.removeItem('tempPhone');
         router.push('/artisan/post-auth');
       }
     }, 1000);
@@ -287,7 +289,7 @@ function ProfilePageComponent() {
                                 <FormLabel>{t.phoneLabel}</FormLabel>
                                 <FormControl>
                                 <div className="relative">
-                                  <Input {...field} disabled={!isEditing} className="pr-10" />
+                                  <Input {...field} disabled={!isEditing || isSetupMode} className="pr-10" />
                                   {renderVoiceInput('phone')}
                                 </div>
                                 </FormControl>
@@ -322,5 +324,6 @@ export default function ProfilePage() {
     </Suspense>
   )
 }
+    
 
     
