@@ -53,6 +53,27 @@ export default function ArtisanRegisterPage() {
         'callback': async (response: any) => {
           // This callback is executed when reCAPTCHA is solved.
           // We can now proceed with sending the OTP.
+           const { mobileNumber } = form.getValues();
+           const phoneNumber = `+91${mobileNumber}`;
+           try {
+             const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+             setConfirmationResult(result);
+             setOtpSent(true);
+             setIsLoading(false);
+             toast({
+               title: t.otpSentToast,
+               description: t.otpSentToastDesc,
+             });
+           } catch (error: any) {
+             console.error("signInWithPhoneNumber error:", error);
+             verifier.clear();
+             setIsLoading(false);
+             toast({
+               variant: 'destructive',
+               title: "Error Sending OTP",
+               description: error.message,
+             });
+           }
         },
         'expired-callback': () => {
           toast({
@@ -60,11 +81,12 @@ export default function ArtisanRegisterPage() {
             title: 'reCAPTCHA Expired',
             description: 'Please try sending the OTP again.',
           });
+          setIsLoading(false);
         }
       });
       (window as any).recaptchaVerifier = verifier;
     }
-  }, [language, toast]);
+  }, [language, t.otpSentToast, t.otpSentToastDesc, toast, form]);
 
 
   async function handleSendOtp() {
@@ -79,38 +101,17 @@ export default function ArtisanRegisterPage() {
     setIsLoading(true);
     
     try {
-      const auth = getAuth();
-      const phoneNumber = `+91${mobileNumber}`;
-      const appVerifier = (window as any).recaptchaVerifier;
-
-      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      
-      setConfirmationResult(result);
-      setOtpSent(true);
-      toast({
-          title: t.otpSentToast,
-          description: t.otpSentToastDesc,
-      });
-
+      const verifier = (window as any).recaptchaVerifier;
+      // This will trigger the reCAPTCHA verification and then the callback.
+      await verifier.verify();
     } catch (error: any) {
-      console.error("signInWithPhoneNumber error:", error);
-      // Reset reCAPTCHA if it exists and an error occurs
-      if ((window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier.clear(); // Clear the existing instance
-        // Re-create a new verifier for the next attempt
-         const newVerifier = new RecaptchaVerifier(getAuth(), 'recaptcha-container', {
-            'size': 'invisible',
-            'callback': (response: any) => {},
-        });
-        (window as any).recaptchaVerifier = newVerifier;
-      }
+      console.error("reCAPTCHA verify error:", error);
+      setIsLoading(false);
       toast({
           variant: 'destructive',
-          title: "Error Sending OTP",
+          title: "reCAPTCHA Error",
           description: error.message,
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 

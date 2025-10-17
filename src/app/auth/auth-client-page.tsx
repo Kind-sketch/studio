@@ -54,9 +54,25 @@ function AuthClientPageComponent() {
 
     if (!(window as any).recaptchaVerifier) {
         const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'normal',
-            'callback': (response: any) => {
-                 // reCAPTCHA solved, allow signInWithPhoneNumber.
+            'size': 'invisible',
+            'callback': async (response: any) => {
+                 const { mobileNumber } = form.getValues();
+                 const phoneNumber = `+91${mobileNumber}`;
+                 try {
+                   const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+                   setConfirmationResult(result);
+                   setOtpSent(true);
+                   setIsLoading(false);
+                   toast({
+                     title: 'OTP Sent',
+                     description: 'An OTP has been sent to your mobile number.',
+                   });
+                 } catch (error: any) {
+                   console.error("signInWithPhoneNumber Error:", error);
+                   verifier.clear();
+                   setIsLoading(false);
+                   toast({ variant: 'destructive', title: 'Error', description: error.message });
+                 }
             },
             'expired-callback': () => {
                 toast({
@@ -64,12 +80,12 @@ function AuthClientPageComponent() {
                     title: 'reCAPTCHA Expired',
                     description: 'Please solve the reCAPTCHA again.',
                 });
+                setIsLoading(false);
             }
         });
         (window as any).recaptchaVerifier = verifier;
-        verifier.render();
     }
-  }, [toast, language]);
+  }, [toast, language, form]);
 
 
   async function handleSendOtp() {
@@ -83,27 +99,12 @@ function AuthClientPageComponent() {
 
     setIsLoading(true);
     try {
-        const auth = getAuth();
-        const phoneNumber = `+91${mobileNumber}`;
-        const appVerifier = (window as any).recaptchaVerifier;
-
-        const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        
-        setConfirmationResult(result);
-        setOtpSent(true);
-        toast({
-            title: 'OTP Sent',
-            description: 'An OTP has been sent to your mobile number.',
-        });
-
+        const verifier = (window as any).recaptchaVerifier;
+        await verifier.verify();
     } catch (error: any) {
-        console.error("signInWithPhoneNumber Error:", error);
-        if ((window as any).grecaptcha) {
-          (window as any).grecaptcha.reset();
-        }
-        toast({ variant: 'destructive', title: 'Error', description: error.message });
-    } finally {
+        console.error("reCAPTCHA verify error:", error);
         setIsLoading(false);
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
     }
   }
 
