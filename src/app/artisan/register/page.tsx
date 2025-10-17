@@ -47,24 +47,24 @@ export default function ArtisanRegisterPage() {
     auth.languageCode = language;
 
     if (!(window as any).recaptchaVerifier) {
-        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'normal',
-            'callback': async (response: any) => {
-                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                 // This callback is executed when reCAPTCHA is solved.
-            },
-            'expired-callback': () => {
-                toast({
-                    variant: 'destructive',
-                    title: 'reCAPTCHA Expired',
-                    description: 'Please solve the reCAPTCHA again.',
-                });
-            }
-        });
-        (window as any).recaptchaVerifier = verifier;
-        verifier.render();
+      // It's important that the container is visible, but we can hide it with styles
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible', // Use invisible reCAPTCHA
+        'callback': async (response: any) => {
+          // This callback is executed when reCAPTCHA is solved.
+          // We can now proceed with sending the OTP.
+        },
+        'expired-callback': () => {
+          toast({
+            variant: 'destructive',
+            title: 'reCAPTCHA Expired',
+            description: 'Please try sending the OTP again.',
+          });
+        }
+      });
+      (window as any).recaptchaVerifier = verifier;
     }
-  }, [toast, language]);
+  }, [language, toast]);
 
 
   async function handleSendOtp() {
@@ -94,13 +94,19 @@ export default function ArtisanRegisterPage() {
 
     } catch (error: any) {
       console.error("signInWithPhoneNumber error:", error);
-      // Reset reCAPTCHA
-       if ((window as any).grecaptcha) {
-        (window as any).grecaptcha.reset();
+      // Reset reCAPTCHA if it exists and an error occurs
+      if ((window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier.clear(); // Clear the existing instance
+        // Re-create a new verifier for the next attempt
+         const newVerifier = new RecaptchaVerifier(getAuth(), 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response: any) => {},
+        });
+        (window as any).recaptchaVerifier = newVerifier;
       }
       toast({
           variant: 'destructive',
-          title: "Error",
+          title: "Error Sending OTP",
           description: error.message,
       });
     } finally {
@@ -129,12 +135,12 @@ export default function ArtisanRegisterPage() {
 
       toast({
         title: isNewUser ? 'Account Created!' : t.welcomeBackToast,
-        description: isNewUser ? 'Let\'s complete your registration.' : t.welcomeBackToastDesc,
+        description: `UID: ${user.uid}`,
       });
       
       if (isNewUser) {
         localStorage.setItem('tempPhone', values.mobileNumber);
-        router.push('/artisan/register-recovery');
+        router.push('/artisan/profile?setup=true');
       } else {
         router.push('/artisan/post-auth');
       }
@@ -195,7 +201,7 @@ export default function ArtisanRegisterPage() {
                   )}
                 />
               ) : (
-                <div id="recaptcha-container" className="flex justify-center"></div>
+                <div id="recaptcha-container"></div>
               )}
             </CardContent>
             <CardContent>
