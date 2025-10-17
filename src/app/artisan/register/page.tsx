@@ -53,10 +53,12 @@ export default function ArtisanRegisterPage() {
     
     try {
       const auth = getAuth();
+      // In a production app, you would use a real App Check provider.
+      // For this sample, we use a mock verifier.
       auth.settings.appVerificationDisabledForTesting = true;
       const phoneNumber = `+91${mobileNumber}`;
       
-      const result = await signInWithPhoneNumber(auth, phoneNumber, (window as any).recaptchaVerifier);
+      const result = await signInWithPhoneNumber(auth, phoneNumber);
       
       setConfirmationResult(result);
       setOtpSent(true);
@@ -118,14 +120,6 @@ export default function ArtisanRegisterPage() {
         setIsLoading(false);
     }
   }
-
-  useEffect(() => {
-    const auth = getAuth();
-    (window as any).recaptchaVerifier = {
-      type: 'recaptcha',
-      verify: () => Promise.resolve('test-recaptcha-token'),
-    };
-  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">

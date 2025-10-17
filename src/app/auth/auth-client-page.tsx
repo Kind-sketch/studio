@@ -46,16 +46,6 @@ function AuthClientPageComponent() {
     setUserType(type);
   }, [searchParams]);
 
-  useEffect(() => {
-    const auth = getAuth();
-    // This is a mock verifier for environments where reCAPTCHA isn't set up.
-    // In a production environment with App Check, this would be handled differently.
-    (window as any).recaptchaVerifier = {
-      type: 'recaptcha',
-      verify: () => Promise.resolve('test-recaptcha-token'),
-    };
-  }, []);
-
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
@@ -68,11 +58,12 @@ function AuthClientPageComponent() {
     setIsLoading(true);
     try {
         const auth = getAuth();
-        // Disable app verification for testing purposes.
+        // In a production app, you would use a real App Check provider.
+        // For this sample, we use a mock verifier.
         auth.settings.appVerificationDisabledForTesting = true;
         const phoneNumber = `+91${mobileNumber}`;
 
-        const result = await signInWithPhoneNumber(auth, phoneNumber, (window as any).recaptchaVerifier);
+        const result = await signInWithPhoneNumber(auth, phoneNumber);
         
         setConfirmationResult(result);
         setOtpSent(true);
