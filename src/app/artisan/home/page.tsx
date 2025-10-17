@@ -169,7 +169,7 @@ export default function ArtisanHomePage() {
   }, [toast, t.savedToCollectionToast]);
 
   return (
-    <div className="flex flex-col p-4 space-y-6">
+    <div className="flex flex-col px-2 py-4 space-y-6">
       <div>
         <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
         <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
@@ -286,5 +286,7 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
+
+    
 
     
