@@ -20,6 +20,8 @@ import { useTranslation } from '@/context/translation-context';
 import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 
 // Mocking the current artisan as Elena Vance (ID '1')
@@ -177,21 +179,37 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <section className="space-y-3">
             <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+            <Carousel
+                opts={{ align: 'start', loop: true }}
+                plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
+                className="-mx-2"
+            >
+                <CarouselContent className="-ml-2">
                 {frequentlyBoughtProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-2">
+                        <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    </CarouselItem>
                 ))}
-            </div>
+                </CarouselContent>
+            </Carousel>
         </section>
 
         {/* Most Liked Products */}
         <section className="space-y-3">
           <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
-           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {mostLikedProducts.map((product) => (
-                   <ProductCard key={product.id} product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
-              ))}
-            </div>
+           <Carousel
+                opts={{ align: 'start', loop: true }}
+                plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
+                className="-mx-2"
+            >
+                <CarouselContent className="-ml-2">
+                {mostLikedProducts.map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-2">
+                        <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    </CarouselItem>
+                ))}
+                </CarouselContent>
+            </Carousel>
         </section>
 
         {/* AI Review Section */}
@@ -268,5 +286,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
