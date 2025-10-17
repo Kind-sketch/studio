@@ -16,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
-import { getAuth, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
+import { getAuth, signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -53,28 +53,41 @@ export default function ArtisanRegisterPage() {
     
     try {
       const auth = getAuth();
-      // This is crucial for OTP-only flow in development.
-      // In production, you would configure App Check.
-      auth.settings.appVerificationDisabledForTesting = true;
       const phoneNumber = `+91${mobileNumber}`;
-      
-      const result = await signInWithPhoneNumber(auth, phoneNumber);
-      
-      setConfirmationResult(result);
-      setOtpSent(true);
-      toast({
-          title: t.otpSentToast,
-          description: t.otpSentToastDesc,
+
+      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'normal',
+        'callback': async () => {
+           try {
+            const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+            setConfirmationResult(result);
+            setOtpSent(true);
+            toast({
+                title: t.otpSentToast,
+                description: t.otpSentToastDesc,
+            });
+           } catch (error: any) {
+             console.error("signInWithPhoneNumber error:", error);
+             toast({
+                 variant: 'destructive',
+                 title: "Error",
+                 description: error.message,
+             });
+           } finally {
+              setIsLoading(false);
+           }
+        }
       });
+      
+      await recaptchaVerifier.render();
 
     } catch (error: any) {
-      console.error("signInWithPhoneNumber error:", error);
+      console.error("reCAPTCHA render error:", error);
       toast({
           variant: 'destructive',
-          title: "Error",
+          title: "reCAPTCHA Error",
           description: error.message,
       });
-    } finally {
       setIsLoading(false);
     }
   }
@@ -163,7 +176,8 @@ export default function ArtisanRegisterPage() {
                     </FormItem>
                   )}
                 />}
-              
+                
+                {!otpSent && <div id="recaptcha-container" className="flex justify-center"></div>}
             </CardContent>
             <CardContent>
               {otpSent ? (
