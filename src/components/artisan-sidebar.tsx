@@ -39,6 +39,7 @@ import { useLanguage } from '@/context/language-context';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { artisans } from '@/lib/data';
 import { interpretNavCommand } from '@/ai/flows/interpret-navigation-command';
+import { getAuth, signOut } from 'firebase/auth';
 
 
 const artisan = artisans[0]; // Mock current user
@@ -254,6 +255,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { toast } = useToast();
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar;
+    const auth = getAuth();
     
     const baseNavItems = {
         studio: [
@@ -276,13 +278,24 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         }
     };
 
-    const handleLogout = (e: React.MouseEvent) => {
+    const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
-        handleLinkClick('/');
-        toast({
-            title: t.logoutToastTitle,
-            description: t.logoutToastDesc
-        });
+        try {
+            await signOut(auth);
+            if (closeSheet) closeSheet();
+            toast({
+                title: t.logoutToastTitle,
+                description: t.logoutToastDesc
+            });
+            router.push('/role-selection');
+        } catch (error) {
+            console.error("Logout failed", error);
+            toast({
+                variant: 'destructive',
+                title: "Logout Failed",
+                description: "An error occurred while logging out."
+            });
+        }
     };
     
     const isLinkActive = (href: string) => {

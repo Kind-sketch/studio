@@ -3,12 +3,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, User } from 'lucide-react';
+import { Home, LayoutGrid, User, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/buyer/home', label: 'Home', icon: Home },
-  { href: '/buyer/categories', label: 'Categories', icon: LayoutGrid },
+  { href: '/buyer/customize', label: 'Customize', icon: Sparkles },
   { href: '/buyer/profile', label: 'Profile', icon: User },
 ];
 
