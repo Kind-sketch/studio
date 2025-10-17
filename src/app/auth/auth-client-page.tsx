@@ -55,24 +55,30 @@ function AuthClientPageComponent() {
     if (!(window as any).recaptchaVerifier) {
         const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'invisible',
-            'callback': async (response: any) => {
+            'callback': (response: any) => {
                  const { mobileNumber } = form.getValues();
                  const phoneNumber = `+91${mobileNumber}`;
-                 try {
-                   const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-                   setConfirmationResult(result);
-                   setOtpSent(true);
-                   setIsLoading(false);
-                   toast({
-                     title: 'OTP Sent',
-                     description: 'An OTP has been sent to your mobile number.',
-                   });
-                 } catch (error: any) {
-                   console.error("signInWithPhoneNumber Error:", error);
-                   verifier.clear();
-                   setIsLoading(false);
-                   toast({ variant: 'destructive', title: 'Error', description: error.message });
-                 }
+
+                 signInWithPhoneNumber(auth, phoneNumber, verifier)
+                    .then((result) => {
+                        setConfirmationResult(result);
+                        setOtpSent(true);
+                        setIsLoading(false);
+                        toast({
+                            title: 'OTP Sent',
+                            description: 'An OTP has been sent to your mobile number.',
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.error("signInWithPhoneNumber Error:", error);
+                        setIsLoading(false);
+                        toast({ variant: 'destructive', title: 'Error', description: error.message });
+                        verifier.render().then((widgetId) => {
+                            if (typeof grecaptcha !== 'undefined') {
+                                grecaptcha.reset(widgetId);
+                            }
+                        });
+                    });
             },
             'expired-callback': () => {
                 toast({
@@ -85,7 +91,14 @@ function AuthClientPageComponent() {
         });
         (window as any).recaptchaVerifier = verifier;
     }
-  }, [toast, language, form]);
+
+    return () => {
+        if ((window as any).recaptchaVerifier) {
+            (window as any).recaptchaVerifier.clear();
+            (window as any).recaptchaVerifier = null;
+        }
+    };
+  }, [language, toast, form]);
 
 
   async function handleSendOtp() {
@@ -182,9 +195,7 @@ function AuthClientPageComponent() {
                     </FormItem>
                   )}
                 />
-              ) : (
-                <div id="recaptcha-container" className="flex justify-center"></div>
-              )}
+              ) : null}
               
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
@@ -200,7 +211,8 @@ function AuthClientPageComponent() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="justify-center text-xs text-muted-foreground">
+        <CardFooter className="flex flex-col justify-center text-xs text-muted-foreground">
+          <div id="recaptcha-container" className="my-2"></div>
           <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>

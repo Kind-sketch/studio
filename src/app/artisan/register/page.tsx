@@ -46,34 +46,41 @@ export default function ArtisanRegisterPage() {
     const auth = getAuth();
     auth.languageCode = language;
 
+    // Ensure the verifier is only created once and cleaned up properly.
     if (!(window as any).recaptchaVerifier) {
-      // It's important that the container is visible, but we can hide it with styles
       const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible', // Use invisible reCAPTCHA
-        'callback': async (response: any) => {
+        'size': 'invisible',
+        'callback': (response: any) => {
           // This callback is executed when reCAPTCHA is solved.
           // We can now proceed with sending the OTP.
-           const { mobileNumber } = form.getValues();
-           const phoneNumber = `+91${mobileNumber}`;
-           try {
-             const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-             setConfirmationResult(result);
-             setOtpSent(true);
-             setIsLoading(false);
-             toast({
-               title: t.otpSentToast,
-               description: t.otpSentToastDesc,
-             });
-           } catch (error: any) {
-             console.error("signInWithPhoneNumber error:", error);
-             verifier.clear();
-             setIsLoading(false);
-             toast({
-               variant: 'destructive',
-               title: "Error Sending OTP",
-               description: error.message,
-             });
-           }
+          const { mobileNumber } = form.getValues();
+          const phoneNumber = `+91${mobileNumber}`;
+
+          signInWithPhoneNumber(auth, phoneNumber, verifier)
+            .then((result) => {
+              setConfirmationResult(result);
+              setOtpSent(true);
+              setIsLoading(false);
+              toast({
+                title: t.otpSentToast,
+                description: t.otpSentToastDesc,
+              });
+            })
+            .catch((error: any) => {
+              console.error("signInWithPhoneNumber error:", error);
+              setIsLoading(false);
+              toast({
+                variant: 'destructive',
+                title: "Error Sending OTP",
+                description: error.message,
+              });
+              // In case of error, you might want to reset the reCAPTCHA
+              verifier.render().then((widgetId) => {
+                  if (typeof grecaptcha !== 'undefined') {
+                      grecaptcha.reset(widgetId);
+                  }
+              });
+            });
         },
         'expired-callback': () => {
           toast({
@@ -86,6 +93,14 @@ export default function ArtisanRegisterPage() {
       });
       (window as any).recaptchaVerifier = verifier;
     }
+    
+    // Cleanup function to clear the verifier when the component unmounts
+    return () => {
+      if ((window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier.clear();
+        (window as any).recaptchaVerifier = null;
+      }
+    };
   }, [language, t.otpSentToast, t.otpSentToastDesc, toast, form]);
 
 
@@ -201,9 +216,7 @@ export default function ArtisanRegisterPage() {
                     </FormItem>
                   )}
                 />
-              ) : (
-                <div id="recaptcha-container"></div>
-              )}
+              ) : null}
             </CardContent>
             <CardContent>
               {otpSent ? (
@@ -220,7 +233,8 @@ export default function ArtisanRegisterPage() {
             </CardContent>
           </form>
         </Form>
-        <CardFooter className="justify-center text-xs text-muted-foreground">
+        <CardFooter className="flex flex-col justify-center text-xs text-muted-foreground">
+          <div id="recaptcha-container" className="my-2"></div>
           <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>
