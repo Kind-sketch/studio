@@ -70,7 +70,8 @@ export default function ArtisanRegisterPage() {
         verifier.clear();
       }
     };
-  }, [auth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   async function handleSendOtp() {
