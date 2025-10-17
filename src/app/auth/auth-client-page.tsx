@@ -60,6 +60,10 @@ function AuthClientPageComponent() {
         const auth = getAuth();
         const phoneNumber = `+91${mobileNumber}`;
 
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.clear();
+        }
+
         const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',
             'callback': async () => {
@@ -99,6 +103,7 @@ function AuthClientPageComponent() {
             }
         });
 
+        window.recaptchaVerifier = recaptchaVerifier;
         await recaptchaVerifier.render();
 
     } catch (error: any) {
@@ -108,7 +113,7 @@ function AuthClientPageComponent() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent || !values.otp || values.otp.length !== 6) {
       form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;

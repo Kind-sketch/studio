@@ -55,6 +55,11 @@ export default function ArtisanRegisterPage() {
       const auth = getAuth();
       const phoneNumber = `+91${mobileNumber}`;
 
+      // Ensure previous verifier is cleared if it exists
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
+
       const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'normal',
         'callback': async () => {
@@ -97,6 +102,9 @@ export default function ArtisanRegisterPage() {
           setIsLoading(false);
         }
       });
+      
+      // Store verifier on window to access it for clearing
+      window.recaptchaVerifier = recaptchaVerifier;
       
       await recaptchaVerifier.render();
 
