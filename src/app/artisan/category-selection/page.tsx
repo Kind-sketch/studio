@@ -45,7 +45,7 @@ export default function CategorySelectionPage() {
       title: t.savedToast,
       description: t.savedToastDesc,
     });
-    router.push('/artisan/post-auth');
+    router.push('/artisan/profile?setup=true');
   };
 
   return (

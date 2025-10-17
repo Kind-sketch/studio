@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -25,8 +26,12 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState(false);
+function ProfilePageComponent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSetupMode = searchParams.get('setup') === 'true';
+
+  const [isEditing, setIsEditing] = useState(isSetupMode);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { translations } = useTranslation();
@@ -79,6 +84,10 @@ export default function ProfilePage() {
         title: t.profileUpdatedToast,
         description: t.profileUpdatedToastDesc,
       });
+
+      if (isSetupMode) {
+        router.push('/artisan/post-auth');
+      }
     }, 1000);
   };
 
@@ -101,10 +110,10 @@ export default function ProfilePage() {
     <div className="container mx-auto p-4 md:p-8 max-w-4xl">
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
-          <p className="text-muted-foreground">{t.description}</p>
+          <h1 className="font-headline text-4xl font-bold">{isSetupMode ? "Complete Your Profile" : t.title}</h1>
+          <p className="text-muted-foreground">{isSetupMode ? "Tell buyers and sponsors more about yourself." : t.description}</p>
         </div>
-        {!isEditing && (
+        {!isEditing && !isSetupMode && (
             <Button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
                 <Edit className="mr-2 h-4 w-4" />
                 {t.editProfileButton}
@@ -205,10 +214,10 @@ export default function ProfilePage() {
 
                 {isEditing && (
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>{t.cancelButton}</Button>
+                  {!isSetupMode && <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>{t.cancelButton}</Button>}
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {t.saveButton}
+                    {isSetupMode ? 'Save and Continue' : t.saveButton}
                   </Button>
                 </div>
               )}
@@ -218,4 +227,12 @@ export default function ProfilePage() {
       </Form>
     </div>
   );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense>
+      <ProfilePageComponent />
+    </Suspense>
+  )
 }
