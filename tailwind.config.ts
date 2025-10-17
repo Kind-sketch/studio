@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -20,6 +21,9 @@ export default {
         body: ['Open Sans', 'sans-serif'],
         headline: ['Lora', 'serif'],
         code: ['monospace'],
+      },
+      flexBasis: {
+        '1/8': '12.5%',
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -104,3 +108,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    
