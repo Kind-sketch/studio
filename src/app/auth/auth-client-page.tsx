@@ -34,34 +34,17 @@ function AuthClientPageComponent() {
   const [userType, setUserType] = useState('buyer');
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { mobileNumber: '', otp: '' },
+  });
 
   useEffect(() => {
     const role = searchParams.get('role');
     const type = role === 'sponsor' ? 'sponsor' : 'buyer';
     setUserType(type);
   }, [searchParams]);
-
-  useEffect(() => {
-    const auth = getAuth();
-    if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {},
-        'expired-callback': () => {}
-      });
-    }
-     return () => {
-      const verifier = (window as any).recaptchaVerifier;
-      if (verifier) {
-        verifier.clear();
-      }
-    };
-  }, []);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { mobileNumber: '', otp: '' },
-  });
 
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
@@ -75,41 +58,58 @@ function AuthClientPageComponent() {
     setIsLoading(true);
     try {
         const auth = getAuth();
-        const appVerifier = (window as any).recaptchaVerifier;
         const phoneNumber = `+91${mobileNumber}`;
-        const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        
-        if (auth.currentUser) {
-            toast({
-                title: t.loginSuccessToast,
-                description: t.loginSuccessToastDesc,
-            });
-            const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
-            router.push(redirectPath);
-            return;
-        }
 
-        setConfirmationResult(result);
-        setOtpSent(true);
-        toast({
-            title: 'OTP Sent',
-            description: 'An OTP has been sent to your mobile number.',
+        const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal',
+            'callback': async () => {
+                try {
+                    const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+                    
+                    if (auth.currentUser) {
+                        toast({
+                            title: t.loginSuccessToast,
+                            description: t.loginSuccessToastDesc,
+                        });
+                        const redirectPath = userType === 'buyer' ? '/buyer/home' : '/sponsor/dashboard';
+                        router.push(redirectPath);
+                        return;
+                    }
+
+                    setConfirmationResult(result);
+                    setOtpSent(true);
+                    toast({
+                        title: 'OTP Sent',
+                        description: 'An OTP has been sent to your mobile number.',
+                    });
+                } catch (error: any) {
+                    console.error("signInWithPhoneNumber Error:", error);
+                    toast({ variant: 'destructive', title: 'Error', description: error.message });
+                } finally {
+                    setIsLoading(false);
+                }
+            },
+            'expired-callback': () => {
+                toast({
+                    variant: 'destructive',
+                    title: "reCAPTCHA Expired",
+                    description: "Please solve the reCAPTCHA again.",
+                });
+                setIsLoading(false);
+            }
         });
+
+        await recaptchaVerifier.render();
+
     } catch (error: any) {
-        console.error("OTP Error:", error);
+        console.error("reCAPTCHA Error:", error);
         toast({ variant: 'destructive', title: 'Error', description: error.message });
-    } finally {
         setIsLoading(false);
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!otpSent) {
-      handleSendOtp();
-      return;
-    }
-
-    if (!values.otp || values.otp.length !== 6) {
+  async function onSubmit(values: z.infer<typeof formSchema>>) {
+    if (!otpSent || !values.otp || values.otp.length !== 6) {
       form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;
     }
@@ -151,7 +151,6 @@ function AuthClientPageComponent() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
-          <div id="recaptcha-container"></div>
           <Link href="/role-selection" className="flex justify-center mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </Link>
@@ -184,6 +183,9 @@ function AuthClientPageComponent() {
                   )}
                 />
               )}
+
+              {!otpSent && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
+              
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

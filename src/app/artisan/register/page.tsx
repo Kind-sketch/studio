@@ -40,26 +40,6 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  useEffect(() => {
-    const auth = getAuth();
-    if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // reCAPTCHA solved.
-        },
-        'expired-callback': () => {
-          // Response expired.
-        }
-      });
-    }
-
-    // Cleanup is not strictly necessary here as Firebase handles it, 
-    // and incorrect cleanup was causing errors.
-    // Let the verifier persist for the app's lifecycle on this page.
-  }, []);
-
-
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
@@ -73,46 +53,67 @@ export default function ArtisanRegisterPage() {
     
     try {
       const auth = getAuth();
-      const appVerifier = (window as any).recaptchaVerifier;
       const phoneNumber = `+91${mobileNumber}`;
+
+      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'normal',
+        'callback': async () => {
+          try {
+            const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
       
-      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      
-      // This handles instant verification where no OTP is needed.
-      if (auth.currentUser) {
-          toast({
-              title: t.welcomeBackToast,
-              description: "You've been securely signed in.",
+            // This handles instant verification where no OTP is needed.
+            if (auth.currentUser) {
+                toast({
+                    title: t.welcomeBackToast,
+                    description: "You've been securely signed in.",
+                });
+                router.push('/artisan/post-auth');
+                return;
+            }
+            
+            setConfirmationResult(result);
+            setOtpSent(true);
+            toast({
+                title: t.otpSentToast,
+                description: t.otpSentToastDesc,
+            });
+          } catch (error: any) {
+             console.error("signInWithPhoneNumber error:", error);
+              toast({
+                  variant: 'destructive',
+                  title: "Error",
+                  description: error.message,
+              });
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        'expired-callback': () => {
+           toast({
+              variant: 'destructive',
+              title: "reCAPTCHA Expired",
+              description: "Please solve the reCAPTCHA again.",
           });
-          router.push('/artisan/post-auth');
-          return;
-      }
-      
-      setConfirmationResult(result);
-      setOtpSent(true);
-      toast({
-          title: t.otpSentToast,
-          description: t.otpSentToastDesc,
+          setIsLoading(false);
+        }
       });
+      
+      await recaptchaVerifier.render();
+
     } catch (error: any) {
-      console.error("OTP sending error:", error);
+      console.error("reCAPTCHA rendering error:", error);
       toast({
           variant: 'destructive',
           title: "Error",
           description: error.message,
       });
-    } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!otpSent) {
-      handleSendOtp();
-      return;
-    }
-    
-    if (!values.otp || values.otp.length !== 6) {
+    // This function will now only handle OTP verification
+    if (!otpSent || !values.otp || values.otp.length !== 6) {
       form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;
     }
@@ -124,7 +125,6 @@ export default function ArtisanRegisterPage() {
 
     setIsLoading(true);
     try {
-      const auth = getAuth();
       const result = await confirmationResult.confirm(values.otp);
       const user = result.user;
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
@@ -158,7 +158,6 @@ export default function ArtisanRegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-xs shadow-lg">
         <CardHeader className="text-center">
-            <div id="recaptcha-container"></div>
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
             </Link>
@@ -197,6 +196,8 @@ export default function ArtisanRegisterPage() {
                     </FormItem>
                   )}
                 />}
+              
+              {!otpSent && <div id="recaptcha-container" className="flex justify-center my-4"></div>}
 
             </CardContent>
             <CardContent>
