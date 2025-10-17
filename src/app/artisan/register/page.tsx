@@ -76,7 +76,7 @@ export default function ArtisanRegisterPage() {
               });
               // In case of error, you might want to reset the reCAPTCHA
               verifier.render().then((widgetId) => {
-                  if (typeof grecaptcha !== 'undefined') {
+                  if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
                       grecaptcha.reset(widgetId);
                   }
               });
@@ -151,7 +151,7 @@ export default function ArtisanRegisterPage() {
 
       toast({
         title: isNewUser ? 'Account Created!' : t.welcomeBackToast,
-        description: `UID: ${user.uid}`,
+        description: t.welcomeBackToastDesc,
       });
       
       if (isNewUser) {
