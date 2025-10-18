@@ -38,7 +38,7 @@ const prompt = ai.definePrompt({
   name: 'generateProductDetailsPrompt',
   input: {schema: z.object({ photoDataUri: GenerateProductDetailsInputSchema.shape.photoDataUri })},
   output: {schema: GenerateProductDetailsOutputSchema},
-  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details: a product name, a product category, a product story, and a product description.
+  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details in English: a product name, a product category, a product story, and a product description.
 
 The product category must be one of the following: ${productCategories.join(', ')}.
 
