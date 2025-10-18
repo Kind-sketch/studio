@@ -62,16 +62,12 @@ function AuthClientPageComponent() {
     const auth = getAuth();
     auth.languageCode = language;
 
-    if (!(window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'invisible',
-        });
-    }
-
-    const verifier = (window as any).recaptchaVerifier;
     const phoneNumber = `+91${mobileNumber}`;
 
     try {
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+        });
         const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
         setConfirmationResult(result);
         setOtpSent(true);
@@ -82,9 +78,6 @@ function AuthClientPageComponent() {
     } catch (error: any) {
         console.error("signInWithPhoneNumber Error:", error);
         toast({ variant: 'destructive', title: 'Error', description: error.message });
-        if (typeof grecaptcha !== 'undefined') {
-            verifier.render().then(grecaptcha.reset);
-        }
     } finally {
         setIsLoading(false);
     }

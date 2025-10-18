@@ -56,24 +56,19 @@ export default function ArtisanRegisterPage() {
     const auth = getAuth();
     auth.languageCode = language;
 
-    // Ensure the reCAPTCHA container is only initialized once
-    if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible'
-      });
-    }
-    
-    const verifier = (window as any).recaptchaVerifier;
     const phoneNumber = `+91${mobileNumber}`;
 
     try {
-      const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-      setConfirmationResult(result);
-      setOtpSent(true);
-      toast({
-        title: t.otpSentToast,
-        description: t.otpSentToastDesc,
-      });
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible'
+        });
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: t.otpSentToast,
+            description: t.otpSentToastDesc,
+        });
     } catch (error: any) {
       console.error("signInWithPhoneNumber error:", error);
       toast({
@@ -81,10 +76,6 @@ export default function ArtisanRegisterPage() {
         title: "Error Sending OTP",
         description: error.message,
       });
-      // In case of error, you might want to reset the reCAPTCHA
-      if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-        verifier.render().then(grecaptcha.reset);
-      }
     } finally {
         setIsLoading(false);
     }
