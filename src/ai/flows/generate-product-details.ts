@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 import { productCategories } from '@/lib/data';
 import { translateText } from '@/services/translation-service';
 
