@@ -42,10 +42,9 @@ function AuthClientPageComponent() {
   
   useEffect(() => {
     if (recaptchaContainerRef.current && !verifierRef.current) {
-        const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        verifierRef.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
             'size': 'invisible'
         });
-        verifierRef.current = verifier;
     }
   }, [auth]);
 
