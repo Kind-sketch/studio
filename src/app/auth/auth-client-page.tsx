@@ -48,59 +48,6 @@ function AuthClientPageComponent() {
     setUserType(type);
   }, [searchParams]);
 
-  useEffect(() => {
-    const auth = getAuth();
-    auth.languageCode = language;
-
-    if (!(window as any).recaptchaVerifier) {
-        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'invisible',
-            'callback': (response: any) => {
-                 const { mobileNumber } = form.getValues();
-                 const phoneNumber = `+91${mobileNumber}`;
-
-                 signInWithPhoneNumber(auth, phoneNumber, verifier)
-                    .then((result) => {
-                        setConfirmationResult(result);
-                        setOtpSent(true);
-                        setIsLoading(false);
-                        toast({
-                            title: 'OTP Sent',
-                            description: 'An OTP has been sent to your mobile number.',
-                        });
-                    })
-                    .catch((error: any) => {
-                        console.error("signInWithPhoneNumber Error:", error);
-                        setIsLoading(false);
-                        toast({ variant: 'destructive', title: 'Error', description: error.message });
-                        verifier.render().then((widgetId) => {
-                            if (typeof grecaptcha !== 'undefined') {
-                                grecaptcha.reset(widgetId);
-                            }
-                        });
-                    });
-            },
-            'expired-callback': () => {
-                toast({
-                    variant: 'destructive',
-                    title: 'reCAPTCHA Expired',
-                    description: 'Please solve the reCAPTCHA again.',
-                });
-                setIsLoading(false);
-            }
-        });
-        (window as any).recaptchaVerifier = verifier;
-    }
-
-    return () => {
-        if ((window as any).recaptchaVerifier) {
-            (window as any).recaptchaVerifier.clear();
-            (window as any).recaptchaVerifier = null;
-        }
-    };
-  }, [language, toast, form]);
-
-
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
@@ -111,13 +58,35 @@ function AuthClientPageComponent() {
     }
 
     setIsLoading(true);
+    
+    const auth = getAuth();
+    auth.languageCode = language;
+
+    if (!(window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+        });
+    }
+
+    const verifier = (window as any).recaptchaVerifier;
+    const phoneNumber = `+91${mobileNumber}`;
+
     try {
-        const verifier = (window as any).recaptchaVerifier;
-        await verifier.verify();
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: 'OTP Sent',
+            description: 'An OTP has been sent to your mobile number.',
+        });
     } catch (error: any) {
-        console.error("reCAPTCHA verify error:", error);
-        setIsLoading(false);
+        console.error("signInWithPhoneNumber Error:", error);
         toast({ variant: 'destructive', title: 'Error', description: error.message });
+        if (typeof grecaptcha !== 'undefined') {
+            verifier.render().then(grecaptcha.reset);
+        }
+    } finally {
+        setIsLoading(false);
     }
   }
 

@@ -42,68 +42,6 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  useEffect(() => {
-    const auth = getAuth();
-    auth.languageCode = language;
-
-    // Ensure the verifier is only created once and cleaned up properly.
-    if (!(window as any).recaptchaVerifier) {
-      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // This callback is executed when reCAPTCHA is solved.
-          // We can now proceed with sending the OTP.
-          const { mobileNumber } = form.getValues();
-          const phoneNumber = `+91${mobileNumber}`;
-
-          signInWithPhoneNumber(auth, phoneNumber, verifier)
-            .then((result) => {
-              setConfirmationResult(result);
-              setOtpSent(true);
-              setIsLoading(false);
-              toast({
-                title: t.otpSentToast,
-                description: t.otpSentToastDesc,
-              });
-            })
-            .catch((error: any) => {
-              console.error("signInWithPhoneNumber error:", error);
-              setIsLoading(false);
-              toast({
-                variant: 'destructive',
-                title: "Error Sending OTP",
-                description: error.message,
-              });
-              // In case of error, you might want to reset the reCAPTCHA
-              verifier.render().then((widgetId) => {
-                  if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-                      grecaptcha.reset(widgetId);
-                  }
-              });
-            });
-        },
-        'expired-callback': () => {
-          toast({
-            variant: 'destructive',
-            title: 'reCAPTCHA Expired',
-            description: 'Please try sending the OTP again.',
-          });
-          setIsLoading(false);
-        }
-      });
-      (window as any).recaptchaVerifier = verifier;
-    }
-    
-    // Cleanup function to clear the verifier when the component unmounts
-    return () => {
-      if ((window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier.clear();
-        (window as any).recaptchaVerifier = null;
-      }
-    };
-  }, [language, t.otpSentToast, t.otpSentToastDesc, toast, form]);
-
-
   async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
@@ -115,18 +53,40 @@ export default function ArtisanRegisterPage() {
    
     setIsLoading(true);
     
-    try {
-      const verifier = (window as any).recaptchaVerifier;
-      // This will trigger the reCAPTCHA verification and then the callback.
-      await verifier.verify();
-    } catch (error: any) {
-      console.error("reCAPTCHA verify error:", error);
-      setIsLoading(false);
-      toast({
-          variant: 'destructive',
-          title: "reCAPTCHA Error",
-          description: error.message,
+    const auth = getAuth();
+    auth.languageCode = language;
+
+    // Ensure the reCAPTCHA container is only initialized once
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible'
       });
+    }
+    
+    const verifier = (window as any).recaptchaVerifier;
+    const phoneNumber = `+91${mobileNumber}`;
+
+    try {
+      const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+      setConfirmationResult(result);
+      setOtpSent(true);
+      toast({
+        title: t.otpSentToast,
+        description: t.otpSentToastDesc,
+      });
+    } catch (error: any) {
+      console.error("signInWithPhoneNumber error:", error);
+      toast({
+        variant: 'destructive',
+        title: "Error Sending OTP",
+        description: error.message,
+      });
+      // In case of error, you might want to reset the reCAPTCHA
+      if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+        verifier.render().then(grecaptcha.reset);
+      }
+    } finally {
+        setIsLoading(false);
     }
   }
 
