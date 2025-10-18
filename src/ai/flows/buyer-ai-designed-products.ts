@@ -6,6 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { translateText } from '@/services/translation-service';
 import { 
     type BuyerAiDesignedProductsInput, 
     type BuyerAiDesignedProductsOutput,
@@ -19,11 +20,25 @@ const generateProductImageFlow = ai.defineFlow(
     inputSchema: BuyerAiDesignedProductsInputSchema,
     outputSchema: BuyerAiDesignedProductsOutputSchema,
   },
-  async ({ prompt: userInput, style }) => {
+  async ({ prompt: userInput, style, language }) => {
+
+    let englishPrompt = userInput;
+
+    // Translate the prompt to English if it's not already.
+    if (language && language !== 'en' && userInput) {
+        const translationResponse = await translateText({
+            texts: [userInput],
+            targetLanguage: 'en',
+        });
+        if (translationResponse.translatedTexts.length > 0) {
+            englishPrompt = translationResponse.translatedTexts[0];
+        }
+    }
+
     // This call gets the specific Imagen model and generates a single image.
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${userInput}". The craft style is ${style}. The image should be well-lit, on a clean background, as if for an e-commerce product page.`,
+      prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${englishPrompt}". The craft style is ${style}. The image should be well-lit, on a clean background, as if for an e-commerce product page.`,
       config: {
         // We explicitly ask for one image.
         numberOfImages: 1,

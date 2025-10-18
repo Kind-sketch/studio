@@ -103,6 +103,7 @@ export default function CustomizePage() {
       const imageUrl = await buyerAiDesignedProducts({
         prompt: description,
         style: category,
+        language: language,
       });
       setGeneratedImage(imageUrl);
       toast({
