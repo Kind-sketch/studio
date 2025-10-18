@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import Reviews from '@/components/reviews';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/translation-context';
 
 
 export default function BuyerProductDetailPage() {
@@ -19,19 +20,8 @@ export default function BuyerProductDetailPage() {
   const { toast } = useToast();
   const productId = params.productId as string;
   const product = products.find(p => p.id === productId);
-  
-  // Fake translations - in a real app this would use the translation context
-  const [t, setT] = useState({
-    productNotFound: 'Product not found.',
-    backButton: 'Back',
-    artisanDetails: 'About the Artisan',
-    by: 'by',
-    description: 'Description',
-    story: 'The Story',
-    buyNowButton: 'Buy Now',
-    toastTitle: 'Added to Cart!',
-    toastDescription: '{productName} has been added to your cart.',
-  });
+  const { translations } = useTranslation();
+  const t = translations.buyer_product_page;
 
   if (!product) {
     return <div className="p-4 text-center">{t.productNotFound}</div>;

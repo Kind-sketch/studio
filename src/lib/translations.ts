@@ -344,6 +344,17 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
         allProductsTitle: 'All Products',
         allCategories: 'All',
     },
+    buyer_product_page: {
+      productNotFound: 'Product not found.',
+      backButton: 'Back',
+      artisanDetails: 'About the Artisan',
+      by: 'by',
+      description: 'Description',
+      story: 'The Story',
+      buyNowButton: 'Buy Now',
+      toastTitle: 'Added to Cart!',
+      toastDescription: '{productName} has been added to your cart.',
+    },
     language_selection_page: {
         title: 'Choose Your Language',
     },
@@ -803,6 +814,17 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
       allProductsTitle: "அனைத்து தயாரிப்புகளும்",
       allCategories: "அனைத்தும்",
     },
+    buyer_product_page: {
+      productNotFound: 'தயாரிப்பு கிடைக்கவில்லை.',
+      backButton: 'பின்னால்',
+      artisanDetails: 'கைவினைஞர் பற்றி',
+      by: 'வழங்கியவர்',
+      description: 'விளக்கம்',
+      story: 'கதை',
+      buyNowButton: 'இப்போதே வாங்கு',
+      toastTitle: 'வண்டியில் சேர்க்கப்பட்டது!',
+      toastDescription: '{productName} உங்கள் வண்டியில் சேர்க்கப்பட்டது.',
+    },
     language_selection_page: {
         title: "உங்கள் மொழியைத் தேர்வுசெய்க",
     },
@@ -920,6 +942,3 @@ sponsorshipTerminatedToast: 'Sponsorship Terminated',
     ],
   },
 };
-
-    
-    
