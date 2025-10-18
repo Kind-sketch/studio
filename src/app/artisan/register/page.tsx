@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
@@ -33,6 +33,18 @@ export default function ArtisanRegisterPage() {
   const { language } = useLanguage();
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const verifierRef = useRef<RecaptchaVerifier | null>(null);
+  const auth = getAuth();
+
+  useEffect(() => {
+    if (recaptchaContainerRef.current && !verifierRef.current) {
+        const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+            'size': 'invisible'
+        });
+        verifierRef.current = verifier;
+    }
+  }, [auth]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,16 +65,15 @@ export default function ArtisanRegisterPage() {
    
     setIsLoading(true);
     
-    const auth = getAuth();
     auth.languageCode = language;
 
     const phoneNumber = `+91${mobileNumber}`;
 
     try {
-        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'invisible'
-        });
-        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+        if (!verifierRef.current) {
+            throw new Error("RecaptchaVerifier not initialized.");
+        }
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifierRef.current);
         setConfirmationResult(result);
         setOtpSent(true);
         toast({
@@ -185,7 +196,7 @@ export default function ArtisanRegisterPage() {
           </form>
         </Form>
         <CardFooter className="flex flex-col justify-center text-xs text-muted-foreground">
-          <div id="recaptcha-container" className="my-2"></div>
+          <div ref={recaptchaContainerRef} className="my-2"></div>
           <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>
