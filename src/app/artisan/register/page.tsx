@@ -156,7 +156,10 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                         <FormLabel>{t.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm" />
+                        <div className="flex items-center">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">+91</span>
+                          <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm rounded-l-none" />
+                        </div>
                         </FormControl>
                         <FormMessage />
                     </FormItem>

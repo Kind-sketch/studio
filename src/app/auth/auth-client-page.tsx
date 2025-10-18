@@ -150,7 +150,12 @@ function AuthClientPageComponent() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t.mobileLabel}</FormLabel>
-                    <FormControl><Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} /></FormControl>
+                    <FormControl>
+                      <div className="flex items-center">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">+91</span>
+                          <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="rounded-l-none" />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
