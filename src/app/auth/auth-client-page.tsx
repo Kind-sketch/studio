@@ -37,17 +37,8 @@ function AuthClientPageComponent() {
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
-  const verifierRef = useRef<RecaptchaVerifier | null>(null);
   const auth = getAuth();
   
-  useEffect(() => {
-    if (recaptchaContainerRef.current && !verifierRef.current) {
-        verifierRef.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-            'size': 'invisible'
-        });
-    }
-  }, [auth]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { mobileNumber: '', otp: '' },
@@ -69,16 +60,22 @@ function AuthClientPageComponent() {
     }
 
     setIsLoading(true);
-    
     auth.languageCode = language;
-
     const phoneNumber = `+91${mobileNumber}`;
 
     try {
-        if (!verifierRef.current) {
-            throw new Error("RecaptchaVerifier not initialized.");
+        if (!recaptchaContainerRef.current) {
+            throw new Error("reCAPTCHA container not found.");
         }
-        const result = await signInWithPhoneNumber(auth, phoneNumber, verifierRef.current);
+
+        // Ensure the container is empty before creating a new verifier
+        recaptchaContainerRef.current.innerHTML = '';
+        
+        const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+            'size': 'invisible'
+        });
+
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
         setConfirmationResult(result);
         setOtpSent(true);
         toast({
