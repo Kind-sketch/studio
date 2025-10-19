@@ -12,6 +12,20 @@ import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import Reviews from '@/components/reviews';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/context/translation-context';
+import type { Product } from '@/lib/types';
+
+type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
+interface MyOrder extends Product {
+  quantity: number;
+  status: OrderStatus;
+  orderDate: string;
+  expectedDelivery: string;
+}
+
+interface OrderRequest extends Product {
+    quantity: number;
+    buyerName: string;
+}
 
 
 export default function BuyerProductDetailPage() {
@@ -28,6 +42,26 @@ export default function BuyerProductDetailPage() {
   }
 
   const handleBuyNow = () => {
+    // Add to buyer's orders
+    const buyerOrders = JSON.parse(localStorage.getItem('buyerOrders') || '[]');
+    const newBuyerOrder = {
+        ...product,
+        orderDate: new Date().toISOString(),
+        status: 'Processing',
+        quantity: 1
+    };
+    localStorage.setItem('buyerOrders', JSON.stringify([newBuyerOrder, ...buyerOrders]));
+    
+    // Add to artisan's order requests
+    const orderRequests = JSON.parse(localStorage.getItem('orderRequests') || '[]');
+     const newRequest: OrderRequest = {
+        ...product,
+        quantity: 1,
+        buyerName: "Valued Customer" // In a real app, this would be the buyer's name
+    };
+    localStorage.setItem('orderRequests', JSON.stringify([newRequest, ...orderRequests]));
+
+
     toast({
       title: t.toastTitle,
       description: t.toastDescription.replace('{productName}', product.name),
