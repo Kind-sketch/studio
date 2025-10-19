@@ -106,7 +106,7 @@ export default function StatisticsPage() {
     } else {
       setCurrentOpenDialog(null);
       setAiReview(null);
-       if (audioRef.current) {
+       if (audioRef.current && aiReview) {
         audioRef.current.pause();
         setIsPlaying(false);
       }
