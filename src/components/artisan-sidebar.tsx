@@ -58,8 +58,8 @@ export function HeaderActions() {
     const { language } = useLanguage();
     const router = useRouter();
     const { toast } = useToast();
-    const t = translations.artisan_sidebar.notifications;
-    const t_logout = translations.artisan_sidebar;
+    const t_notifications = translations.artisan_sidebar.notifications;
+    const t_sidebar = translations.artisan_sidebar;
     const auth = getAuth();
     
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -83,8 +83,8 @@ export function HeaderActions() {
         try {
             await signOut(auth);
             toast({
-                title: t_logout.logoutToastTitle,
-                description: t_logout.logoutToastDesc
+                title: t_sidebar.logoutToastTitle,
+                description: t_sidebar.logoutToastDesc
             });
             router.push('/language-selection');
         } catch (error) {
@@ -95,7 +95,7 @@ export function HeaderActions() {
                 description: "An error occurred while logging out."
             });
         }
-    }, [auth, router, toast, t_logout]);
+    }, [auth, router, toast, t_sidebar]);
 
     // Setup speech recognition only once.
     useEffect(() => {
@@ -124,14 +124,14 @@ export function HeaderActions() {
             if (event.error === 'network') {
                 toast({
                 variant: 'destructive',
-                title: 'Voice Service Unavailable',
-                description: 'Please check your network connection.',
+                title: t_sidebar.voiceNetworkErrorTitle,
+                description: t_sidebar.voiceNetworkErrorDesc,
                 });
             } else {
                 toast({
                 variant: 'destructive',
-                title: 'Voice Error',
-                description: 'Could not recognize your voice. Please check microphone permissions.',
+                title: t_sidebar.voiceErrorTitle,
+                description: t_sidebar.voiceErrorDesc,
                 });
             }
             setIsListening(false);
@@ -144,7 +144,7 @@ export function HeaderActions() {
 
         recognitionRef.current = recognition;
 
-    }, [toast]);
+    }, [toast, t_sidebar]);
 
     useEffect(() => {
         if (!spokenCommand) {
@@ -152,7 +152,7 @@ export function HeaderActions() {
         }
 
         const processCommand = async () => {
-            toast({ title: 'Heard you say:', description: `"${spokenCommand}"` });
+            toast({ title: t_sidebar.voiceHeard, description: `"${spokenCommand}"` });
             
             try {
                 const recognition = recognitionRef.current;
@@ -160,19 +160,19 @@ export function HeaderActions() {
                 
                 if (page && page !== 'unknown') {
                     if (page === 'logout') {
-                        toast({ title: 'Logging out...', description: 'You will be signed out.' });
+                        toast({ title: t_sidebar.loggingOut, description: t_sidebar.willBeSignedOut });
                         await handleLogout();
                     } else {
                         const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
-                        toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
+                        toast({ title: t_sidebar.navigating, description: t_sidebar.navigatingTo.replace('{page}', page.replace(/-/g, ' '))});
                         router.push(path);
                     }
                 } else {
-                    toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
+                    toast({ variant: 'destructive', title: t_sidebar.navFailed, description: t_sidebar.navFailedDesc });
                 }
             } catch (error) {
                 console.error('AI navigation error:', error);
-                toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
+                toast({ variant: 'destructive', title: t_sidebar.aiError, description: t_sidebar.aiErrorDesc });
             } finally {
                 setSpokenCommand(null); // Reset command after processing
             }
@@ -238,20 +238,20 @@ export function HeaderActions() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-80">
-                    <DropdownMenuLabel>{t.title}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t_notifications.title}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {notifications.length > 0 ? (
                         notifications.map((n) => (
                             <DropdownMenuItem key={n.id} onClick={() => markAsRead(n.id)} className={cn("flex items-start gap-2", !n.read && "bg-accent/50")}>
                                 {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
                                 <div className={cn(!n.read && 'pl-1')}>
-                                    <p className="font-semibold">{t[n.titleKey]}</p>
-                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t[n.descriptionKey], n.descriptionParams)}</p>
+                                    <p className="font-semibold">{t_notifications[n.titleKey]}</p>
+                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t_notifications[n.descriptionKey], n.descriptionParams)}</p>
                                 </div>
                             </DropdownMenuItem>
                         ))
                     ) : (
-                        <p className="p-4 text-center text-sm text-muted-foreground">{t.noNotifications}</p>
+                        <p className="p-4 text-center text-sm text-muted-foreground">{t_notifications.noNotifications}</p>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -422,3 +422,5 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
+
+    
