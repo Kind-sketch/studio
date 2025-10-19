@@ -95,7 +95,7 @@ export function HeaderActions() {
                 description: "An error occurred while logging out."
             });
         }
-    }, [auth, router, toast, t_sidebar]);
+    }, [auth, router, toast, t_sidebar.logoutToastDesc, t_sidebar.logoutToastTitle]);
 
     // Setup speech recognition only once.
     useEffect(() => {
@@ -120,7 +120,6 @@ export function HeaderActions() {
                 console.log('Speech recognition aborted or no speech detected.');
                 return; 
             }
-            console.error('Speech recognition error:', event.error);
             if (event.error === 'network') {
                 toast({
                 variant: 'destructive',
@@ -144,7 +143,7 @@ export function HeaderActions() {
 
         recognitionRef.current = recognition;
 
-    }, [toast, t_sidebar]);
+    }, [toast, t_sidebar.voiceErrorDesc, t_sidebar.voiceErrorTitle, t_sidebar.voiceNetworkErrorDesc, t_sidebar.voiceNetworkErrorTitle]);
 
     useEffect(() => {
         if (!spokenCommand) {
@@ -422,5 +421,3 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         </div>
     );
 }
-
-    
