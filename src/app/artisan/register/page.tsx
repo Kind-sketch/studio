@@ -108,8 +108,8 @@ export default function ArtisanRegisterPage() {
       const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime);
 
       toast({
-        title: isNewUser ? t.welcomeBackToast : t.welcomeBackToast,
-        description: isNewUser ? 'Your account has been created.' : t.welcomeBackToastDesc,
+        title: isNewUser ? t.welcomeToast : t.welcomeBackToast,
+        description: isNewUser ? t.accountCreatedDesc : t.welcomeBackToastDesc,
       });
       
       if (isNewUser) {
@@ -121,11 +121,19 @@ export default function ArtisanRegisterPage() {
 
     } catch (error: any) {
         console.error("OTP verification error:", error);
-        toast({
-            variant: 'destructive',
-            title: t.invalidOtpToast,
-            description: error.message || t.invalidOtpToastDesc,
-        });
+        if (error.code === 'auth/code-expired') {
+             toast({
+                variant: 'destructive',
+                title: t.otpExpiredToast,
+                description: t.otpExpiredToastDesc,
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: t.invalidOtpToast,
+                description: error.message || t.invalidOtpToastDesc,
+            });
+        }
     } finally {
         setIsLoading(false);
     }
