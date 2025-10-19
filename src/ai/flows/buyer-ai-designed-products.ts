@@ -13,6 +13,7 @@ import {
     BuyerAiDesignedProductsInputSchema,
     BuyerAiDesignedProductsOutputSchema
 } from './buyer-ai-designed-products-types';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const generateProductImageFlow = ai.defineFlow(
   {
@@ -37,7 +38,7 @@ const generateProductImageFlow = ai.defineFlow(
 
     // This call gets the specific Imagen model and generates a single image.
     const { media } = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
+      model: googleAI.model('imagen-4.0-ultra-generate-001'),
       prompt: `A single, photorealistic image of a handmade artisan craft. The product should be: "${englishPrompt}". The craft style is ${style}. The image should be well-lit, on a clean background, as if for an e-commerce product page.`,
       config: {
         // We explicitly ask for one image.
