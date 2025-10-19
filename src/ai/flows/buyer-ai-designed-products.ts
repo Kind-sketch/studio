@@ -30,7 +30,7 @@ const generateProductImageFlow = ai.defineFlow(
             texts: [userInput],
             targetLanguage: 'en',
         });
-        if (translationResponse.translatedTexts.length > 0) {
+        if (translationResponse.translatedTexts.length > 0 && translationResponse.translatedTexts[0]) {
             englishPrompt = translationResponse.translatedTexts[0];
         }
     }
