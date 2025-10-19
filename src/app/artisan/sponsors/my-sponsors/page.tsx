@@ -79,7 +79,7 @@ export default function MySponsorsPage() {
                 </p>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
-              <CardContent className="flex gap-2">
+              <CardContent className="flex flex-col gap-2">
                  <Button onClick={() => handleChat(sponsor.name)} variant="outline" className="w-full">
                     <MessageCircle className="mr-2 h-4 w-4" /> {t.chatButton}
                 </Button>
