@@ -394,7 +394,7 @@ export default function AddProductPage() {
                 <DialogContent className="max-w-full w-full h-full max-h-full p-0 flex flex-col">
                     <div className="relative p-4 border-b">
                         <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
-                         <DialogClose className="absolute right-2 top-1/2 -translate-y-1/2">
+                         <DialogClose asChild className="absolute right-2 top-1/2 -translate-y-1/2">
                             <Button variant="ghost" size="icon">
                                 <ChevronLeft className="h-6 w-6" />
                             </Button>
@@ -416,3 +416,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
