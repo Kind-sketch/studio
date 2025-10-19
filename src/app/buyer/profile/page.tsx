@@ -22,7 +22,7 @@ export default function BuyerProfilePage() {
         title: 'Logged Out',
         description: 'You have been successfully logged out.',
       });
-      router.push('/role-selection');
+      router.push('/language-selection');
     } catch (error) {
       console.error('Logout Error:', error);
       toast({

@@ -86,7 +86,7 @@ export function HeaderActions() {
                 title: t_logout.logoutToastTitle,
                 description: t_logout.logoutToastDesc
             });
-            router.push('/role-selection');
+            router.push('/language-selection');
         } catch (error) {
             console.error("Logout failed", error);
             toast({
@@ -328,7 +328,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                 title: t.logoutToastTitle,
                 description: t.logoutToastDesc
             });
-            router.push('/role-selection');
+            router.push('/language-selection');
         } catch (error) {
             console.error("Logout failed", error);
             toast({

@@ -55,7 +55,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
                 title: "Logged Out",
                 description: "You have been successfully logged out."
             });
-            router.push('/role-selection');
+            router.push('/language-selection');
         } catch (error) {
              console.error("Logout failed", error);
             toast({
