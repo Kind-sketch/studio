@@ -32,7 +32,7 @@ export default function ArtisanDashboard() {
   const t = translations.artisan_dashboard;
   
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2 sm:p-4">
       <header className="mb-6">
         <h1 className="font-headline text-2xl font-bold">{t.welcome}</h1>
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>
