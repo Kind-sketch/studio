@@ -187,6 +187,7 @@ export const languages: Language[] = [
     { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
     { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
     { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
+    { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
 ];
 
 export const statsData = {
