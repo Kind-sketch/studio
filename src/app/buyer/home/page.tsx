@@ -48,8 +48,8 @@ export default function BuyerHomePage() {
                                     <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
                                     <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <h3 className="font-semibold font-headline truncate">{artisan.name}</h3>
-                                <p className="text-xs text-muted-foreground truncate">{artisan.crafts?.join(', ')}</p>
+                                <h3 className="font-semibold font-headline">{artisan.name}</h3>
+                                <p className="text-xs text-muted-foreground">{artisan.crafts?.join(', ')}</p>
                              </CardContent>
                          </Card>
                     </CarouselItem>
