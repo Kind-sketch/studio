@@ -179,7 +179,7 @@ export default function ArtisanHomePage() {
         {/* Frequently Bought Products */}
         <div className="overflow-hidden">
             <section className="space-y-3">
-                <h3 className="font-headline text-lg font-semibold">Frequently Bought Products</h3>
+                <h3 className="font-headline text-lg font-semibold">{t.frequentlyBought}</h3>
                 <Carousel
                     opts={{ align: 'start', loop: true }}
                     plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
