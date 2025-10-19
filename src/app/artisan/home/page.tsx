@@ -101,6 +101,7 @@ export default function ArtisanHomePage() {
       const response = await getCommunityTrendInsights({
         artisanId: CURRENT_ARTISAN_ID,
         productDescription: values.productDescription,
+        language: language,
       });
       setResult(response);
       toast({
@@ -302,3 +303,4 @@ export default function ArtisanHomePage() {
 
 
     
+
