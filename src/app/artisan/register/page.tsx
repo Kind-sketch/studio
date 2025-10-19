@@ -108,8 +108,8 @@ export default function ArtisanRegisterPage() {
       const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime);
 
       toast({
-        title: isNewUser ? 'Welcome!' : 'Welcome Back!',
-        description: isNewUser ? 'Your account has been created.' : 'You have successfully logged in.',
+        title: isNewUser ? t.welcomeBackToast : t.welcomeBackToast,
+        description: isNewUser ? 'Your account has been created.' : t.welcomeBackToastDesc,
       });
       
       if (isNewUser) {
