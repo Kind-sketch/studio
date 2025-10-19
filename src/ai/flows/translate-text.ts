@@ -21,12 +21,14 @@ const translateTextPrompt = ai.definePrompt({
     output: { schema: TranslateTextOutputSchema },
     prompt: `Translate the following array of strings from their original language to the target language with code '{{targetLanguage}}'. 
     
-    Return a JSON object with a single key "translatedTexts" that contains an array of the translated strings. The order of the translated strings in the array must exactly match the order of the original strings.
+Return a JSON object with a single key "translatedTexts" that contains an array of the translated strings. The order of the translated strings in the array must exactly match the order of the original strings.
+
+Original Texts:
+{{#each texts}}
+- "{{this}}"
+{{/each}}
     
-    Original Texts:
-    {{jsonStringify texts}}
-    
-    Your response MUST be a valid JSON object.
+Your response MUST be a valid JSON object.
     `,
 });
 
