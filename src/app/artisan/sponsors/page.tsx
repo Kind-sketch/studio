@@ -142,7 +142,7 @@ export default function SponsorsPage() {
               <CardContent>
                 <p className="text-sm text-muted-foreground italic">"{request.message}"</p>
               </CardContent>
-              <CardContent className="flex gap-2">
+              <CardContent className="flex flex-col gap-2">
                 <Button onClick={() => handleAccept(request.id)} className="w-full">
                   <Check className="mr-2 h-4 w-4" /> {t.acceptButton}
                 </Button>
