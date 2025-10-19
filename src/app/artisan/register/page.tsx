@@ -105,11 +105,11 @@ export default function ArtisanRegisterPage() {
       const result = await confirmationResult.confirm(values.otp);
       const user = result.user;
       
-      const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime) || (values.mobileNumber === '8438610450');
+      const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime);
 
       toast({
-        title: isNewUser ? 'Account Created!' : t.welcomeBackToast,
-        description: t.welcomeBackToastDesc,
+        title: isNewUser ? 'Welcome!' : 'Welcome Back!',
+        description: isNewUser ? 'Your account has been created.' : 'You have successfully logged in.',
       });
       
       if (isNewUser) {
