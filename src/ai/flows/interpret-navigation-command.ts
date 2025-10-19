@@ -15,7 +15,7 @@ import { z } from 'genkit';
 const pageSlugs = [
   'home', 'my-products', 'saved-collection', 'dashboard', 'orders', 
   'sponsors', 'sponsors/requests', 'sponsors/my-sponsors', 'profile', 'add-product',
-  'statistics'
+  'statistics', 'logout'
 ] as const;
 
 const InterpretNavCommandInputSchema = z.object({
@@ -57,6 +57,7 @@ Here are the available pages and keywords associated with them:
 - 'sponsors/requests': Sponsor requests, new sponsors, people who want to donate, funding requests.
 - 'sponsors/my-sponsors': My current sponsors, existing partnerships.
 - 'profile': My account, my details, edit profile.
+- 'logout': Logout, sign out, close the app, exit.
 
 Analyze the user's command, considering synonyms and context. For example, if the user says "I want to see people who want to give me money for my art", you should map this to 'sponsors/requests'. If they say "புதிய ஸ்பான்சர்களைப் பார்க்க வேண்டும்" (I want to see new sponsors) in Tamil, it should also map to 'sponsors/requests'. If they say "show my performance", it should map to 'statistics'. If the command is unclear, return 'unknown'.
 

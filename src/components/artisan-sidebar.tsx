@@ -59,6 +59,8 @@ export function HeaderActions() {
     const router = useRouter();
     const { toast } = useToast();
     const t = translations.artisan_sidebar.notifications;
+    const t_logout = translations.artisan_sidebar;
+    const auth = getAuth();
     
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
@@ -76,6 +78,24 @@ export function HeaderActions() {
         ];
         setNotifications(mockNotifications);
     }, []);
+
+    const handleLogout = useCallback(async () => {
+        try {
+            await signOut(auth);
+            toast({
+                title: t_logout.logoutToastTitle,
+                description: t_logout.logoutToastDesc
+            });
+            router.push('/role-selection');
+        } catch (error) {
+            console.error("Logout failed", error);
+            toast({
+                variant: 'destructive',
+                title: "Logout Failed",
+                description: "An error occurred while logging out."
+            });
+        }
+    }, [auth, router, toast, t_logout]);
 
     // Setup speech recognition only once.
     useEffect(() => {
@@ -139,9 +159,14 @@ export function HeaderActions() {
                 const { page } = await interpretNavCommand({ command: spokenCommand, language: recognition.lang });
                 
                 if (page && page !== 'unknown') {
-                    const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
-                    toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
-                    router.push(path);
+                    if (page === 'logout') {
+                        toast({ title: 'Logging out...', description: 'You will be signed out.' });
+                        await handleLogout();
+                    } else {
+                        const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
+                        toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
+                        router.push(path);
+                    }
                 } else {
                     toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
                 }
@@ -155,7 +180,7 @@ export function HeaderActions() {
 
         processCommand();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [spokenCommand, router]);
+    }, [spokenCommand, router, handleLogout]);
 
     const toggleListening = useCallback(() => {
         const recognition = recognitionRef.current;
