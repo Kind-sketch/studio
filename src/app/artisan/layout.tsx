@@ -28,7 +28,7 @@ export default function ArtisanLayout({
         <ArtisanSidebar />
       </div>
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
+        <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button
@@ -44,8 +44,9 @@ export default function ArtisanLayout({
                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1 md:hidden" />
-          <HeaderActions />
+          <div className="md:hidden">
+            <HeaderActions />
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto bg-muted/40 relative">
           {children}
