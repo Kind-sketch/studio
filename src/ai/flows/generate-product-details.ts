@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow that generates product details from an image.
@@ -75,9 +76,10 @@ const generateProductDetailsFlow = ai.defineFlow(
       });
 
       if (translatedTexts.length === 3) {
+        // Return the translated output.
         return {
           productName: translatedTexts[0],
-          productCategory: output.productCategory,
+          productCategory: output.productCategory, // Category is not translated
           productStory: translatedTexts[1],
           productDescription: translatedTexts[2],
         };
