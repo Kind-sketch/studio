@@ -226,8 +226,8 @@ export default function SponsorsPage() {
         <p className="text-muted-foreground">{t.description}</p>
       </header>
 
-      <Tabs defaultValue="requests" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="requests" className="w-full" orientation="vertical">
+        <TabsList className="grid w-full grid-cols-1 h-auto">
           <TabsTrigger value="requests">{t.requestsTab}</TabsTrigger>
           <TabsTrigger value="my-sponsors">{t.mySponsorsTab}</TabsTrigger>
         </TabsList>
