@@ -296,56 +296,58 @@ export default function AddProductPage() {
         </CardHeader>
 
         <CardContent>
-          <div className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
-            {useCamera ? (
-              <>
-                <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-                
-                {hasCameraPermission === false && (
-                  <div className="absolute inset-0 flex items-center justify-center p-4">
-                    <Alert variant="destructive">
-                      <AlertTitle>{t.cameraAccessRequired}</AlertTitle>
-                      <AlertDescription>{t.cameraAccessDescription}</AlertDescription>
-                    </Alert>
-                  </div>
+          <div className="space-y-2">
+            <div className="flex justify-end">
+                {imageData && (
+                    <Button
+                        onClick={handleEnhanceImage}
+                        disabled={isEnhancing}
+                        size="sm"
+                        className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400"
+                    >
+                        {isEnhancing ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Enhancing...
+                        </>
+                        ) : (
+                        <>
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            Enhance
+                        </>
+                        )}
+                    </Button>
                 )}
-              </>
-            ) : imagePreview ? (
-              <div className="relative w-full h-full">
-                <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-muted-foreground">
-                <Upload className="w-8 h-8 mb-2" />
-                <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
-              </div>
-            )}
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
-          <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
-        </CardContent>
-
-        {imageData && (
-          <CardContent>
-              <Button
-                onClick={handleEnhanceImage}
-                disabled={isEnhancing}
-                className="w-full bg-yellow-300 text-yellow-900 hover:bg-yellow-400"
-              >
-                {isEnhancing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enhancing...
-                  </>
+            </div>
+            <div className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
+                {useCamera ? (
+                <>
+                    <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
+                    
+                    {hasCameraPermission === false && (
+                    <div className="absolute inset-0 flex items-center justify-center p-4">
+                        <Alert variant="destructive">
+                        <AlertTitle>{t.cameraAccessRequired}</AlertTitle>
+                        <AlertDescription>{t.cameraAccessDescription}</AlertDescription>
+                        </Alert>
+                    </div>
+                    )}
+                </>
+                ) : imagePreview ? (
+                <div className="relative w-full h-full">
+                    <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
+                </div>
                 ) : (
-                  <>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    Enhance
-                  </>
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <Upload className="w-8 h-8 mb-2" />
+                    <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
+                </div>
                 )}
-              </Button>
-          </CardContent>
-        )}
+                <canvas ref={canvasRef} className="hidden" />
+            </div>
+            <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
+          </div>
+        </CardContent>
 
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {useCamera && stream ? (
@@ -458,5 +460,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    
