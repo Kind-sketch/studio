@@ -141,9 +141,11 @@ export default function AddProductPage() {
 
     setIsEnhancing(true);
     try {
-      const result = await enhanceProductImage({ photoDataUri: imageData });
-      setImagePreview(result);
-      setImageData(result);
+      const firstPassResult = await enhanceProductImage({ photoDataUri: imageData });
+      const secondPassResult = await enhanceProductImage({ photoDataUri: firstPassResult });
+      
+      setImagePreview(secondPassResult);
+      setImageData(secondPassResult);
       toast({
         title: 'Image Enhanced!',
         description: 'The product image has been improved by AI.',
@@ -297,7 +299,7 @@ export default function AddProductPage() {
 
         <CardContent>
           <div className="space-y-2">
-            <div className="flex justify-end">
+             <div className="flex justify-end">
                 {imageData && (
                     <Button
                         onClick={handleEnhanceImage}
