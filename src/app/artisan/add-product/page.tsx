@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { generateProductDetails } from '@/ai/flows/generate-product-details';
+import { enhanceProductImage } from '@/ai/flows/enhance-product-image';
 import { productCategories as baseProductCategories, artisans } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import ProductPreview from '@/components/product-preview';
@@ -20,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye } from 'lucide-react';
+import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye, Wand2 } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import ProductCard from '@/components/product-card';
@@ -45,6 +46,7 @@ export default function AddProductPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -110,23 +112,10 @@ export default function AddProductPage() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = canvasRef.current;
-          if (canvas) {
-            const context = canvas.getContext('2d');
-            if (context) {
-              canvas.width = img.width;
-              canvas.height = img.height;
-              context.drawImage(img, 0, 0);
-              const dataUrl = canvas.toDataURL('image/png');
-              setImagePreview(dataUrl);
-              setImageData(dataUrl);
-              stopCamera();
-            }
-          }
-        };
-        img.src = e.target?.result as string;
+        const dataUrl = e.target?.result as string;
+        setImagePreview(dataUrl);
+        setImageData(dataUrl);
+        stopCamera();
       };
       reader.readAsDataURL(file);
     }
@@ -139,6 +128,37 @@ export default function AddProductPage() {
     setStream(null);
     setUseCamera(false);
   }
+
+  const handleEnhanceImage = async () => {
+    if (!imageData) {
+      toast({
+        variant: 'destructive',
+        title: 'No Image',
+        description: 'Please upload an image before enhancing.',
+      });
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const result = await enhanceProductImage({ photoDataUri: imageData });
+      setImagePreview(result);
+      setImageData(result);
+      toast({
+        title: 'Image Enhanced!',
+        description: 'The product image has been improved by AI.',
+      });
+    } catch (error) {
+      console.error('Enhancement failed:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Enhancement Failed',
+        description: 'Could not enhance the image at this time.',
+      });
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
 
   const handleGenerateDetails = async () => {
     if (!imageData) {
@@ -293,6 +313,15 @@ export default function AddProductPage() {
             ) : imagePreview ? (
               <div className="relative w-full h-full">
                 <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
+                <Button 
+                  size="sm" 
+                  onClick={handleEnhanceImage} 
+                  disabled={isEnhancing}
+                  className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70"
+                >
+                  {isEnhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                  <span className="ml-2 hidden sm:inline">{isEnhancing ? 'Enhancing...' : 'Enhance'}</span>
+                </Button>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -416,5 +445,3 @@ export default function AddProductPage() {
     </div>
   );
 }
-
-    

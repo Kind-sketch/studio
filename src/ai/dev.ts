@@ -20,5 +20,6 @@ import '@/ai/flows/buyer-ai-designed-products.ts';
 import '@/ai/flows/interpret-navigation-command.ts';
 import '@/ai/flows/community-trend-insights.ts';
 import '@/ai/flows/generate-product-image-from-reference.ts';
+import '@/ai/flows/enhance-product-image.ts';
 
 
