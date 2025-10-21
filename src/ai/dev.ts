@@ -21,5 +21,3 @@ import '@/ai/flows/interpret-navigation-command.ts';
 import '@/ai/flows/community-trend-insights.ts';
 import '@/ai/flows/generate-product-image-from-reference.ts';
 import '@/ai/flows/enhance-product-image.ts';
-
-
