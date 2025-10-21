@@ -313,15 +313,6 @@ export default function AddProductPage() {
             ) : imagePreview ? (
               <div className="relative w-full h-full">
                 <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
-                <Button 
-                  size="sm" 
-                  onClick={handleEnhanceImage} 
-                  disabled={isEnhancing}
-                  className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70"
-                >
-                  {isEnhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                  <span className="ml-2 hidden sm:inline">{isEnhancing ? 'Enhancing...' : 'Enhance'}</span>
-                </Button>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -333,6 +324,28 @@ export default function AddProductPage() {
           </div>
           <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
         </CardContent>
+
+        {imageData && (
+          <CardContent>
+              <Button
+                onClick={handleEnhanceImage}
+                disabled={isEnhancing}
+                className="w-full bg-yellow-300 text-yellow-900 hover:bg-yellow-400"
+              >
+                {isEnhancing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enhancing...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Enhance
+                  </>
+                )}
+              </Button>
+          </CardContent>
+        )}
 
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {useCamera && stream ? (
@@ -445,3 +458,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
