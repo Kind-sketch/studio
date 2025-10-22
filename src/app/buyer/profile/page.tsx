@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { getAuth, signOut } from 'firebase/auth';
-import { LogOut, User, ShoppingBag } from 'lucide-react';
+import { LogOut, User, ShoppingBag, ChevronLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/firebase';
 import type { Product } from '@/lib/types';
@@ -52,6 +51,10 @@ export default function BuyerProfilePage() {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
+      <Button onClick={() => router.back()} variant="ghost" className="mb-4">
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
       <Card className="w-full shadow-lg mb-6">
         <CardHeader>
           <CardTitle className="font-headline text-2xl md:text-3xl">My Profile</CardTitle>
