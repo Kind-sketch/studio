@@ -32,25 +32,24 @@ export default function ArtisanLayout({
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
-           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className={cn(
-                  "shrink-0 md:hidden",
-                  isAddProductPage && "invisible"
-                )}
-              >
-                <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
-               <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
-          <div className="md:hidden">
+          {!isAddProductPage && (
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 md:hidden"
+                >
+                  <PanelLeft className="h-5 w-5" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
+                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+              </SheetContent>
+            </Sheet>
+          )}
+          <div className={cn("md:hidden", !isAddProductPage && "ml-auto")}>
             <HeaderActions />
           </div>
         </header>
