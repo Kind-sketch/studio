@@ -437,10 +437,10 @@ export default function AddProductPage() {
                     {t.previewButton}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-full h-full max-h-screen p-0 m-0 overflow-y-auto">
+                <DialogContent className="max-w-sm w-full h-full max-h-screen p-0 m-0 overflow-y-auto flex flex-col">
                     <div className="relative p-4 border-b">
                         <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
-                         <DialogClose asChild className="absolute right-2 top-1/2 -translate-y-1/2">
+                         <DialogClose asChild className="absolute left-2 top-1/2 -translate-y-1/2">
                             <Button variant="ghost" size="icon">
                                 <ChevronLeft className="h-6 w-6" />
                             </Button>
@@ -462,3 +462,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
