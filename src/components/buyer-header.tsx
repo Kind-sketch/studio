@@ -19,7 +19,7 @@ export default function BuyerHeader() {
       </div>
       <Link href="/buyer/customize" passHref>
         <Button variant="ghost" size="icon">
-          <Sparkles className="h-5 w-5" />
+          <Sparkles className="h-5 w-5 text-primary" />
           <span className="sr-only">Customize</span>
         </Button>
       </Link>
