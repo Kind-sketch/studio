@@ -49,7 +49,7 @@ export default function ArtisanLayout({
               </SheetContent>
             </Sheet>
           )}
-          <div className={cn("md:hidden", !isAddProductPage && "ml-auto")}>
+          <div className={cn("ml-auto md:hidden", isAddProductPage && "w-full")}>
             <HeaderActions />
           </div>
         </header>
