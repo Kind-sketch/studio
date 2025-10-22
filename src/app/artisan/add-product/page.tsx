@@ -437,7 +437,7 @@ export default function AddProductPage() {
                     {t.previewButton}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-full w-full h-full max-h-full p-0 flex flex-col">
+                <DialogContent className="w-full h-full max-h-screen p-0 m-0 overflow-y-auto">
                     <div className="relative p-4 border-b">
                         <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
                          <DialogClose asChild className="absolute right-2 top-1/2 -translate-y-1/2">
