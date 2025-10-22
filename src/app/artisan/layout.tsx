@@ -22,6 +22,8 @@ export default function ArtisanLayout({
     return <main className="h-full overflow-y-auto">{children}</main>;
   }
 
+  const isAddProductPage = pathname === '/artisan/add-product';
+
   return (
     <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
       <div className="hidden border-r bg-card md:block">
@@ -29,7 +31,7 @@ export default function ArtisanLayout({
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -40,7 +42,7 @@ export default function ArtisanLayout({
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0">
+            <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
           </Sheet>
@@ -50,7 +52,8 @@ export default function ArtisanLayout({
         </header>
         <main className="flex-1 overflow-y-auto bg-muted/40 relative">
           {children}
-           <Link href="/artisan/add-product" passHref>
+          {!isAddProductPage && (
+            <Link href="/artisan/add-product" passHref>
               <Button
                 size="icon"
                 className="fixed bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
@@ -59,6 +62,7 @@ export default function ArtisanLayout({
                 <Plus className="h-8 w-8" />
               </Button>
             </Link>
+          )}
         </main>
       </div>
     </div>
