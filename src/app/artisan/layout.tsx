@@ -8,6 +8,7 @@ import { PanelLeft, Plus } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function ArtisanLayout({
   children,
@@ -36,7 +37,10 @@ export default function ArtisanLayout({
               <Button
                 variant="outline"
                 size="icon"
-                className="shrink-0 md:hidden"
+                className={cn(
+                  "shrink-0 md:hidden",
+                  isAddProductPage && "invisible"
+                )}
               >
                 <PanelLeft className="h-5 w-5" />
                 <span className="sr-only">Toggle navigation menu</span>
