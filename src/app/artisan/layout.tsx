@@ -26,14 +26,19 @@ export default function ArtisanLayout({
   const isAddProductPage = pathname === '/artisan/add-product';
 
   return (
-    <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
+    <div className="grid h-full w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
+      {/* Desktop Sidebar - Hidden on mobile */}
       <div className="hidden border-r bg-card md:block">
         <ArtisanSidebar />
       </div>
-      <div className="flex flex-col">
-        <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
+
+      {/* Mobile and Main Content Area */}
+      <div className="flex flex-col h-full">
+        {/* Header for both Mobile and Desktop */}
+        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
+          {/* Mobile Navigation Drawer Trigger */}
           {!isAddProductPage && (
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
@@ -49,17 +54,23 @@ export default function ArtisanLayout({
               </SheetContent>
             </Sheet>
           )}
-          <div className={cn("ml-auto md:hidden", isAddProductPage && "w-full")}>
+
+          {/* Header Actions - Aligned to the right */}
+          <div className={cn("ml-auto flex items-center", isAddProductPage && "w-full justify-end")}>
             <HeaderActions />
           </div>
         </header>
+        
+        {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-muted/40 relative">
           {children}
+          
+          {/* Floating Add Product Button */}
           {!isAddProductPage && (
             <Link href="/artisan/add-product" passHref>
               <Button
                 size="icon"
-                className="fixed bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
+                className="absolute bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
                 aria-label="Add New Product"
               >
                 <Plus className="h-8 w-8" />
