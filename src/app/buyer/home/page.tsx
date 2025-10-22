@@ -12,6 +12,8 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslation } from '@/context/translation-context';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { User } from 'lucide-react';
 
 export default function BuyerHomePage() {
   const { translations } = useTranslation();
@@ -35,9 +37,20 @@ export default function BuyerHomePage() {
       
       {/* Artisans Showcase Section */}
       <section className="mb-8">
-        <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-          {t.artisansTitle}
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-headline text-lg sm:text-xl font-semibold">
+            {t.artisansTitle}
+          </h2>
+           <Link href="/buyer/profile" passHref>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="My Profile"
+            >
+              <User className="h-6 w-6" />
+            </Button>
+          </Link>
+        </div>
         <Carousel opts={{ align: 'start' }} className="-mx-2">
             <CarouselContent className="-ml-2">
                 {artisans.map(artisan => (
