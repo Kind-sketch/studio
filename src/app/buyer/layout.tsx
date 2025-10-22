@@ -26,7 +26,7 @@ export default function BuyerLayout({
            <Link href="/buyer/profile" passHref>
             <Button
               size="icon"
-              className="absolute bottom-24 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90 md:hidden"
+              className="absolute bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90 md:hidden"
               aria-label="My Profile"
             >
               <User className="h-8 w-8" />
