@@ -43,11 +43,12 @@ export default function BuyerHomePage() {
           </h2>
            <Link href="/buyer/profile" passHref>
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               aria-label="My Profile"
+              className="rounded-full"
             >
-              <User className="h-6 w-6" />
+              <User className="h-5 w-5" />
             </Button>
           </Link>
         </div>
