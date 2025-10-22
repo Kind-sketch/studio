@@ -27,9 +27,9 @@ export default function ArtisanLayout({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4 lg:h-[60px]">
-        {!isAddProductPage && (
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4">
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          {!isAddProductPage && (
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -40,12 +40,13 @@ export default function ArtisanLayout({
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
-              <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
-        )}
-        <div className={cn("ml-auto flex items-center", isAddProductPage && "w-full justify-end")}>
+          )}
+          <SheetContent side="left" className="flex flex-col p-0 w-[260px]">
+            <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+          </SheetContent>
+        </Sheet>
+        
+        <div className={cn("flex items-center", isAddProductPage ? "w-full justify-end" : "ml-auto")}>
           <HeaderActions />
         </div>
       </header>
