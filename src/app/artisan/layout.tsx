@@ -26,59 +26,45 @@ export default function ArtisanLayout({
   const isAddProductPage = pathname === '/artisan/add-product';
 
   return (
-    <div className="grid h-full w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <div className="hidden border-r bg-card md:block">
-        <ArtisanSidebar />
-      </div>
-
-      {/* Mobile and Main Content Area */}
-      <div className="flex flex-col h-full">
-        {/* Header for both Mobile and Desktop */}
-        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4 lg:h-[60px] lg:px-6">
-          {/* Mobile Navigation Drawer Trigger */}
-          {!isAddProductPage && (
-             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
-                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
-              </SheetContent>
-            </Sheet>
-          )}
-
-          {/* Header Actions - Aligned to the right */}
-          <div className={cn("ml-auto flex items-center", isAddProductPage && "w-full justify-end")}>
-            <HeaderActions />
-          </div>
-        </header>
-        
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-muted/40 relative">
-          {children}
-          
-          {/* Floating Add Product Button */}
-          {!isAddProductPage && (
-            <Link href="/artisan/add-product" passHref>
+    <div className="flex flex-col h-full w-full">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4 lg:h-[60px]">
+        {!isAddProductPage && (
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
               <Button
+                variant="outline"
                 size="icon"
-                className="absolute bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
-                aria-label="Add New Product"
+                className="shrink-0"
               >
-                <Plus className="h-8 w-8" />
+                <PanelLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
               </Button>
-            </Link>
-          )}
-        </main>
-      </div>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col p-0 w-[260px] sm:w-[260px]">
+              <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+            </SheetContent>
+          </Sheet>
+        )}
+        <div className={cn("ml-auto flex items-center", isAddProductPage && "w-full justify-end")}>
+          <HeaderActions />
+        </div>
+      </header>
+      
+      <main className="flex-1 overflow-y-auto bg-muted/40 relative">
+        {children}
+        
+        {!isAddProductPage && (
+          <Link href="/artisan/add-product" passHref>
+            <Button
+              size="icon"
+              className="absolute bottom-6 right-6 h-16 w-16 rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:bg-primary/90"
+              aria-label="Add New Product"
+            >
+              <Plus className="h-8 w-8" />
+            </Button>
+          </Link>
+        )}
+      </main>
     </div>
   );
 }
