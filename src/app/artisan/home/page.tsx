@@ -188,7 +188,7 @@ export default function ArtisanHomePage() {
                 >
                     <CarouselContent className="-ml-2">
                     {frequentlyBoughtProducts.map((product) => (
-                        <CarouselItem key={product.id} className="basis-1/8 pl-2">
+                        <CarouselItem key={product.id} className="basis-1/3 pl-2">
                             <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                         </CarouselItem>
                     ))}
@@ -210,7 +210,7 @@ export default function ArtisanHomePage() {
                 >
                     <CarouselContent className="-ml-2">
                     {mostLikedProducts.map((product) => (
-                        <CarouselItem key={product.id} className="basis-1/8 pl-2">
+                        <CarouselItem key={product.id} className="basis-1/3 pl-2">
                             <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
                         </CarouselItem>
                     ))}
@@ -303,4 +303,5 @@ export default function ArtisanHomePage() {
 
 
     
+
 
