@@ -198,40 +198,81 @@ export default function AddProductPage() {
       setIsGenerating(false);
     }
   };
+  
+  const compressImage = (dataUrl: string, maxWidth = 800): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.src = dataUrl;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const scaleSize = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scaleSize;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return reject('Could not get canvas context');
+            }
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            resolve(canvas.toDataURL('image/jpeg', 0.8)); // Use JPEG for better compression
+        };
+        img.onerror = reject;
+    });
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!imageData) {
+        toast({
+            variant: 'destructive',
+            title: t.noImageToast,
+            description: t.noImageToastDesc,
+        });
+        return;
+    }
     setIsLoading(true);
-    
-    const myProducts: Product[] = JSON.parse(localStorage.getItem('myArtisanProducts') || '[]');
-    
-    const newProduct: Product = {
-        id: `prod-${Date.now()}`,
-        name: values.productName,
-        artisan: artisans[0], // Mocking artisan
-        price: values.price,
-        image: {
-            url: imageData || '',
-            hint: 'custom product'
-        },
-        category: values.productCategory,
-        description: values.productDescription,
-        story: values.productStory,
-        likes: 0,
-        sales: 0,
-        createdAt: new Date().toISOString(),
-    };
-    
-    myProducts.unshift(newProduct);
-    localStorage.setItem('myArtisanProducts', JSON.stringify(myProducts));
 
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: t.productSavedToast,
-        description: t.productSavedToastDesc,
-      });
-      router.push('/artisan/my-products');
-    }, 1000);
+    try {
+        const compressedImageData = await compressImage(imageData);
+        const myProducts: Product[] = JSON.parse(localStorage.getItem('myArtisanProducts') || '[]');
+        
+        const newProduct: Product = {
+            id: `prod-${Date.now()}`,
+            name: values.productName,
+            artisan: artisans[0],
+            price: values.price,
+            image: {
+                url: compressedImageData,
+                hint: 'custom product'
+            },
+            category: values.productCategory,
+            description: values.productDescription,
+            story: values.productStory,
+            likes: 0,
+            sales: 0,
+            createdAt: new Date().toISOString(),
+        };
+        
+        myProducts.unshift(newProduct);
+        localStorage.setItem('myArtisanProducts', JSON.stringify(myProducts));
+
+        toast({
+            title: t.productSavedToast,
+            description: t.productSavedToastDesc,
+        });
+        router.push('/artisan/my-products');
+
+    } catch (error) {
+        console.error('Error saving product:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Failed to Save Product',
+            description: 'Could not save the product. The storage might be full.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   const startCamera = async () => {
