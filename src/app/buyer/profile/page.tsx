@@ -38,7 +38,7 @@ export default function BuyerProfilePage() {
         title: 'Logged Out',
         description: 'You have been successfully logged out.',
       });
-      router.push('/language-selection');
+      router.push('/');
     } catch (error) {
       console.error('Logout Error:', error);
       toast({
