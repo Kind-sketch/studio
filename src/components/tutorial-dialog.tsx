@@ -102,7 +102,7 @@ export default function TutorialDialog({ pageId, children }: TutorialDialogProps
   return (
     <Dialog>
       {trigger}
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>{tutorial.title}</DialogTitle>
         </DialogHeader>

@@ -142,11 +142,10 @@ export default function AddProductPage() {
 
     setIsEnhancing(true);
     try {
-      const firstPassResult = await enhanceProductImage({ photoDataUri: imageData });
-      const secondPassResult = await enhanceProductImage({ photoDataUri: firstPassResult });
+      const enhancedResult = await enhanceProductImage({ photoDataUri: imageData });
       
-      setImagePreview(secondPassResult);
-      setImageData(secondPassResult);
+      setImagePreview(enhancedResult);
+      setImageData(enhancedResult);
       toast({
         title: 'Image Enhanced!',
         description: 'The product image has been improved by AI.',
@@ -515,3 +514,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
