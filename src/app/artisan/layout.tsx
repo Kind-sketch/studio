@@ -55,12 +55,6 @@ export default function ArtisanLayout({
                 <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
             </SheetContent>
             </Sheet>
-            {!isAddProductPage && (
-                <Button variant="secondary" size="sm" onClick={handleTutorialClick} className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Tutorial
-                </Button>
-            )}
         </div>
         
         <div className={cn("flex items-center", isAddProductPage ? "w-full justify-end" : "ml-auto")}>
