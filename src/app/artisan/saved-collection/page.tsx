@@ -25,7 +25,7 @@ export default function SavedCollectionPage() {
   return (
     <div className="container mx-auto p-4 md:p-8 relative">
       <TutorialDialog pageId="saved-collection" />
-      <header className="mb-8">
+      <header className="mb-8 mt-12">
         <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>
       </header>

@@ -35,7 +35,7 @@ export default function ArtisanDashboard() {
   return (
     <div className="container mx-auto p-2 sm:p-4 relative">
       <TutorialDialog pageId="dashboard" />
-      <header className="mb-6">
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-2xl font-bold">{t.welcome}</h1>
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>
       </header>

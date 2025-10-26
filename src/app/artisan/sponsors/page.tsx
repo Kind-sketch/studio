@@ -231,7 +231,7 @@ export default function SponsorsPage() {
   return (
     <div className="container mx-auto p-4 md:p-8 relative">
       <TutorialDialog pageId="sponsors" />
-      <header className="mb-6">
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>
       </header>

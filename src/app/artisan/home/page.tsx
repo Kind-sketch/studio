@@ -173,7 +173,7 @@ export default function ArtisanHomePage() {
   return (
     <div className="flex flex-col px-2 py-4 space-y-6 relative">
       <TutorialDialog pageId="home" />
-      <div>
+      <div className="mt-12">
         <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
         <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
       </div>

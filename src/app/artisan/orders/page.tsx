@@ -200,7 +200,7 @@ export default function OrdersPage() {
   return (
     <div className="container mx-auto p-4 relative">
       <TutorialDialog pageId="orders" />
-      <header className="mb-6">
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
