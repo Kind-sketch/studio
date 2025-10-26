@@ -102,12 +102,12 @@ export default function TutorialDialog({ pageId, children }: TutorialDialogProps
   return (
     <Dialog>
       {trigger}
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{tutorial.title}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden">
+          <div className="aspect-[9/16] w-full bg-muted rounded-lg overflow-hidden">
             <video
               key={tutorial.id}
               className="w-full h-full object-cover"
