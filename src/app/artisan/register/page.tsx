@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
@@ -44,7 +44,7 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  async function handleSendOtp() {
+  const handleSendOtp = useCallback(async () => {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
@@ -86,7 +86,7 @@ export default function ArtisanRegisterPage() {
     } finally {
         setIsLoading(false);
     }
-  }
+  }, [auth, form, language, t.invalidNumber, t.otpSentToast, t.otpSentToastDesc, toast]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -127,6 +127,8 @@ export default function ArtisanRegisterPage() {
                 title: t.otpExpiredToast,
                 description: t.otpExpiredToastDesc,
             });
+            setOtpSent(false); // Allow user to request a new OTP
+            form.resetField('otp');
         } else {
             toast({
                 variant: 'destructive',
@@ -189,10 +191,15 @@ export default function ArtisanRegisterPage() {
             </CardContent>
             <CardContent>
               {otpSent ? (
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t.verifyButton}
-                </Button>
+                <div className="space-y-2">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t.verifyButton}
+                    </Button>
+                    <Button type="button" variant="link" className="text-xs p-0 h-auto w-full" onClick={handleSendOtp} disabled={isLoading}>
+                        Resend OTP
+                    </Button>
+                </div>
               ) : (
                 <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
