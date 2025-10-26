@@ -184,7 +184,7 @@ function ProfilePageComponent() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-4xl relative mt-12">
-        <div className="flex flex-col items-end gap-2 mb-4">
+        <div className="flex justify-between items-center mb-4">
             <TutorialDialog pageId="profile" />
             {!isEditing && !isSetupMode && (
                 <Button onClick={() => setIsEditing(true)} size="sm" className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400">
