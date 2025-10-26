@@ -41,7 +41,6 @@ import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { artisans } from '@/lib/data';
 import { interpretNavCommand } from '@/ai/flows/interpret-navigation-command';
 import { getAuth, signOut } from 'firebase/auth';
-import TutorialDialog from './tutorial-dialog';
 
 
 const defaultArtisan = artisans[0];
@@ -358,12 +357,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
             <div className="flex-1 overflow-y-auto">
                 <nav className="flex h-full flex-col p-4">
                     <div className="flex-1 space-y-6">
-                        <TutorialDialog>
-                            <Button variant="secondary" size="sm" className="w-full bg-yellow-300 text-yellow-900 hover:bg-yellow-400">
-                                <BookOpen className="mr-2 h-4 w-4" />
-                                Tutorial
-                            </Button>
-                        </TutorialDialog>
+                        
                         <div>
                             <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">{t.studio}</h3>
                             <ul className="space-y-1 mt-2">

@@ -71,20 +71,33 @@ const tutorials: Tutorial[] = [
 ];
 
 interface TutorialDialogProps {
+  children?: React.ReactNode;
   pageId: string;
 }
 
-export default function TutorialDialog({ pageId }: TutorialDialogProps) {
-  const tutorial = tutorials.find(t => t.id === pageId) || tutorials[0];
+export default function TutorialDialog({ pageId, children }: TutorialDialogProps) {
+  const tutorial = tutorials.find(t => t.id === pageId);
 
-  return (
-    <Dialog>
+  if (!tutorial) {
+    // If no specific tutorial, render the children if they exist (for custom triggers)
+    // or nothing if it's just meant to be a button.
+    return children || null;
+  }
+  
+  const trigger = children ? (
+     <DialogTrigger asChild>{children}</DialogTrigger>
+  ) : (
       <DialogTrigger asChild>
-        <Button variant="secondary" size="sm" className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400 absolute top-4 right-4 z-10">
+        <Button variant="secondary" size="sm" className="bg-blue-500 text-white hover:bg-blue-600 absolute top-4 right-4 z-10">
           <BookOpen className="mr-2 h-4 w-4" />
           Tutorial
         </Button>
       </DialogTrigger>
+  );
+
+  return (
+    <Dialog>
+      {trigger}
       <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>{tutorial.title}</DialogTitle>
