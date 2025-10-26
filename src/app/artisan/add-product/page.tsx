@@ -337,11 +337,11 @@ export default function AddProductPage() {
             <div className="w-10"></div>
         </header>
 
-        <div className="relative mt-14">
-            <div className="absolute top-2 right-0 z-10">
+        <div className="mt-14">
+            <div className="flex justify-end mb-2">
                 <TutorialDialog pageId="add-product" />
             </div>
-            <Card className="w-full max-w-xl mx-auto shadow-lg mt-8">
+            <Card className="w-full max-w-xl mx-auto shadow-lg">
                 <CardHeader>
                     <div className="text-center">
                         <CardTitle className="font-headline text-xl md:text-2xl">{t.title}</CardTitle>
