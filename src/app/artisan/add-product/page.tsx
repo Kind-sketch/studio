@@ -338,10 +338,10 @@ export default function AddProductPage() {
         </header>
 
         <div className="relative mt-14">
-            <div className="absolute top-0 right-0 z-10 p-4">
+            <div className="absolute top-0 right-0 z-10">
                 <TutorialDialog pageId="add-product" />
             </div>
-            <Card className="w-full max-w-xl mx-auto shadow-lg mt-2">
+            <Card className="w-full max-w-xl mx-auto shadow-lg mt-8">
                 <CardHeader>
                     <div className="text-center">
                         <CardTitle className="font-headline text-xl md:text-2xl">{t.title}</CardTitle>
