@@ -328,11 +328,16 @@ export default function AddProductPage() {
 
   return (
     <div className="p-4 relative">
-      <TutorialDialog pageId="add-product" />
-      <div className="mt-12">
-        <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-sm h-14 flex items-center border-b bg-card px-4 z-50">
+            <Button onClick={() => router.back()} variant="ghost" size="icon">
+                <ChevronLeft className="h-6 w-6" />
+                <span className="sr-only">Back</span>
+            </Button>
+            <h1 className="text-lg font-semibold mx-auto">Add a New Product</h1>
+            <TutorialDialog pageId="add-product" />
+        </header>
+
+        <div className="mt-4">
         <Card className="w-full max-w-xl mx-auto shadow-lg">
           <CardHeader>
             <div className="text-center">

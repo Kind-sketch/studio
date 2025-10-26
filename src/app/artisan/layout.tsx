@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 export default function ArtisanLayout({
   children,
@@ -27,31 +28,33 @@ export default function ArtisanLayout({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4">
-        <div className="flex items-center gap-2">
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0"
-              >
-                <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0 w-[260px]">
-              <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
-        </div>
-        
-        <div className="ml-auto flex items-center">
-          <HeaderActions />
-        </div>
-      </header>
+      {!isAddProductPage && (
+        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4">
+          <div className="flex items-center gap-2">
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0"
+                >
+                  <PanelLeft className="h-5 w-5" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="flex flex-col p-0 w-[260px]">
+                <ArtisanSidebar closeSheet={() => setIsSheetOpen(false)} />
+              </SheetContent>
+            </Sheet>
+          </div>
+          
+          <div className="ml-auto flex items-center">
+            <HeaderActions />
+          </div>
+        </header>
+      )}
       
-      <main className="flex-1 overflow-y-auto bg-muted/40 relative">
+      <main className={cn("flex-1 overflow-y-auto bg-muted/40 relative", isAddProductPage && "pt-14")}>
         {children}
         
         {!isAddProductPage && (
