@@ -69,7 +69,7 @@ export default function CustomizePage() {
             return;
         }
         console.error('Speech recognition error:', event.error);
-        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        toast({ variant: 'destructive', title: t.voiceError, description: t.voiceErrorDesc });
         setIsListening(false);
       };
 
@@ -78,11 +78,11 @@ export default function CustomizePage() {
         form.setValue('description', transcript);
       };
     }
-  }, [language, form, toast]);
+  }, [language, form, toast, t.voiceError, t.voiceErrorDesc]);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
-      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      toast({ variant: 'destructive', title: t.notSupported, description: t.notSupportedDesc });
       return;
     }
     if (isListening) {
@@ -167,12 +167,12 @@ export default function CustomizePage() {
       <div className="flex justify-between items-center mb-4">
         <Button onClick={() => router.back()} variant="ghost">
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
+          {t.backButton}
         </Button>
         <Link href="/buyer/customize-with-reference" passHref>
             <Button variant="outline">
                 <ImageIcon className="mr-2 h-4 w-4" />
-                Have a reference?
+                {t.referenceButton}
             </Button>
         </Link>
       </div>
@@ -262,3 +262,5 @@ export default function CustomizePage() {
     </div>
   );
 }
+
+      

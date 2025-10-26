@@ -59,8 +59,8 @@ export default function MyProductsPage() {
     localStorage.setItem('myArtisanProducts', JSON.stringify(updatedProducts));
 
     toast({
-      title: 'Product Deleted',
-      description: `"${productToDelete.name}" has been removed from your products.`,
+      title: t.deleteToastTitle,
+      description: t.deleteToastDescription.replace('{productName}', productToDelete.name),
     });
 
     setProductToDelete(null); // Close the dialog
@@ -116,7 +116,7 @@ export default function MyProductsPage() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setProductToDelete(product)} className="text-destructive">
                           <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
+                          <span>{t.deleteButton}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -143,18 +143,19 @@ export default function MyProductsPage() {
       <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t.deleteDialogTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the product
-              "{productToDelete?.name}".
+                {t.deleteDialogDescription.replace('{productName}', productToDelete?.name || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setProductToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteProduct}>Delete</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setProductToDelete(null)}>{t.cancelButton}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProduct}>{t.deleteButton}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 }
+
+      

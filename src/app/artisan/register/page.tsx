@@ -80,13 +80,13 @@ export default function ArtisanRegisterPage() {
       console.error("signInWithPhoneNumber error:", error);
       toast({
         variant: 'destructive',
-        title: "Error Sending OTP",
+        title: t.errorSendingOtp,
         description: error.message,
       });
     } finally {
         setIsLoading(false);
     }
-  }, [auth, form, language, t.invalidNumber, t.otpSentToast, t.otpSentToastDesc, toast]);
+  }, [auth, form, language, t.invalidNumber, t.otpSentToast, t.otpSentToastDesc, toast, t.errorSendingOtp]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -181,7 +181,7 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                       <FormLabel>{t.otpLabel}</FormLabel>
                       <FormControl>
-                        <Input placeholder='Enter 6-digit OTP' {...field} disabled={!otpSent || isLoading} className="text-sm" />
+                        <Input placeholder={t.otpPlaceholder} {...field} disabled={!otpSent || isLoading} className="text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -197,7 +197,7 @@ export default function ArtisanRegisterPage() {
                     {t.verifyButton}
                     </Button>
                     <Button type="button" variant="link" className="text-xs p-0 h-auto w-full" onClick={handleSendOtp} disabled={isLoading}>
-                        Resend OTP
+                        {t.resendOtp}
                     </Button>
                 </div>
               ) : (
@@ -217,3 +217,5 @@ export default function ArtisanRegisterPage() {
     </div>
   );
 }
+
+      

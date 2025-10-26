@@ -184,7 +184,7 @@ function ProfilePageComponent() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-4xl relative mt-12">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex justify-between items-center">
             <TutorialDialog pageId="profile" />
             {!isEditing && !isSetupMode && (
                 <Button onClick={() => setIsEditing(true)} size="sm" className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400">
@@ -195,8 +195,8 @@ function ProfilePageComponent() {
         </div>
       <header className="mb-8">
         <div>
-          <h1 className="font-headline text-4xl font-bold">{isSetupMode ? "Complete Your Profile" : t.title}</h1>
-          <p className="text-muted-foreground">{isSetupMode ? "Tell buyers and sponsors more about yourself." : t.description}</p>
+          <h1 className="font-headline text-4xl font-bold">{isSetupMode ? t.setupTitle : t.title}</h1>
+          <p className="text-muted-foreground">{isSetupMode ? t.setupDescription : t.description}</p>
         </div>
       </header>
       
@@ -308,7 +308,7 @@ function ProfilePageComponent() {
                   {!isSetupMode && <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: artisan.name, companyName: artisan.companyName, address: artisan.address, phone: artisan.phone})}}>{t.cancelButton}</Button>}
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {isSetupMode ? 'Save and Continue' : t.saveButton}
+                    {isSetupMode ? t.setupSaveButton : t.saveButton}
                   </Button>
                 </div>
               )}
@@ -327,3 +327,5 @@ export default function ProfilePage() {
     </Suspense>
   )
 }
+
+      

@@ -134,8 +134,8 @@ export default function AddProductPage() {
     if (!imageData) {
       toast({
         variant: 'destructive',
-        title: 'No Image',
-        description: 'Please upload an image before enhancing.',
+        title: t.noImageToast,
+        description: t.noImageToastDesc,
       });
       return;
     }
@@ -147,15 +147,15 @@ export default function AddProductPage() {
       setImagePreview(enhancedResult);
       setImageData(enhancedResult);
       toast({
-        title: 'Image Enhanced!',
-        description: 'The product image has been improved by AI.',
+        title: t.enhanceSuccessToast,
+        description: t.enhanceSuccessToastDesc,
       });
     } catch (error) {
       console.error('Enhancement failed:', error);
       toast({
         variant: 'destructive',
-        title: 'Enhancement Failed',
-        description: 'Could not enhance the image at this time.',
+        title: t.enhanceFailedToast,
+        description: t.enhanceFailedToastDesc,
       });
     } finally {
       setIsEnhancing(false);
@@ -192,7 +192,7 @@ export default function AddProductPage() {
       toast({
         variant: 'destructive',
         title: t.generationFailedToast,
-        description: t.generationFailedToastDesc,
+        description: t.generationFailedDesc,
       });
     } finally {
       setIsGenerating(false);
@@ -330,9 +330,9 @@ export default function AddProductPage() {
         <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-sm h-14 flex items-center border-b bg-card px-4 z-50">
             <Button onClick={() => router.back()} variant="ghost" size="icon">
                 <ChevronLeft className="h-6 w-6" />
-                <span className="sr-only">Back</span>
+                <span className="sr-only">{t.backButton}</span>
             </Button>
-            <h1 className="text-lg font-semibold mx-auto">Add a New Product</h1>
+            <h1 className="text-lg font-semibold mx-auto">{t.title}</h1>
             <div className="w-10"></div>
         </header>
 
@@ -361,12 +361,12 @@ export default function AddProductPage() {
                                 {isEnhancing ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Enhancing...
+                                    {t.enhancingButton}
                                 </>
                                 ) : (
                                 <>
                                     <Wand2 className="mr-2 h-4 w-4" />
-                                    Enhance
+                                    {t.enhanceButton}
                                 </>
                                 )}
                             </Button>
@@ -516,3 +516,5 @@ export default function AddProductPage() {
 }
 
     
+
+      

@@ -28,9 +28,8 @@ const formSchema = z.object({
 export default function CustomizeWithReferencePage() {
   const router = useRouter();
   const { toast } = useToast();
-  // Using customize_page translations as the content is very similar
   const { translations } = useTranslation();
-  const t = translations.customize_page;
+  const t = translations.customize_with_reference_page;
   const { language } = useLanguage();
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -100,8 +99,8 @@ export default function CustomizeWithReferencePage() {
     if (!description || !referenceImage) {
         toast({
             variant: 'destructive',
-            title: 'Missing Information',
-            description: 'Please upload a reference image and provide a description.',
+            title: t.missingInfoToast,
+            description: t.missingInfoDesc,
         });
         return;
     }
@@ -115,15 +114,15 @@ export default function CustomizeWithReferencePage() {
       });
       setGeneratedImage(imageUrl);
       toast({
-        title: t.imageGeneratedToast,
-        description: t.imageGeneratedDesc,
+        title: translations.customize_page.imageGeneratedToast,
+        description: translations.customize_page.imageGeneratedDesc,
       });
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: t.generationFailedToast,
-        description: "The AI failed to generate an image from your reference. Please try again.",
+        title: translations.customize_page.generationFailedToast,
+        description: t.generationFailedToastDesc,
       });
     } finally {
       setIsGenerating(false);
@@ -134,8 +133,8 @@ export default function CustomizeWithReferencePage() {
     if (!generatedImage) {
         toast({
             variant: 'destructive',
-            title: t.noImageToast,
-            description: t.noImageDesc,
+            title: translations.customize_page.noImageToast,
+            description: translations.customize_page.noImageDesc,
         });
         return;
     }
@@ -147,8 +146,8 @@ export default function CustomizeWithReferencePage() {
     setTimeout(() => {
         setIsSubmitting(false);
         toast({
-            title: t.requestSentToast,
-            description: t.requestSentDesc,
+            title: translations.customize_page.requestSentToast,
+            description: translations.customize_page.requestSentDesc,
         });
         form.reset();
         setReferenceImage(null);
@@ -161,12 +160,12 @@ export default function CustomizeWithReferencePage() {
     <div className="container mx-auto p-4 max-w-2xl">
       <Button onClick={() => router.back()} variant="ghost" className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" />
-        Back
+        {translations.customize_page.backButton}
       </Button>
       <Card className="w-full shadow-lg">
         <CardHeader>
-            <CardTitle className="font-headline text-2xl md:text-3xl">Customize with Reference</CardTitle>
-            <CardDescription>Upload an image and describe the changes you'd like an artisan to make.</CardDescription>
+            <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>
+            <CardDescription>{t.description}</CardDescription>
         </CardHeader>
         
         <Form {...form}>
@@ -174,7 +173,7 @@ export default function CustomizeWithReferencePage() {
             <CardContent className="space-y-6">
               
               <FormItem>
-                <FormLabel>Reference Image</FormLabel>
+                <FormLabel>{t.referenceImageLabel}</FormLabel>
                 <FormControl>
                     <div 
                         className="relative flex flex-col items-center justify-center w-full aspect-square border-2 border-dashed rounded-lg bg-secondary overflow-hidden cursor-pointer"
@@ -185,7 +184,7 @@ export default function CustomizeWithReferencePage() {
                         ) : (
                             <div className="flex flex-col items-center justify-center text-muted-foreground text-center p-4">
                                 <Upload className="w-8 h-8 mb-2" />
-                                <p className="text-sm font-semibold">Click to upload an image</p>
+                                <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
                             </div>
                         )}
                         <Input 
@@ -203,12 +202,12 @@ export default function CustomizeWithReferencePage() {
                 
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Describe Your Changes</FormLabel>
+                  <FormLabel>{t.changesDescriptionLabel}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Textarea
                         {...field}
-                        placeholder={"e.g., 'Change the color to blue and add a handle...'"}
+                        placeholder={t.changesDescriptionPlaceholder}
                         className="h-32 pr-12"
                         disabled={!referenceImage}
                       />
@@ -229,7 +228,7 @@ export default function CustomizeWithReferencePage() {
               )}/>
 
               <Button type="button" onClick={handleGenerateImage} disabled={isGenerating || !referenceImage} className="w-full">
-                  {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{'Generating New Image...'}</> : <><Sparkles className="mr-2 h-4 w-4" />{'Visualize My Changes'}</>}
+                  {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.visualizingButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.visualizeButton}</>}
               </Button>
 
               <div className="relative flex flex-col items-center justify-center w-full aspect-square border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
@@ -240,7 +239,7 @@ export default function CustomizeWithReferencePage() {
                 ) : (
                     <div className="flex flex-col items-center justify-center text-muted-foreground text-center p-4">
                         <Sparkles className="w-8 h-8 mb-2" />
-                        <p className="text-sm font-semibold">Your new image will appear here</p>
+                        <p className="text-sm font-semibold">{t.newImagePlaceholder}</p>
                     </div>
                 )}
               </div>
@@ -248,7 +247,7 @@ export default function CustomizeWithReferencePage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isSubmitting || !generatedImage}>
-                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.sendingRequestButton}</> : <><Send className="mr-2 h-4 w-4" />{t.sendRequestButton}</>}
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{translations.customize_page.sendingRequestButton}</> : <><Send className="mr-2 h-4 w-4" />{translations.customize_page.sendRequestButton}</>}
               </Button>
             </CardFooter>
           </form>
@@ -257,3 +256,5 @@ export default function CustomizeWithReferencePage() {
     </div>
   );
 }
+
+      

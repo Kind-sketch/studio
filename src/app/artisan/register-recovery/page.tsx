@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/services/translation-service';
 import { getAuth } from 'firebase/auth';
+import { useTranslation } from '@/context/translation-context';
 
 const formSchema = z.object({
   recoveryNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit recovery number.'),
@@ -37,6 +38,8 @@ const baseTerms = [
 export default function ArtisanRegisterRecoveryPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const t = translations.artisan_register_recovery_page;
   const [isLoading, setIsLoading] = useState(false);
   const [primaryNumber, setPrimaryNumber] = useState('');
   const { language } = useLanguage();
@@ -44,19 +47,6 @@ export default function ArtisanRegisterRecoveryPage() {
 
   const auth = getAuth();
   
-  const [translatedContent, setTranslatedContent] = useState({
-      title: 'Complete Your Registration',
-      description: 'Add a recovery number to secure your account.',
-      primaryNumberLabel: 'Primary Number',
-      recoveryNumberLabel: 'Recovery Mobile Number',
-      recoveryNumberPlaceholder: '10-digit recovery number',
-      termsLabel: 'Terms and Conditions',
-      agreeToTermsLabel: 'I agree to the terms and conditions.',
-      createAccountButton: 'Create Account',
-      accountCreatedToast: 'Account Created!',
-      accountCreatedToastDesc: "Let's get you started.",
-  });
-
   useEffect(() => {
      // If user is not logged in or didn't come from register page, redirect
     if (!auth.currentUser) {
@@ -77,30 +67,13 @@ export default function ArtisanRegisterRecoveryPage() {
   useEffect(() => {
     const translateContent = async () => {
       if (language !== 'en') {
-        const textsToTranslate = Object.values(translatedContent).flat();
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        
-        let i = 0;
-        const newContent: any = {
-            title: translatedTexts[i++],
-            description: translatedTexts[i++],
-            primaryNumberLabel: translatedTexts[i++],
-            recoveryNumberLabel: translatedTexts[i++],
-            recoveryNumberPlaceholder: translatedTexts[i++],
-            termsLabel: translatedTexts[i++],
-            agreeToTermsLabel: translatedTexts[i++],
-            createAccountButton: translatedTexts[i++],
-            accountCreatedToast: translatedTexts[i++],
-            accountCreatedToastDesc: translatedTexts[i++],
-        };
-        setTranslatedContent(newContent);
-        setTermsAndConditions(baseTerms);
+        const { translatedTexts } = await translateText({ texts: baseTerms, targetLanguage: language });
+        setTermsAndConditions(translatedTexts);
       } else {
         setTermsAndConditions(baseTerms);
       }
     };
     translateContent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
 
@@ -125,8 +98,8 @@ export default function ArtisanRegisterRecoveryPage() {
     localStorage.removeItem('tempPhone');
 
     toast({
-      title: translatedContent.accountCreatedToast,
-      description: translatedContent.accountCreatedToastDesc,
+      title: t.accountCreatedToast,
+      description: t.accountCreatedToastDesc,
     });
 
     // Simulate a network request
@@ -140,16 +113,16 @@ export default function ArtisanRegisterRecoveryPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-3xl">{t.title}</CardTitle>
           <CardDescription>
-            {translatedContent.description}
+            {t.description}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
                 <div>
-                    <FormLabel>{translatedContent.primaryNumberLabel}</FormLabel>
+                    <FormLabel>{t.primaryNumberLabel}</FormLabel>
                     <Input value={primaryNumber} disabled />
                 </div>
                 <FormField
@@ -157,16 +130,16 @@ export default function ArtisanRegisterRecoveryPage() {
                     name="recoveryNumber"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{translatedContent.recoveryNumberLabel}</FormLabel>
+                        <FormLabel>{t.recoveryNumberLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.recoveryNumberPlaceholder} {...field} />
+                        <Input placeholder={t.recoveryNumberPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
                  <div className="space-y-2">
-                    <FormLabel>{translatedContent.termsLabel}</FormLabel>
+                    <FormLabel>{t.termsLabel}</FormLabel>
                     <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
                         <ul className="list-disc pl-5 space-y-1">
                             {termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
@@ -182,7 +155,7 @@ export default function ArtisanRegisterRecoveryPage() {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                             <FormLabel>
-                                {translatedContent.agreeToTermsLabel}
+                                {t.agreeToTermsLabel}
                             </FormLabel>
                             <FormMessage />
                             </div>
@@ -194,15 +167,17 @@ export default function ArtisanRegisterRecoveryPage() {
             <CardContent>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {translatedContent.createAccountButton}
+                    {t.createAccountButton}
                 </Button>
             </CardContent>
           </form>
         </Form>
         <CardFooter className="justify-center text-xs text-muted-foreground">
-          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsLabel}</Button>
+          <Button variant="link" className="text-xs p-0 h-auto">{t.termsLabel}</Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
+
+      

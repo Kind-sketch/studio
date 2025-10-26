@@ -45,7 +45,7 @@ export default function BuyerHomePage() {
             <Button
               variant="outline"
               size="icon"
-              aria-label="My Profile"
+              aria-label={t.profileButton}
               className="rounded-full"
             >
               <User className="h-5 w-5" />
@@ -163,3 +163,5 @@ export default function BuyerHomePage() {
     </div>
   );
 }
+
+      

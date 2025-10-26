@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
+import { useTranslation } from '@/context/translation-context';
 
 interface BuyerOrder extends Product {
   orderDate: string;
@@ -25,6 +27,8 @@ export default function BuyerProfilePage() {
   const auth = getAuth();
   const { user } = useUser();
   const [orders, setOrders] = useState<BuyerOrder[]>([]);
+  const { translations } = useTranslation();
+  const t = translations.buyer_profile_page;
 
   useEffect(() => {
     const storedOrders = JSON.parse(localStorage.getItem('buyerOrders') || '[]');
@@ -35,16 +39,16 @@ export default function BuyerProfilePage() {
     try {
       await signOut(auth);
       toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
+        title: t.logoutSuccessToast,
+        description: t.logoutSuccessToastDesc,
       });
       router.push('/');
     } catch (error) {
       console.error('Logout Error:', error);
       toast({
         variant: 'destructive',
-        title: 'Logout Failed',
-        description: 'There was an issue logging you out.',
+        title: t.logoutFailedToast,
+        description: t.logoutFailedToastDesc,
       });
     }
   };
@@ -53,12 +57,12 @@ export default function BuyerProfilePage() {
     <div className="container mx-auto p-4 max-w-2xl">
       <Button onClick={() => router.back()} variant="ghost" className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" />
-        Back
+        {translations.buyer_product_page.backButton}
       </Button>
       <Card className="w-full shadow-lg mb-6">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl md:text-3xl">My Profile</CardTitle>
-          <CardDescription>Manage your account details and preferences.</CardDescription>
+          <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>
+          <CardDescription>{t.description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
             <div className="flex items-center gap-4">
@@ -69,21 +73,21 @@ export default function BuyerProfilePage() {
                 </Avatar>
                 <div>
                     <h3 className="font-semibold">{user?.phoneNumber || "Buyer"}</h3>
-                    <p className="text-sm text-muted-foreground">Welcome to Artistry Havens</p>
+                    <p className="text-sm text-muted-foreground">{t.welcome}</p>
                 </div>
             </div>
 
           <Button onClick={handleLogout} variant="outline" className="w-full">
             <LogOut className="mr-2 h-4 w-4" />
-            Logout
+            {t.logoutButton}
           </Button>
         </CardContent>
       </Card>
       
       <Card className="w-full shadow-lg">
         <CardHeader>
-            <CardTitle className="font-headline text-xl flex items-center gap-2"><ShoppingBag className="h-5 w-5"/>Order History</CardTitle>
-            <CardDescription>Here are the beautiful crafts you have purchased.</CardDescription>
+            <CardTitle className="font-headline text-xl flex items-center gap-2"><ShoppingBag className="h-5 w-5"/>{t.orderHistoryTitle}</CardTitle>
+            <CardDescription>{t.orderHistoryDescription}</CardDescription>
         </CardHeader>
         <CardContent>
             {orders.length > 0 ? (
@@ -94,8 +98,8 @@ export default function BuyerProfilePage() {
                                 <Image src={order.image.url} alt={order.name} width={64} height={64} className="rounded-md object-cover aspect-square bg-muted"/>
                                 <div className="flex-grow">
                                     <h4 className="font-semibold">{order.name}</h4>
-                                    <p className="text-sm text-muted-foreground">by {order.artisan.name}</p>
-                                    <p className="text-xs text-muted-foreground">Ordered on: {format(new Date(order.orderDate), 'PPP')}</p>
+                                    <p className="text-sm text-muted-foreground">{translations.buyer_product_page.by} {order.artisan.name}</p>
+                                    <p className="text-xs text-muted-foreground">{t.orderedOn} {format(new Date(order.orderDate), 'PPP')}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="font-semibold">₹{order.price.toFixed(2)}</p>
@@ -108,7 +112,7 @@ export default function BuyerProfilePage() {
                 </div>
             ) : (
                 <div className="text-center text-muted-foreground py-8">
-                    <p>You haven't made any purchases yet.</p>
+                    <p>{t.noPurchases}</p>
                 </div>
             )}
         </CardContent>
@@ -116,3 +120,5 @@ export default function BuyerProfilePage() {
     </div>
   );
 }
+
+      
