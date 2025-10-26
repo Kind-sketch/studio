@@ -144,7 +144,6 @@ function ProfilePageComponent() {
       });
 
       if (isSetupMode) {
-        localStorage.removeItem('tempPhone');
         router.push('/artisan/category-selection');
       }
     }, 1000);
@@ -185,18 +184,20 @@ function ProfilePageComponent() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-4xl relative mt-12">
-      <TutorialDialog pageId="profile" />
-      <header className="mb-8 flex items-center justify-between">
+        <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
+            <TutorialDialog pageId="profile" />
+            {!isEditing && !isSetupMode && (
+                <Button onClick={() => setIsEditing(true)} size="sm" className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400">
+                    <Edit className="mr-2 h-4 w-4" />
+                    {t.editProfileButton}
+                </Button>
+            )}
+        </div>
+      <header className="mb-8">
         <div>
           <h1 className="font-headline text-4xl font-bold">{isSetupMode ? "Complete Your Profile" : t.title}</h1>
           <p className="text-muted-foreground">{isSetupMode ? "Tell buyers and sponsors more about yourself." : t.description}</p>
         </div>
-        {!isEditing && !isSetupMode && (
-            <Button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
-                <Edit className="mr-2 h-4 w-4" />
-                {t.editProfileButton}
-            </Button>
-        )}
       </header>
       
       <Form {...form}>
