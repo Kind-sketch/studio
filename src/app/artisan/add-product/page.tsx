@@ -334,10 +334,11 @@ export default function AddProductPage() {
                 <span className="sr-only">Back</span>
             </Button>
             <h1 className="text-lg font-semibold mx-auto">Add a New Product</h1>
-            <TutorialDialog pageId="add-product" />
+            <div className="w-10"></div>
         </header>
 
-        <div className="mt-4">
+        <div className="mt-16 relative">
+          <TutorialDialog pageId="add-product" />
         <Card className="w-full max-w-xl mx-auto shadow-lg">
           <CardHeader>
             <div className="text-center">
@@ -512,3 +513,5 @@ export default function AddProductPage() {
     </div>
   );
 }
+
+    
