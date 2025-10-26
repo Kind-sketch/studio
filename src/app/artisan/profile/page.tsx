@@ -145,7 +145,7 @@ function ProfilePageComponent() {
 
       if (isSetupMode) {
         localStorage.removeItem('tempPhone');
-        router.push('/artisan/post-auth');
+        router.push('/artisan/category-selection');
       }
     }, 1000);
   };
@@ -184,9 +184,9 @@ function ProfilePageComponent() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl relative">
+    <div className="container mx-auto p-4 md:p-8 max-w-4xl relative mt-12">
       <TutorialDialog pageId="profile" />
-      <header className="mb-8 flex items-center justify-between mt-12">
+      <header className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-headline text-4xl font-bold">{isSetupMode ? "Complete Your Profile" : t.title}</h1>
           <p className="text-muted-foreground">{isSetupMode ? "Tell buyers and sponsors more about yourself." : t.description}</p>

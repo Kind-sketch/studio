@@ -338,7 +338,7 @@ export default function AddProductPage() {
         </header>
 
         <div className="relative mt-14">
-            <div className="absolute top-0 right-0 z-10">
+            <div className="absolute top-2 right-0 z-10">
                 <TutorialDialog pageId="add-product" />
             </div>
             <Card className="w-full max-w-xl mx-auto shadow-lg mt-8">
