@@ -68,6 +68,12 @@ const tutorials: Tutorial[] = [
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
     description: "A walkthrough on how to update your public-facing artisan profile and manage your personal details."
   },
+  {
+    id: 'home',
+    title: 'Exploring Trends',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    description: "Learn how to discover popular products, save them for inspiration, and get AI-powered reviews on your own ideas."
+  },
 ];
 
 interface TutorialDialogProps {
@@ -79,8 +85,6 @@ export default function TutorialDialog({ pageId, children }: TutorialDialogProps
   const tutorial = tutorials.find(t => t.id === pageId);
 
   if (!tutorial) {
-    // If no specific tutorial, render the children if they exist (for custom triggers)
-    // or nothing if it's just meant to be a button.
     return children || null;
   }
   
@@ -121,3 +125,5 @@ export default function TutorialDialog({ pageId, children }: TutorialDialogProps
     </Dialog>
   );
 }
+
+    

@@ -22,6 +22,7 @@ import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 
 // Mocking the current artisan as Elena Vance (ID '1')
@@ -170,7 +171,8 @@ export default function ArtisanHomePage() {
   }, [toast, t.savedToCollectionToast]);
 
   return (
-    <div className="flex flex-col px-2 py-4 space-y-6">
+    <div className="flex flex-col px-2 py-4 space-y-6 relative">
+      <TutorialDialog pageId="home" />
       <div>
         <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
         <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
@@ -305,3 +307,6 @@ export default function ArtisanHomePage() {
     
 
 
+
+
+    
