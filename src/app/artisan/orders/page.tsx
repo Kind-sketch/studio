@@ -14,6 +14,7 @@ import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
 import { useTranslation } from '@/context/translation-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -197,7 +198,8 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 relative">
+      <TutorialDialog pageId="orders" />
       <header className="mb-6">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>
@@ -258,5 +260,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-
-    

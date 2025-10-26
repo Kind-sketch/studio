@@ -19,6 +19,7 @@ import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
 import 'regenerator-runtime/runtime';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 
 const profileSchema = z.object({
@@ -183,7 +184,8 @@ function ProfilePageComponent() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
+    <div className="container mx-auto p-4 md:p-8 max-w-4xl relative">
+      <TutorialDialog pageId="profile" />
       <header className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-headline text-4xl font-bold">{isSetupMode ? "Complete Your Profile" : t.title}</h1>
@@ -324,6 +326,3 @@ export default function ProfilePage() {
     </Suspense>
   )
 }
-    
-
-    

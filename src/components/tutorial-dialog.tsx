@@ -10,60 +10,99 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Film } from 'lucide-react';
+import { Film, BookOpen } from 'lucide-react';
 
-const tutorials = [
+interface Tutorial {
+  id: string;
+  title: string;
+  videoUrl: string;
+  description: string;
+}
+
+const tutorials: Tutorial[] = [
   {
-    id: 'pottery-basics',
-    title: 'Pottery Basics: Throwing a Bowl',
+    id: 'add-product',
+    title: 'How to Add a Product',
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-    description: 'Learn the fundamental techniques of throwing a bowl on the potter\'s wheel, from centering the clay to shaping the final form.'
+    description: "Learn how to upload a photo and use AI to generate your product details in just a few clicks."
   },
-  // Add more tutorial objects here
+  {
+    id: 'my-products',
+    title: 'Managing Your Products',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    description: "An overview of how to view, edit, and delete your product listings from the 'My Products' page."
+  },
+  {
+    id: 'orders',
+    title: 'Managing Orders',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    description: "Learn how to accept new order requests and update the status of ongoing orders from processing to delivery."
+  },
+  {
+    id: 'dashboard',
+    title: 'Understanding Your Revenue',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    description: "A quick guide to your revenue dashboard, including how to track earnings and revenue shared with sponsors."
+  },
+  {
+    id: 'sponsors',
+    title: 'Managing Sponsors',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+    description: "Learn how to review sponsor requests and manage your active sponsorships."
+  },
+  {
+    id: 'statistics',
+    title: 'Analyzing Your Performance',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    description: "Discover how to use the statistics page to track likes vs. sales and get AI-powered insights on your products."
+  },
+  {
+    id: 'saved-collection',
+    title: 'Using Saved Collections',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    description: "Learn how to save inspiring products from the 'Trends' page into collections for future reference."
+  },
+  {
+    id: 'profile',
+    title: 'Editing Your Profile',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
+    description: "A walkthrough on how to update your public-facing artisan profile and manage your personal details."
+  },
 ];
 
-export default function TutorialDialog({ children }: { children: React.ReactNode }) {
-  const [selectedTutorial, setSelectedTutorial] = useState(tutorials[0]);
+interface TutorialDialogProps {
+  pageId: string;
+}
+
+export default function TutorialDialog({ pageId }: TutorialDialogProps) {
+  const tutorial = tutorials.find(t => t.id === pageId) || tutorials[0];
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogTrigger asChild>
+        <Button variant="secondary" size="sm" className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400 absolute top-4 right-4 z-10">
+          <BookOpen className="mr-2 h-4 w-4" />
+          Tutorial
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>App Tutorials</DialogTitle>
+          <DialogTitle>{tutorial.title}</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-          <div className="md:col-span-1">
-            <h3 className="font-semibold mb-2">Topics</h3>
-            <div className="flex flex-col gap-2">
-              {tutorials.map((tutorial) => (
-                <Button
-                  key={tutorial.id}
-                  variant={selectedTutorial.id === tutorial.id ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => setSelectedTutorial(tutorial)}
-                >
-                  <Film className="mr-2 h-4 w-4" />
-                  {tutorial.title}
-                </Button>
-              ))}
-            </div>
+        <div className="py-4">
+          <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden">
+            <video
+              key={tutorial.id}
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              muted
+            >
+              <source src={tutorial.videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
-          <div className="md:col-span-2">
-            <h3 className="font-semibold mb-2">{selectedTutorial.title}</h3>
-            <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden">
-                <video
-                    key={selectedTutorial.id}
-                    className="w-full h-full object-cover"
-                    controls
-                    autoPlay
-                >
-                    <source src={selectedTutorial.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">{selectedTutorial.description}</p>
-          </div>
+          <p className="text-sm text-muted-foreground mt-2">{tutorial.description}</p>
         </div>
       </DialogContent>
     </Dialog>

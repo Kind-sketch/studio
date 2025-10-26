@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useTranslation } from '@/context/translation-context';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/language-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 type View = 'weekly' | 'monthly' | 'yearly';
 
@@ -118,7 +119,8 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
+    <div className="container mx-auto p-4 md:p-6 relative">
+      <TutorialDialog pageId="statistics" />
       <header className="mb-6">
         <h1 className="font-headline text-2xl md:text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>

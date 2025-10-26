@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 export default function MyProductsPage() {
   const [myProducts, setMyProducts] = useState<Product[]>([]);
@@ -67,7 +68,8 @@ export default function MyProductsPage() {
 
   return (
     <>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 relative">
+        <TutorialDialog pageId="my-products" />
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="font-headline text-3xl font-bold">{t.title}</h1>

@@ -10,6 +10,7 @@ import { products } from "@/lib/data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/context/translation-context";
+import TutorialDialog from "@/components/tutorial-dialog";
 
 const sponsoredProducts = [
   {
@@ -32,7 +33,8 @@ export default function ArtisanDashboard() {
   const t = translations.artisan_dashboard;
   
   return (
-    <div className="container mx-auto p-2 sm:p-4">
+    <div className="container mx-auto p-2 sm:p-4 relative">
+      <TutorialDialog pageId="dashboard" />
       <header className="mb-6">
         <h1 className="font-headline text-2xl font-bold">{t.welcome}</h1>
         <p className="text-sm text-muted-foreground">{t.snapshot}</p>

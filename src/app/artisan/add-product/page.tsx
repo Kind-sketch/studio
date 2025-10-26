@@ -27,6 +27,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import ProductCard from '@/components/product-card';
 import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 
 const formSchema = z.object({
@@ -326,7 +327,8 @@ export default function AddProductPage() {
 
 
   return (
-    <div className="p-4">
+    <div className="p-4 relative">
+      <TutorialDialog pageId="add-product" />
       <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
         <ChevronLeft className="h-6 w-6" />
       </Button>

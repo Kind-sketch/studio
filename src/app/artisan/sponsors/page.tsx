@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from '@/context/translation-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 const initialSponsorRequests: SponsorRequest[] = [
     {
@@ -228,7 +229,8 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8 relative">
+      <TutorialDialog pageId="sponsors" />
       <header className="mb-6">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>

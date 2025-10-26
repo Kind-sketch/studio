@@ -8,6 +8,7 @@ import type { SavedCollection, Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useTranslation } from '@/context/translation-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 export default function SavedCollectionPage() {
   const [collections, setCollections] = useState<SavedCollection[]>([]);
@@ -22,7 +23,8 @@ export default function SavedCollectionPage() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8 relative">
+      <TutorialDialog pageId="saved-collection" />
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>
