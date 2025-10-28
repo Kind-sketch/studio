@@ -183,7 +183,7 @@ function ProfilePageComponent() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl relative mt-12">
+    <div className="container mx-auto p-4 md:p-8 max-w-4xl pt-12">
         <div className="mb-4 flex justify-between items-center">
             <TutorialDialog pageId="profile" />
             {!isEditing && !isSetupMode && (
