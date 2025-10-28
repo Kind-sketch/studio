@@ -297,16 +297,3 @@ export default function ArtisanHomePage() {
     </div>
   );
 }
-
-    
-
-    
-
-
-
-    
-
-
-
-
-    
