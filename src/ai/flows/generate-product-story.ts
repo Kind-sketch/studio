@@ -28,12 +28,18 @@ export async function generateProductStory(input: GenerateProductStoryInput): Pr
   return generateProductStoryFlow(input);
 }
 
-const promptTemplate = `You are a skilled storyteller helping artisans craft compelling product stories.
+const prompt = ai.definePrompt({
+    name: 'generateProductStoryPrompt',
+    input: { schema: GenerateProductStoryInputSchema },
+    output: { schema: GenerateProductStoryOutputSchema },
+    prompt: `You are a skilled storyteller helping artisans craft compelling product stories.
 
-  Based on the artisan's voice input, create a captivating and engaging product story that highlights the craft's unique qualities, origin, and the artisan's passion.
+    Based on the artisan's voice input, create a captivating and engaging product story that highlights the craft's unique qualities, origin, and the artisan's passion.
 
-  Voice Input: {{{voiceInput}}}
-  `;
+    Voice Input: {{{voiceInput}}}
+    `,
+});
+
 
 const generateProductStoryFlow = ai.defineFlow(
   {
@@ -48,8 +54,7 @@ const generateProductStoryFlow = ai.defineFlow(
 
     const { output } = await ai.generate({
       model: llm,
-      prompt: promptTemplate,
-      input: input,
+      prompt: (await prompt(input)).prompt,
       output: {
         schema: GenerateProductStoryOutputSchema,
       },

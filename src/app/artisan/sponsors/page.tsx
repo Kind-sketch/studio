@@ -192,10 +192,10 @@ export default function SponsorsPage() {
                 </div>
               </CardHeader>
               <CardContent className="flex-grow space-y-2">
-                <p className="text-sm">
+                <div className="text-sm">
                   <span className="font-semibold">{t.contribution}: </span>
                   <Badge variant="secondary">₹{sponsor.contributionAmount}/month</Badge>
-                </p>
+                </div>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
               <CardContent className="flex flex-col gap-2">

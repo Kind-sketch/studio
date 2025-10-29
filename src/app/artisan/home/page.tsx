@@ -167,6 +167,12 @@ export default function ArtisanHomePage() {
         toast({
             title: t.savedToCollectionToast.replace('{collectionName}', inspirationCollection.name),
         });
+    } else {
+        toast({
+            variant: 'default',
+            title: 'Already Saved',
+            description: 'This product is already in your Inspiration collection.',
+        });
     }
   }, [toast, t.savedToCollectionToast]);
 

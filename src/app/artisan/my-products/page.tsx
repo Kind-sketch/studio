@@ -43,12 +43,16 @@ export default function MyProductsPage() {
   }, []);
 
   const formatTimeAgo = (date: string) => {
-    const distance = formatDistanceToNow(new Date(date));
-    if (translations.add_product_page.cameraError.includes('Error')) { // A simple check for English
-        return `Added ${distance} ago`;
+    try {
+      const distance = formatDistanceToNow(new Date(date));
+      if (translations.add_product_page.cameraError.includes('Error')) { // A simple check for English
+          return `Added ${distance} ago`;
+      }
+      // A simple placeholder for other languages.
+      return `${t.added} ${distance} ${t.ago}`;
+    } catch (e) {
+      return t.justAdded;
     }
-    // A simple placeholder for other languages.
-    return `${t.added} ${distance} ${t.ago}`;
   }
 
   const handleDeleteProduct = () => {
@@ -157,5 +161,3 @@ export default function MyProductsPage() {
     </>
   );
 }
-
-      

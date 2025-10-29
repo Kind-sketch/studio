@@ -114,12 +114,13 @@ function ProfilePageComponent() {
 
   useEffect(() => {
     const storedProfile = localStorage.getItem('artisanProfile');
+    const tempPhone = isSetupMode ? localStorage.getItem('tempPhone') : null;
     let data;
+
     if (storedProfile) {
         data = JSON.parse(storedProfile);
         setArtisan(prev => ({...prev, ...data}));
     } else {
-        const tempPhone = isSetupMode ? localStorage.getItem('tempPhone') : null;
         data = {
             name: artisan.name,
             companyName: artisan.companyName,

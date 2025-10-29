@@ -68,15 +68,15 @@ export default function OrdersPage() {
             ...orderToMove,
             status: 'Processing',
             orderDate: new Date().toISOString(),
-            expectedDelivery: '',
+            expectedDelivery: '', // This will be set below
         };
 
-        const updatedMyOrders = [...myOrders, newOrder];
-        localStorage.setItem('myOrders', JSON.stringify(updatedMyOrders));
-        
         const deliveryDate = new Date(newOrder.orderDate);
         deliveryDate.setDate(deliveryDate.getDate() + 7);
         newOrder.expectedDelivery = deliveryDate.toISOString();
+
+        const updatedMyOrders = [...myOrders, newOrder];
+        localStorage.setItem('myOrders', JSON.stringify(updatedMyOrders));
         setMyOrders(updatedMyOrders);
         
         const updatedRequests = orderRequests.filter(order => order.id !== orderId);
