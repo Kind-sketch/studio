@@ -106,8 +106,8 @@ export function HeaderActions() {
             return;
         }
 
-        recognitionRef.current = new SpeechRecognition();
-        const recognition = recognitionRef.current;
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
         recognition.continuous = false;
         recognition.interimResults = false;
 
@@ -115,7 +115,19 @@ export function HeaderActions() {
         recognition.onend = () => setIsListening(false);
         recognition.onerror = (event: any) => {
             console.error('Speech recognition error:', event.error);
-            toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+            if (event.error === 'network') {
+                toast({
+                    variant: 'destructive',
+                    title: t_sidebar.voiceNetworkErrorTitle,
+                    description: t_sidebar.voiceNetworkErrorDesc,
+                });
+            } else {
+                toast({ 
+                    variant: 'destructive', 
+                    title: t_sidebar.voiceErrorTitle,
+                    description: t_sidebar.voiceErrorDesc 
+                });
+            }
             setIsListening(false);
         };
 
@@ -124,7 +136,7 @@ export function HeaderActions() {
             setSpokenCommand(command);
         };
 
-    }, [toast]);
+    }, [toast, t_sidebar.voiceErrorDesc, t_sidebar.voiceErrorTitle, t_sidebar.voiceNetworkErrorDesc, t_sidebar.voiceNetworkErrorTitle]);
 
     useEffect(() => {
         if (!spokenCommand) {
