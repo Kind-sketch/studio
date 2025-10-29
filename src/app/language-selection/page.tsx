@@ -5,30 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { languages } from '@/lib/data';
 import { Logo } from '@/components/icons';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
 import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function LanguageSelectionPage() {
-  const { language, setLanguage } = useLanguage();
+  const { setLanguage } = useLanguage();
   const router = useRouter();
-  const [title, setTitle] = useState('Choose Your Language');
-
-  useEffect(() => {
-    const translateTitle = async () => {
-      if (language !== 'en' && language) {
-        const { translatedTexts } = await translateText({
-          texts: ['Choose Your Language'],
-          targetLanguage: language,
-        });
-        setTitle(translatedTexts[0]);
-      } else {
-        setTitle('Choose Your Language');
-      }
-    };
-    translateTitle();
-  }, [language]);
 
   const handleLanguageSelect = (langCode: string) => {
     setLanguage(langCode);
@@ -40,7 +23,7 @@ export default function LanguageSelectionPage() {
        <div className="text-center mb-8">
             <Logo className="mb-4 h-14 w-14 text-primary inline-block"/>
           <CardTitle className="font-headline text-2xl sm:text-3xl">
-            {title}
+            Choose Your Language
           </CardTitle>
         </div>
       <Card className="w-full max-w-sm shadow-xl border-none">
@@ -65,5 +48,3 @@ export default function LanguageSelectionPage() {
     </div>
   );
 }
-
-    

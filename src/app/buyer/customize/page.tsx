@@ -2,7 +2,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -16,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Send, Mic } from 'lucide-react';
+import { Loader2, Sparkles, Send, Mic, ChevronLeft, Image as ImageIcon } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
@@ -28,6 +30,7 @@ const formSchema = z.object({
 });
 
 export default function CustomizePage() {
+  const router = useRouter();
   const { toast } = useToast();
   const { translations, isTranslating } = useTranslation();
   const t = translations.customize_page;
@@ -60,8 +63,13 @@ export default function CustomizePage() {
       recognitionRef.current.onstart = () => setIsListening(true);
       recognitionRef.current.onend = () => setIsListening(false);
       recognitionRef.current.onerror = (event: any) => {
+        if (event.error === 'no-speech' || event.error === 'aborted') {
+            console.log('Speech recognition aborted or no speech detected.');
+            setIsListening(false);
+            return;
+        }
         console.error('Speech recognition error:', event.error);
-        toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+        toast({ variant: 'destructive', title: t.voiceError, description: t.voiceErrorDesc });
         setIsListening(false);
       };
 
@@ -70,11 +78,11 @@ export default function CustomizePage() {
         form.setValue('description', transcript);
       };
     }
-  }, [language, form, toast]);
+  }, [language, form, toast, t.voiceError, t.voiceErrorDesc]);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
-      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      toast({ variant: 'destructive', title: t.notSupported, description: t.notSupportedDesc });
       return;
     }
     if (isListening) {
@@ -101,6 +109,7 @@ export default function CustomizePage() {
       const imageUrl = await buyerAiDesignedProducts({
         prompt: description,
         style: category,
+        language: language,
       });
       setGeneratedImage(imageUrl);
       toast({
@@ -155,6 +164,19 @@ export default function CustomizePage() {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
+      <div className="flex justify-between items-center mb-4">
+        <Button onClick={() => router.back()} variant="ghost">
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          {t.backButton}
+        </Button>
+        <Link href="/buyer/customize-with-reference" passHref>
+            <Button variant="secondary">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                {t.referenceButton}
+            </Button>
+        </Link>
+      </div>
+
       <Card className="w-full shadow-lg">
         <CardHeader>
             <CardTitle className="font-headline text-2xl md:text-3xl">{t.title}</CardTitle>

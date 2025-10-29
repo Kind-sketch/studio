@@ -9,7 +9,7 @@ import { Check, X, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { SponsorRequest } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from '@/context/translation-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 const initialSponsorRequests: SponsorRequest[] = [
     {
@@ -47,6 +48,7 @@ export default function SponsorsPage() {
   const router = useRouter();
   const { translations } = useTranslation();
   const t = translations.sponsors_page;
+  const [openAccordionItems, setOpenAccordionItems] = useState<string[]>([]);
 
   useEffect(() => {
     const sponsorsFromStorage = JSON.parse(localStorage.getItem('mySponsors') || '[]');
@@ -54,10 +56,17 @@ export default function SponsorsPage() {
 
     const requestsFromStorage = localStorage.getItem('sponsorRequests');
     if (requestsFromStorage) {
-        setSponsorRequests(JSON.parse(requestsFromStorage));
+        const parsedRequests = JSON.parse(requestsFromStorage);
+        setSponsorRequests(parsedRequests);
+        if (parsedRequests.length > 0) {
+            setOpenAccordionItems(prev => [...prev, 'requests']);
+        }
     } else {
         setSponsorRequests(initialSponsorRequests);
         localStorage.setItem('sponsorRequests', JSON.stringify(initialSponsorRequests));
+        if (initialSponsorRequests.length > 0) {
+            setOpenAccordionItems(prev => [...prev, 'requests']);
+        }
     }
   }, []);
 
@@ -114,7 +123,7 @@ export default function SponsorsPage() {
   const renderRequests = () => {
       if (sponsorRequests.length === 0) {
         return (
-            <Card className="flex items-center justify-center p-12">
+            <Card className="flex items-center justify-center p-12 mt-6 border-none shadow-none bg-transparent">
                 <div className="text-center text-muted-foreground">
                     <p className="text-lg">{t.noRequestsTitle}</p>
                     <p>{t.noRequestsDescription}</p>
@@ -124,7 +133,7 @@ export default function SponsorsPage() {
       }
 
       return (
-        <div className="space-y-4">
+        <div className="space-y-4 pt-4">
           {sponsorRequests.map((request) => (
             <Card key={request.id}>
               <CardHeader className="flex-row items-center gap-4 pb-4">
@@ -142,7 +151,7 @@ export default function SponsorsPage() {
               <CardContent>
                 <p className="text-sm text-muted-foreground italic">"{request.message}"</p>
               </CardContent>
-              <CardContent className="flex gap-2">
+              <CardContent className="flex flex-col gap-2">
                 <Button onClick={() => handleAccept(request.id)} className="w-full">
                   <Check className="mr-2 h-4 w-4" /> {t.acceptButton}
                 </Button>
@@ -159,7 +168,7 @@ export default function SponsorsPage() {
   const renderMySponsors = () => {
     if (mySponsors.length === 0) {
         return (
-            <Card className="flex items-center justify-center p-12">
+            <Card className="flex items-center justify-center p-12 mt-6 border-none shadow-none bg-transparent">
                 <div className="text-center text-muted-foreground">
                     <p className="text-lg">{t.noSponsorsTitle}</p>
                     <p>{t.noSponsorsDescription}</p>
@@ -169,7 +178,7 @@ export default function SponsorsPage() {
       }
 
       return (
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 pt-4">
           {mySponsors.map((sponsor) => (
             <Card key={sponsor.id} className="flex flex-col">
               <CardHeader className="flex-row items-center gap-4 pb-4">
@@ -183,10 +192,10 @@ export default function SponsorsPage() {
                 </div>
               </CardHeader>
               <CardContent className="flex-grow space-y-2">
-                <p className="text-sm">
+                <div className="text-sm">
                   <span className="font-semibold">{t.contribution}: </span>
                   <Badge variant="secondary">₹{sponsor.contributionAmount}/month</Badge>
-                </p>
+                </div>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
               <CardContent className="flex flex-col gap-2">
@@ -220,26 +229,35 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
+    <div className="container mx-auto p-4 md:p-8 relative">
+      <TutorialDialog pageId="sponsors" />
+      <header className="mb-6 mt-12">
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.description}</p>
       </header>
 
-      <Tabs defaultValue="requests" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 h-auto">
-          <TabsTrigger value="requests">{t.requestsTab}</TabsTrigger>
-          <TabsTrigger value="my-sponsors">{t.mySponsorsTab}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="requests">
-          {renderRequests()}
-        </TabsContent>
-        <TabsContent value="my-sponsors">
-          {renderMySponsors()}
-        </TabsContent>
-      </Tabs>
+      <Accordion type="multiple" value={openAccordionItems} onValueChange={setOpenAccordionItems} className="w-full space-y-4">
+        <Card>
+            <AccordionItem value="requests" className="border-b-0">
+                <AccordionTrigger className="p-6 hover:no-underline text-lg font-semibold">
+                    {t.requestsTab}
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                    {renderRequests()}
+                </AccordionContent>
+            </AccordionItem>
+        </Card>
+        <Card>
+            <AccordionItem value="my-sponsors" className="border-b-0">
+                <AccordionTrigger className="p-6 hover:no-underline text-lg font-semibold">
+                    {t.mySponsorsTab}
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                    {renderMySponsors()}
+                </AccordionContent>
+            </AccordionItem>
+        </Card>
+      </Accordion>
     </div>
   );
 }
-
-    

@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import MainHeader from './main-header';
+import { getAuth, signOut } from 'firebase/auth';
 
 const navItems = [
   { href: '/sponsor/dashboard', label: 'Home', icon: Home },
@@ -36,6 +37,7 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
     const pathname = usePathname();
     const { toast } = useToast();
     const router = useRouter();
+    const auth = getAuth();
 
     const handleLinkClick = (href: string) => {
         router.push(href);
@@ -44,14 +46,24 @@ function NavContent({ closeSheet }: { closeSheet?: () => void }) {
         }
     };
 
-    const handleLogout = (e: React.MouseEvent) => {
+    const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (closeSheet) closeSheet();
-        toast({
-            title: "Logged Out",
-            description: "You have been successfully logged out."
-        });
-        window.location.href = '/'; 
+        try {
+            await signOut(auth);
+            if (closeSheet) closeSheet();
+            toast({
+                title: "Logged Out",
+                description: "You have been successfully logged out."
+            });
+            router.push('/');
+        } catch (error) {
+             console.error("Logout failed", error);
+            toast({
+                variant: 'destructive',
+                title: "Logout Failed",
+                description: "An error occurred while logging out."
+            });
+        }
     };
 
     return (

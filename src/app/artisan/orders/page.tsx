@@ -14,6 +14,7 @@ import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
 import { useTranslation } from '@/context/translation-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -67,15 +68,15 @@ export default function OrdersPage() {
             ...orderToMove,
             status: 'Processing',
             orderDate: new Date().toISOString(),
-            expectedDelivery: '',
+            expectedDelivery: '', // This will be set below
         };
 
-        const updatedMyOrders = [...myOrders, newOrder];
-        localStorage.setItem('myOrders', JSON.stringify(updatedMyOrders));
-        
         const deliveryDate = new Date(newOrder.orderDate);
         deliveryDate.setDate(deliveryDate.getDate() + 7);
         newOrder.expectedDelivery = deliveryDate.toISOString();
+
+        const updatedMyOrders = [...myOrders, newOrder];
+        localStorage.setItem('myOrders', JSON.stringify(updatedMyOrders));
         setMyOrders(updatedMyOrders);
         
         const updatedRequests = orderRequests.filter(order => order.id !== orderId);
@@ -197,8 +198,9 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <header className="mb-6">
+    <div className="container mx-auto p-4 relative">
+      <TutorialDialog pageId="orders" />
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
@@ -258,5 +260,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-
-    

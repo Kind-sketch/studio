@@ -53,13 +53,13 @@ export default function MySponsorsPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <header className="mb-6">
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
 
       {mySponsors.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           {mySponsors.map((sponsor) => (
             <Card key={sponsor.id} className="flex flex-col">
               <CardHeader className="flex-row items-center gap-4 pb-4">
@@ -79,7 +79,7 @@ export default function MySponsorsPage() {
                 </p>
                 <p className="text-sm text-muted-foreground">{sponsor.message}</p>
               </CardContent>
-              <CardContent className="flex gap-2">
+              <CardContent className="flex flex-col gap-2">
                  <Button onClick={() => handleChat(sponsor.name)} variant="outline" className="w-full">
                     <MessageCircle className="mr-2 h-4 w-4" /> {t.chatButton}
                 </Button>
@@ -107,7 +107,7 @@ export default function MySponsorsPage() {
           ))}
         </div>
       ) : (
-         <Card className="flex items-center justify-center p-12">
+         <Card className="flex items-center justify-center p-12 mt-4">
             <div className="text-center text-muted-foreground">
                 <p className="text-lg">{t.noSponsorsTitle}</p>
                 <p>{t.noSponsorsDescription}</p>

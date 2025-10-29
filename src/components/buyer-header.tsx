@@ -17,15 +17,14 @@ export default function BuyerHeader() {
           className="pl-8"
         />
       </div>
-       <Link href="/buyer/customize">
-          <Button variant="ghost" size="icon">
+      <div className="flex items-center justify-center">
+          <Link href="/buyer/customize" passHref>
+            <Button variant="ghost" size="icon">
               <Sparkles className="h-5 w-5 text-primary" />
               <span className="sr-only">Customize</span>
-          </Button>
-       </Link>
+            </Button>
+          </Link>
+      </div>
     </header>
   );
 }
-
-
-

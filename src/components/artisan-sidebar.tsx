@@ -19,6 +19,7 @@ import {
   BarChart,
   LayoutDashboard,
   TrendingUp,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -39,9 +40,10 @@ import { useLanguage } from '@/context/language-context';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { artisans } from '@/lib/data';
 import { interpretNavCommand } from '@/ai/flows/interpret-navigation-command';
+import { getAuth, signOut } from 'firebase/auth';
 
 
-const artisan = artisans[0]; // Mock current user
+const defaultArtisan = artisans[0];
 
 interface Notification {
     id: string;
@@ -57,13 +59,16 @@ export function HeaderActions() {
     const { language } = useLanguage();
     const router = useRouter();
     const { toast } = useToast();
-    const t = translations.artisan_sidebar.notifications;
+    const t_notifications = translations.artisan_sidebar.notifications;
+    const t_sidebar = translations.artisan_sidebar;
+    const auth = getAuth();
     
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const hasUnread = notifications.some(n => !n.read);
 
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const [spokenCommand, setSpokenCommand] = useState<string | null>(null);
 
     useEffect(() => {
         // Mock notifications
@@ -73,59 +78,116 @@ export function HeaderActions() {
             { id: '3', titleKey: 'milestone', descriptionKey: 'milestoneDesc', descriptionParams: { salesCount: 100 }, read: true, createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) },
         ];
         setNotifications(mockNotifications);
+    }, []);
 
-        // Setup speech recognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-
-            recognitionRef.current.onstart = () => setIsListening(true);
-            recognitionRef.current.onend = () => setIsListening(false);
-            recognitionRef.current.onerror = (event: any) => {
-                if (event.error === 'no-speech') {
-                    // This error is common, so we can ignore it to prevent user confusion.
-                    setIsListening(false);
-                    return;
-                }
-                console.error('Speech recognition error:', event.error);
-                toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
-                setIsListening(false);
-            };
-
-            recognitionRef.current.onresult = async (event: any) => {
-                const command = event.results[0][0].transcript;
-                toast({ title: 'Heard you say:', description: `"${command}"` });
-                
-                try {
-                    const { page } = await interpretNavCommand({ command, language });
-                    if (page && page !== 'unknown') {
-                        router.push(`/artisan/${page}`);
-                        toast({ title: 'Navigating...', description: `Taking you to ${page.replace(/-/g, ' ')}.`});
-                    } else {
-                        toast({ variant: 'destructive', title: 'Navigation Failed', description: "Sorry, I didn't understand where you want to go." });
-                    }
-                } catch (error) {
-                     console.error('AI navigation error:', error);
-                     toast({ variant: 'destructive', title: 'AI Error', description: 'Could not process the voice command.' });
-                }
-            };
+    const handleLogout = useCallback(async () => {
+        try {
+            await signOut(auth);
+            toast({
+                title: t_sidebar.logoutToastTitle,
+                description: t_sidebar.logoutToastDesc
+            });
+            router.push('/');
+        } catch (error) {
+            console.error("Logout failed", error);
+            toast({
+                variant: 'destructive',
+                title: "Logout Failed",
+                description: "An error occurred while logging out."
+            });
         }
-    }, [language, router, toast]);
+    }, [auth, router, toast, t_sidebar.logoutToastDesc, t_sidebar.logoutToastTitle]);
 
-    const toggleListening = () => {
-        if (!recognitionRef.current) {
+    // Setup speech recognition only once.
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.warn('Speech recognition not supported.');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'network') {
+                toast({
+                    variant: 'destructive',
+                    title: t_sidebar.voiceNetworkErrorTitle,
+                    description: t_sidebar.voiceNetworkErrorDesc,
+                });
+            } else {
+                toast({ 
+                    variant: 'destructive', 
+                    title: t_sidebar.voiceErrorTitle,
+                    description: t_sidebar.voiceErrorDesc 
+                });
+            }
+            setIsListening(false);
+        };
+
+        recognition.onresult = (event: any) => {
+            const command = event.results[0][0].transcript;
+            setSpokenCommand(command);
+        };
+
+    }, [toast, t_sidebar.voiceErrorDesc, t_sidebar.voiceErrorTitle, t_sidebar.voiceNetworkErrorDesc, t_sidebar.voiceNetworkErrorTitle]);
+
+    useEffect(() => {
+        if (!spokenCommand) {
+            return;
+        }
+
+        const processCommand = async () => {
+            toast({ title: t_sidebar.voiceHeard, description: `"${spokenCommand}"` });
+            
+            try {
+                const recognition = recognitionRef.current;
+                const { page } = await interpretNavCommand({ command: spokenCommand, language: recognition.lang });
+                
+                if (page && page !== 'unknown') {
+                    if (page === 'logout') {
+                        toast({ title: t_sidebar.loggingOut, description: t_sidebar.willBeSignedOut });
+                        await handleLogout();
+                    } else {
+                        const path = page === 'home' ? '/artisan/home' : `/artisan/${page}`;
+                        toast({ title: t_sidebar.navigating, description: t_sidebar.navigatingTo.replace('{page}', page.replace(/-/g, ' '))});
+                        router.push(path);
+                    }
+                } else {
+                    toast({ variant: 'destructive', title: t_sidebar.navFailed, description: t_sidebar.navFailedDesc });
+                }
+            } catch (error) {
+                console.error('AI navigation error:', error);
+                toast({ variant: 'destructive', title: t_sidebar.aiError, description: t_sidebar.aiErrorDesc });
+            } finally {
+                setSpokenCommand(null); // Reset command after processing
+            }
+        };
+
+        processCommand();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [spokenCommand, router, handleLogout]);
+
+    const toggleListening = useCallback(() => {
+        const recognition = recognitionRef.current;
+        if (!recognition) {
             toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
             return;
         }
         if (isListening) {
-            recognitionRef.current.stop();
+            recognition.stop();
         } else {
-            recognitionRef.current.lang = language;
-            recognitionRef.current.start();
+            // Set language just before starting
+            recognition.lang = language; 
+            recognition.start();
         }
-    };
+    }, [isListening, language, toast]);
 
 
     const markAsRead = (id: string) => {
@@ -168,20 +230,20 @@ export function HeaderActions() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-80">
-                    <DropdownMenuLabel>{t.title}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t_notifications.title}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {notifications.length > 0 ? (
                         notifications.map((n) => (
                             <DropdownMenuItem key={n.id} onClick={() => markAsRead(n.id)} className={cn("flex items-start gap-2", !n.read && "bg-accent/50")}>
                                 {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
                                 <div className={cn(!n.read && 'pl-1')}>
-                                    <p className="font-semibold">{t[n.titleKey]}</p>
-                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t[n.descriptionKey], n.descriptionParams)}</p>
+                                    <p className="font-semibold">{t_notifications[n.titleKey]}</p>
+                                    <p className="text-xs text-muted-foreground">{formatNotificationDescription(t_notifications[n.descriptionKey], n.descriptionParams)}</p>
                                 </div>
                             </DropdownMenuItem>
                         ))
                     ) : (
-                        <p className="p-4 text-center text-sm text-muted-foreground">{t.noNotifications}</p>
+                        <p className="p-4 text-center text-sm text-muted-foreground">{t_notifications.noNotifications}</p>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -210,7 +272,24 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
     const { toast } = useToast();
     const { translations } = useTranslation();
     const t = translations.artisan_sidebar;
+    const auth = getAuth();
     
+    const [artisanProfile, setArtisanProfile] = useState({
+      name: defaultArtisan.name,
+      avatar: defaultArtisan.avatar,
+    });
+
+    useEffect(() => {
+        const storedProfile = localStorage.getItem('artisanProfile');
+        if (storedProfile) {
+            const profileData = JSON.parse(storedProfile);
+            setArtisanProfile(prev => ({
+                ...prev,
+                name: profileData.name || prev.name,
+            }));
+        }
+    }, [pathname]); // Rerun on path change to catch updates
+
     const baseNavItems = {
         studio: [
             { href: '/artisan/home', icon: TrendingUp, labelKey: 'trends' },
@@ -232,20 +311,31 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
         }
     };
 
-    const handleLogout = (e: React.MouseEvent) => {
+    const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
-        handleLinkClick('/');
-        toast({
-            title: t.logoutToastTitle,
-            description: t.logoutToastDesc
-        });
+        try {
+            await signOut(auth);
+            if (closeSheet) closeSheet();
+            toast({
+                title: t.logoutToastTitle,
+                description: t.logoutToastDesc
+            });
+            router.push('/');
+        } catch (error) {
+            console.error("Logout failed", error);
+            toast({
+                variant: 'destructive',
+                title: "Logout Failed",
+                description: "An error occurred while logging out."
+            });
+        }
     };
     
     const isLinkActive = (href: string) => {
         if (href.endsWith('/sponsors')) {
             return pathname.startsWith('/artisan/sponsors');
         }
-        return pathname.startsWith(href);
+        return pathname === href;
     };
 
     return (
@@ -259,7 +349,7 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
             <div className="flex-1 overflow-y-auto">
                 <nav className="flex h-full flex-col p-4">
                     <div className="flex-1 space-y-6">
-
+                        
                         <div>
                             <h3 className="px-3 text-xs font-semibold uppercase text-sidebar-foreground/60">{t.studio}</h3>
                             <ul className="space-y-1 mt-2">
@@ -305,10 +395,10 @@ export default function ArtisanSidebar({ closeSheet }: ArtisanSidebarProps) {
                         <div className="flex items-center justify-between p-4">
                             <button onClick={() => handleLinkClick('/artisan/profile')} className="flex items-center gap-3 w-full">
                                 <Avatar className="h-9 w-9">
-                                    <AvatarImage src={artisan.avatar.url} alt={artisan.name} />
-                                    <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={artisanProfile.avatar.url} alt={artisanProfile.name} />
+                                    <AvatarFallback>{artisanProfile.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium truncate">{artisan.name}</span>
+                                <span className="text-sm font-medium truncate">{artisanProfile.name}</span>
                             </button>
                             <button
                                 onClick={handleLogout}

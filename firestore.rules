@@ -1,0 +1,119 @@
+/**
+ * @file Firebase Security Rules for Artistry Havens.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for artisan, buyer, and sponsor profiles.
+ * Craft data is publicly readable but writable only by the owning artisan.
+ *
+ * Data Structure:
+ * - /artisans/{artisanId}: Artisan profiles, accessible only by the artisan.
+ * - /buyers/{buyerId}: Buyer profiles, accessible only by the buyer.
+ * - /sponsors/{sponsorId}: Sponsor profiles, accessible only by the sponsor.
+ * - /crafts/{craftId}: Craft details, publicly readable but writable only by the owning artisan.
+ *
+ * Key Security Decisions:
+ * - User listing is disallowed for all collections to protect user privacy.
+ * - Crafts are publicly readable to facilitate discovery, but their modification is restricted to the artisan who created them.
+ * - All write operations are protected by authorization checks that rely on verified user identity (`request.auth`).
+ *
+ * Denormalization for Authorization:
+ * - The /crafts/{craftId} documents denormalize the `artisanId` field to allow for ownership checks without additional reads.
+ *
+ * Structural Segregation:
+ * - Artisan, Buyer, and Sponsor profiles are stored in separate collections to maintain clear data segregation.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Secures artisan profiles. Only the artisan can read or write their own profile.
+     * @path /artisans/{artisanId}
+     * @allow (create, update, delete) - Artisan with UID 'artisan123' creating their own profile.
+     *    request.auth.uid == 'artisan123' and request.resource.data.id == 'artisan123'.
+     * @allow (get) - Artisan with UID 'artisan123' reading their own profile.
+     *    request.auth.uid == 'artisan123'.
+     * @deny (create, update, delete) - User with UID 'hacker456' attempting to modify artisan 'artisan123's profile.
+     *    request.auth.uid == 'hacker456' and resource.data.id == 'artisan123'.
+     * @deny (list) - Any user attempting to list all artisan profiles.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /artisans/{artisanId} {
+      allow get: if isSignedIn() && isOwner(artisanId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.id == artisanId;
+      allow update: if isSignedIn() && isExistingOwner(artisanId) && request.resource.data.id == resource.data.id;
+      allow delete: if isSignedIn() && isExistingOwner(artisanId);
+    }
+
+    /**
+     * @description Secures buyer profiles. Only the buyer can read or write their own profile.
+     * @path /buyers/{buyerId}
+     * @allow (create, update, delete) - Buyer with UID 'buyer789' creating their own profile.
+     *    request.auth.uid == 'buyer789' and request.resource.data.id == 'buyer789'.
+     * @allow (get) - Buyer with UID 'buyer789' reading their own profile.
+     *    request.auth.uid == 'buyer789'.
+     * @deny (create, update, delete) - User with UID 'hacker456' attempting to modify buyer 'buyer789's profile.
+     *    request.auth.uid == 'hacker456' and resource.data.id == 'buyer789'.
+     * @deny (list) - Any user attempting to list all buyer profiles.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /buyers/{buyerId} {
+      allow get: if isSignedIn() && isOwner(buyerId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(buyerId) && request.resource.data.id == buyerId;
+      allow update: if isSignedIn() && isExistingOwner(buyerId) && request.resource.data.id == resource.data.id;
+      allow delete: if isSignedIn() && isExistingOwner(buyerId);
+    }
+
+    /**
+     * @description Secures sponsor profiles. Only the sponsor can read or write their own profile.
+     * @path /sponsors/{sponsorId}
+     * @allow (create, update, delete) - Sponsor with UID 'sponsor101' creating their own profile.
+     *    request.auth.uid == 'sponsor101' and request.resource.data.id == 'sponsor101'.
+     * @allow (get) - Sponsor with UID 'sponsor101' reading their own profile.
+     *    request.auth.uid == 'sponsor101'.
+     * @deny (create, update, delete) - User with UID 'hacker456' attempting to modify sponsor 'sponsor101's profile.
+     *    request.auth.uid == 'hacker456' and resource.data.id == 'sponsor101'.
+     * @deny (list) - Any user attempting to list all sponsor profiles.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /sponsors/{sponsorId} {
+      allow get: if isSignedIn() && isOwner(sponsorId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(sponsorId) && request.resource.data.id == sponsorId;
+      allow update: if isSignedIn() && isExistingOwner(sponsorId) && request.resource.data.id == resource.data.id;
+      allow delete: if isSignedIn() && isExistingOwner(sponsorId);
+    }
+
+    /**
+     * @description Secures craft details. Allows public read access, but restricts write access to the owning artisan.
+     * @path /crafts/{craftId}
+     * @allow (get, list) - Any user can read craft details.
+     * @allow (create, update, delete) - Artisan with UID 'artisan123' creating a craft with artisanId 'artisan123'.
+     *    request.auth.uid == 'artisan123' and request.resource.data.artisanId == 'artisan123'.
+     * @deny (create, update, delete) - User with UID 'hacker456' attempting to modify craft owned by 'artisan123'.
+     *    request.auth.uid == 'hacker456' and resource.data.artisanId == 'artisan123'.
+     * @principle Allows public read access while enforcing document ownership for writes.
+     */
+    match /crafts/{craftId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.artisanId == request.auth.uid;
+      allow update: if isSignedIn() && isExistingOwner(resource.data.artisanId);
+      allow delete: if isSignedIn() && isExistingOwner(resource.data.artisanId);
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+  }
+}

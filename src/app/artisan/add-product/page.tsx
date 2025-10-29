@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { generateProductDetails } from '@/ai/flows/generate-product-details';
+import { enhanceProductImage } from '@/ai/flows/enhance-product-image';
 import { productCategories as baseProductCategories, artisans } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import ProductPreview from '@/components/product-preview';
@@ -20,12 +21,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye } from 'lucide-react';
+import { Loader2, Upload, Camera, Sparkles, ChevronLeft, Eye, Wand2 } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import ProductCard from '@/components/product-card';
 import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 
 const formSchema = z.object({
@@ -45,6 +47,7 @@ export default function AddProductPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -110,23 +113,10 @@ export default function AddProductPage() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = canvasRef.current;
-          if (canvas) {
-            const context = canvas.getContext('2d');
-            if (context) {
-              canvas.width = img.width;
-              canvas.height = img.height;
-              context.drawImage(img, 0, 0);
-              const dataUrl = canvas.toDataURL('image/png');
-              setImagePreview(dataUrl);
-              setImageData(dataUrl);
-              stopCamera();
-            }
-          }
-        };
-        img.src = e.target?.result as string;
+        const dataUrl = e.target?.result as string;
+        setImagePreview(dataUrl);
+        setImageData(dataUrl);
+        stopCamera();
       };
       reader.readAsDataURL(file);
     }
@@ -139,6 +129,38 @@ export default function AddProductPage() {
     setStream(null);
     setUseCamera(false);
   }
+
+  const handleEnhanceImage = async () => {
+    if (!imageData) {
+      toast({
+        variant: 'destructive',
+        title: t.noImageToast,
+        description: t.noImageToastDesc,
+      });
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const enhancedResult = await enhanceProductImage({ photoDataUri: imageData });
+      
+      setImagePreview(enhancedResult);
+      setImageData(enhancedResult);
+      toast({
+        title: t.enhanceSuccessToast,
+        description: t.enhanceSuccessToastDesc,
+      });
+    } catch (error) {
+      console.error('Enhancement failed:', error);
+      toast({
+        variant: 'destructive',
+        title: t.enhanceFailedToast,
+        description: t.enhanceFailedToastDesc,
+      });
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
 
   const handleGenerateDetails = async () => {
     if (!imageData) {
@@ -170,46 +192,87 @@ export default function AddProductPage() {
       toast({
         variant: 'destructive',
         title: t.generationFailedToast,
-        description: t.generationFailedToastDesc,
+        description: t.generationFailedDesc,
       });
     } finally {
       setIsGenerating(false);
     }
   };
+  
+  const compressImage = (dataUrl: string, maxWidth = 800): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.src = dataUrl;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const scaleSize = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scaleSize;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return reject('Could not get canvas context');
+            }
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            resolve(canvas.toDataURL('image/jpeg', 0.8)); // Use JPEG for better compression
+        };
+        img.onerror = reject;
+    });
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!imageData) {
+        toast({
+            variant: 'destructive',
+            title: t.noImageToast,
+            description: t.noImageToastDesc,
+        });
+        return;
+    }
     setIsLoading(true);
-    
-    const myProducts: Product[] = JSON.parse(localStorage.getItem('myArtisanProducts') || '[]');
-    
-    const newProduct: Product = {
-        id: `prod-${Date.now()}`,
-        name: values.productName,
-        artisan: artisans[0], // Mocking artisan
-        price: values.price,
-        image: {
-            url: imageData || '',
-            hint: 'custom product'
-        },
-        category: values.productCategory,
-        description: values.productDescription,
-        story: values.productStory,
-        likes: 0,
-        sales: 0,
-        createdAt: new Date().toISOString(),
-    };
-    
-    myProducts.unshift(newProduct);
-    localStorage.setItem('myArtisanProducts', JSON.stringify(myProducts));
 
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: t.productSavedToast,
-        description: t.productSavedToastDesc,
-      });
-      router.push('/artisan/my-products');
-    }, 1000);
+    try {
+        const compressedImageData = await compressImage(imageData);
+        const myProducts: Product[] = JSON.parse(localStorage.getItem('myArtisanProducts') || '[]');
+        
+        const newProduct: Product = {
+            id: `prod-${Date.now()}`,
+            name: values.productName,
+            artisan: artisans[0],
+            price: values.price,
+            image: {
+                url: compressedImageData,
+                hint: 'custom product'
+            },
+            category: values.productCategory,
+            description: values.productDescription,
+            story: values.productStory,
+            likes: 0,
+            sales: 0,
+            createdAt: new Date().toISOString(),
+        };
+        
+        myProducts.unshift(newProduct);
+        localStorage.setItem('myArtisanProducts', JSON.stringify(myProducts));
+
+        toast({
+            title: t.productSavedToast,
+            description: t.productSavedToastDesc,
+        });
+        router.push('/artisan/my-products');
+
+    } catch (error) {
+        console.error('Error saving product:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Failed to Save Product',
+            description: 'Could not save the product. The storage might be full.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   const startCamera = async () => {
@@ -263,156 +326,195 @@ export default function AddProductPage() {
 
 
   return (
-    <div className="p-4">
-      <Button onClick={() => router.back()} variant="ghost" size="icon" className="mb-4 h-9 w-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 md:hidden">
-        <ChevronLeft className="h-6 w-6" />
-      </Button>
-      <Card className="w-full max-w-xl mx-auto shadow-lg">
-        <CardHeader>
-          <div className="text-center">
-              <CardTitle className="font-headline text-xl md:text-2xl">{t.title}</CardTitle>
-              <CardDescription>{t.description}</CardDescription>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <div className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
-            {useCamera ? (
-              <>
-                <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-                
-                {hasCameraPermission === false && (
-                  <div className="absolute inset-0 flex items-center justify-center p-4">
-                    <Alert variant="destructive">
-                      <AlertTitle>{t.cameraAccessRequired}</AlertTitle>
-                      <AlertDescription>{t.cameraAccessDescription}</AlertDescription>
-                    </Alert>
-                  </div>
-                )}
-              </>
-            ) : imagePreview ? (
-              <div className="relative w-full h-full">
-                <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-muted-foreground">
-                <Upload className="w-8 h-8 mb-2" />
-                <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
-              </div>
-            )}
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
-          <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
-        </CardContent>
-
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {useCamera && stream ? (
-                 <Button onClick={handleCapture} className="w-full">
-                    <Camera className="mr-2 h-4 w-4" />
-                    {t.captureButton}
-                </Button>
-            ) : (
-                <>
-                    <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-                        <Upload className="mr-2 h-4 w-4" />{t.uploadButton}
-                    </Button>
-                    <Button onClick={startCamera} variant="outline">
-                        <Camera className="mr-2 h-4 w-4" />{t.cameraButton}
-                    </Button>
-                </>
-            )}
-        </CardContent>
-
-        <CardContent>
-            <Button onClick={handleGenerateDetails} disabled={isGenerating || !imageData} className="w-full">
-                {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.generatingDetailsButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.generateDetailsButton}</>}
+    <div className="p-4 relative">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-sm h-14 flex items-center border-b bg-card px-4 z-50">
+            <Button onClick={() => router.back()} variant="ghost" size="icon">
+                <ChevronLeft className="h-6 w-6" />
+                <span className="sr-only">{t.backButton}</span>
             </Button>
-        </CardContent>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-4">
-              <FormField control={form.control} name="productName" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.productNameLabel}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}/>
-               <FormField control={form.control} name="productCategory" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.productCategoryLabel}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder={t.selectCategoryPlaceholder}>
-                                {getCategoryDisplayValue(field.value)}
-                            </SelectValue>
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        {baseProductCategories.map((cat, index) => (
-                            <SelectItem key={cat} value={cat}>
-                                {translations.product_categories[index] || cat}
-                            </SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
-                  <FormMessage />
-                </FormItem>
-              )}/>
-               <FormField control={form.control} name="productDescription" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.productDescriptionLabel}</FormLabel>
-                  <FormControl><Textarea {...field} className="h-24" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}/>
-               <FormField control={form.control} name="productStory" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.productStoryLabel}</FormLabel>
-                  <FormControl><Textarea {...field} className="h-24" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}/>
-              <FormField control={form.control} name="price" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.priceLabel}</FormLabel>
-                  <FormControl><Input type="number" placeholder={t.pricePlaceholder} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}/>
-            </CardContent>
-            <CardFooter className="flex flex-col sm:flex-row gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full" onClick={handlePreview}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    {t.previewButton}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-full w-full h-full max-h-full p-0 flex flex-col">
-                    <div className="relative p-4 border-b">
-                        <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
-                         <DialogClose className="absolute right-2 top-1/2 -translate-y-1/2">
-                            <Button variant="ghost" size="icon">
-                                <ChevronLeft className="h-6 w-6" />
-                            </Button>
-                         </DialogClose>
+            <h1 className="text-lg font-semibold mx-auto">{t.title}</h1>
+            <div className="w-10"></div>
+        </header>
+
+        <div className="mt-14">
+            <div className="flex justify-end mb-2">
+                <TutorialDialog pageId="add-product" />
+            </div>
+            <Card className="w-full max-w-xl mx-auto shadow-lg">
+                <CardHeader>
+                    <div className="text-center">
+                        <CardTitle className="font-headline text-xl md:text-2xl">{t.title}</CardTitle>
+                        <CardDescription>{t.description}</CardDescription>
                     </div>
-                  <div className="flex-1 overflow-y-auto">
-                     {previewProduct && <ProductPreview product={previewProduct} />}
-                  </div>
-                </DialogContent>
-              </Dialog>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? t.savingProductButton : t.saveProductButton}
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
+                </CardHeader>
+
+                <CardContent>
+                    <div className="space-y-2">
+                    <div className="flex justify-end">
+                        {imageData && (
+                            <Button
+                                onClick={handleEnhanceImage}
+                                disabled={isEnhancing}
+                                size="sm"
+                                className="bg-yellow-300 text-yellow-900 hover:bg-yellow-400"
+                            >
+                                {isEnhancing ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {t.enhancingButton}
+                                </>
+                                ) : (
+                                <>
+                                    <Wand2 className="mr-2 h-4 w-4" />
+                                    {t.enhanceButton}
+                                </>
+                                )}
+                            </Button>
+                        )}
+                    </div>
+                    <div className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg bg-secondary overflow-hidden">
+                        {useCamera ? (
+                        <>
+                            <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
+                            
+                            {hasCameraPermission === false && (
+                            <div className="absolute inset-0 flex items-center justify-center p-4">
+                                <Alert variant="destructive">
+                                <AlertTitle>{t.cameraAccessRequired}</AlertTitle>
+                                <AlertDescription>{t.cameraAccessDescription}</AlertDescription>
+                                </Alert>
+                            </div>
+                            )}
+                        </>
+                        ) : imagePreview ? (
+                        <div className="relative w-full h-full">
+                            <Image src={imagePreview} alt="Preview" fill className="object-contain"/>
+                        </div>
+                        ) : (
+                        <div className="flex flex-col items-center justify-center text-muted-foreground">
+                            <Upload className="w-8 h-8 mb-2" />
+                            <p className="text-sm font-semibold">{t.uploadPlaceholder}</p>
+                        </div>
+                        )}
+                        <canvas ref={canvasRef} className="hidden" />
+                    </div>
+                    <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
+                    </div>
+                </CardContent>
+
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {useCamera && stream ? (
+                        <Button onClick={handleCapture} className="w-full">
+                            <Camera className="mr-2 h-4 w-4" />
+                            {t.captureButton}
+                        </Button>
+                    ) : (
+                        <>
+                            <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+                                <Upload className="mr-2 h-4 w-4" />{t.uploadButton}
+                            </Button>
+                            <Button onClick={startCamera} variant="outline">
+                                <Camera className="mr-2 h-4 w-4" />{t.cameraButton}
+                            </Button>
+                        </>
+                    )}
+                </CardContent>
+
+                <CardContent>
+                    <Button onClick={handleGenerateDetails} disabled={isGenerating || !imageData} className="w-full">
+                        {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t.generatingDetailsButton}</> : <><Sparkles className="mr-2 h-4 w-4" />{t.generateDetailsButton}</>}
+                    </Button>
+                </CardContent>
+                
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardContent className="space-y-4">
+                        <FormField control={form.control} name="productName" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t.productNameLabel}</FormLabel>
+                            <FormControl><Input {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="productCategory" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t.productCategoryLabel}</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={t.selectCategoryPlaceholder}>
+                                        {getCategoryDisplayValue(field.value)}
+                                    </SelectValue>
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                {baseProductCategories.map((cat, index) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {translations.product_categories[index] || cat}
+                                    </SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="productDescription" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t.productDescriptionLabel}</FormLabel>
+                            <FormControl><Textarea {...field} className="h-24" /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="productStory" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t.productStoryLabel}</FormLabel>
+                            <FormControl><Textarea {...field} className="h-24" /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="price" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t.priceLabel}</FormLabel>
+                            <FormControl><Input type="number" placeholder={t.pricePlaceholder} {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}/>
+                    </CardContent>
+                    <CardFooter className="flex flex-col sm:flex-row gap-2">
+                        <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="w-full" onClick={handlePreview}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            {t.previewButton}
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent showCloseButton={false} className="max-w-sm w-full h-full max-h-screen p-0 m-0 overflow-y-auto flex flex-col">
+                            <div className="relative p-4 border-b">
+                                <DialogTitle className="text-center font-headline">{t.previewTitle}</DialogTitle>
+                                <DialogClose asChild className="absolute left-2 top-1/2 -translate-y-1/2">
+                                    <Button variant="ghost" size="icon">
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </Button>
+                                </DialogClose>
+                            </div>
+                            <div className="flex-1 overflow-y-auto">
+                            {previewProduct && <ProductPreview product={previewProduct} />}
+                            </div>
+                        </DialogContent>
+                        </Dialog>
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading ? t.savingProductButton : t.saveProductButton}
+                        </Button>
+                    </CardFooter>
+                    </form>
+                </Form>
+            </Card>
+        </div>
     </div>
   );
 }
+
+    
+
+      

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { statsData } from "@/lib/data";
 import StatsChart from "@/components/stats-chart";
@@ -11,11 +11,13 @@ import { products } from '@/lib/data';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, X } from 'lucide-react';
+import { Loader2, Sparkles, Volume2 } from 'lucide-react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useTranslation } from '@/context/translation-context';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/language-context';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 type View = 'weekly' | 'monthly' | 'yearly';
 
@@ -42,20 +44,45 @@ export default function StatisticsPage() {
   const [aiReview, setAiReview] = useState<AiReview | null>(null);
   const { toast } = useToast();
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.stats_page;
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentOpenDialog, setCurrentOpenDialog] = useState<string | null>(null);
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    }
+  };
+  
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+  };
 
   const handleGenerateReview = async (productId: string, productDescription: string) => {
     setIsGenerating(productId);
     setAiReview(null);
     try {
-      const result = await getCommunityTrendInsights({ artisanId: '1', productDescription });
+      const result = await getCommunityTrendInsights({ 
+        artisanId: '1', 
+        productDescription,
+        language,
+      });
       setAiReview({
         productId: productId,
         review: result.aiReview,
         audio: result.aiReviewAudio,
       });
       toast({
-        title: t.reviewFor,
+        title: `${t.reviewFor} ${products.find(p => p.id === productId)?.name || 'Product'}`,
         description: t.analysisOfPotential,
       })
     } catch (error) {
@@ -69,14 +96,32 @@ export default function StatisticsPage() {
       setIsGenerating(null);
     }
   }
+  
+  const onDialogOpenChange = (open: boolean, productId: string) => {
+    if (open) {
+      setCurrentOpenDialog(productId);
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        handleGenerateReview(productId, product.description);
+      }
+    } else {
+      setCurrentOpenDialog(null);
+      setAiReview(null);
+       if (audioRef.current && aiReview) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
 
   const getButtonVariant = (buttonView: View) => {
     return view === buttonView ? 'default' : 'outline';
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
-      <header className="mb-6">
+    <div className="container mx-auto p-4 md:p-6 relative">
+      <TutorialDialog pageId="statistics" />
+      <header className="mb-6 mt-12">
         <h1 className="font-headline text-2xl md:text-3xl font-bold">{t.title}</h1>
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
@@ -123,18 +168,17 @@ export default function StatisticsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Dialog>
+                      <Dialog onOpenChange={(open) => onDialogOpenChange(open, product.id)}>
                          <DialogTrigger asChild>
                            <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleGenerateReview(product.id, product.description)}
                               className={cn(
                                 'animate-pulse bg-primary/10 text-primary hover:bg-primary/20',
                                 isGenerating === product.id && 'animate-spin'
                               )}
                             >
-                             {isGenerating === product.id ? <Loader2 className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+                             {isGenerating === product.id && currentOpenDialog === product.id ? <Loader2 className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
                            </Button>
                          </DialogTrigger>
                          <DialogContent>
@@ -145,7 +189,23 @@ export default function StatisticsPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             {aiReview ? (
-                              <div className="py-4 text-sm text-muted-foreground">{aiReview.review}</div>
+                              <div className="py-4">
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{aiReview.review}</p>
+                                  {aiReview.audio && (
+                                      <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className={cn("h-8 w-8 rounded-full", isPlaying && "bg-accent text-accent-foreground")}
+                                          onClick={handlePlayPause}
+                                          aria-label="Play audio review"
+                                      >
+                                          <Volume2 className="h-5 w-5" />
+                                          <audio ref={audioRef} src={aiReview.audio} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={handleAudioEnded} />
+                                      </Button>
+                                  )}
+                                </div>
+                              </div>
                             ) : (
                               <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin"/></div>
                             )}

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow that generates product details from an image.
@@ -8,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 import { productCategories } from '@/lib/data';
 import { translateText } from '@/services/translation-service';
 
@@ -38,7 +39,7 @@ const prompt = ai.definePrompt({
   name: 'generateProductDetailsPrompt',
   input: {schema: z.object({ photoDataUri: GenerateProductDetailsInputSchema.shape.photoDataUri })},
   output: {schema: GenerateProductDetailsOutputSchema},
-  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details: a product name, a product category, a product story, and a product description.
+  prompt: `You are an expert product marketer for artisanal crafts. Analyze the provided image of a handmade product and generate the following details in English: a product name, a product category, a product story, and a product description.
 
 The product category must be one of the following: ${productCategories.join(', ')}.
 
@@ -75,9 +76,10 @@ const generateProductDetailsFlow = ai.defineFlow(
       });
 
       if (translatedTexts.length === 3) {
+        // Return the translated output.
         return {
           productName: translatedTexts[0],
-          productCategory: output.productCategory,
+          productCategory: output.productCategory, // Category is not translated
           productStory: translatedTexts[1],
           productDescription: translatedTexts[2],
         };

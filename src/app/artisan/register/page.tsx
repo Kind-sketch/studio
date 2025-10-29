@@ -11,16 +11,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
-
+import { useLanguage } from '@/context/language-context';
+import { signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
+import { useAuth } from '@/firebase';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
-  otp: z.string().min(5, 'OTP must be 5 digits.').optional(),
+  otp: z.string().length(6, 'OTP must be 6 digits.').optional(),
 });
 
 export default function ArtisanRegisterPage() {
@@ -29,7 +31,11 @@ export default function ArtisanRegisterPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { translations } = useTranslation();
+  const { language } = useLanguage();
   const t = translations.artisan_register_page;
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,48 +45,101 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  function handleSendOtp() {
+  const handleSendOtp = useCallback(async () => {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
-     if (!mobileResult.success) {
+    if (!mobileResult.success) {
       form.setError('mobileNumber', { message: t.invalidNumber });
       return;
     }
-
+   
     setIsLoading(true);
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      setOtpSent(true);
-      toast({
-          title: t.otpSentToast,
-          description: t.otpSentToastDesc,
-      });
-    }, 1000);
-  }
+    auth.languageCode = language;
+    const phoneNumber = `+91${mobileNumber}`;
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!otpSent) {
-      handleSendOtp();
+    try {
+        if (!recaptchaContainerRef.current) {
+            throw new Error("reCAPTCHA container not found.");
+        }
+        
+        // Ensure the container is empty before creating a new verifier
+        recaptchaContainerRef.current.innerHTML = '';
+
+        const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+            'size': 'invisible'
+        });
+
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+        setConfirmationResult(result);
+        setOtpSent(true);
+        toast({
+            title: t.otpSentToast,
+            description: t.otpSentToastDesc,
+        });
+    } catch (error: any) {
+      console.error("signInWithPhoneNumber error:", error);
+      toast({
+        variant: 'destructive',
+        title: t.errorSendingOtp,
+        description: error.message,
+      });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [auth, form, language, t.invalidNumber, t.otpSentToast, t.otpSentToastDesc, toast, t.errorSendingOtp]);
+
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!otpSent || !values.otp || values.otp.length !== 6) {
+      form.setError('otp', { message: 'OTP must be 6 digits.' });
       return;
     }
-    
-    if (!values.otp || values.otp.length < 5) {
-      form.setError('otp', { message: 'OTP must be at least 5 digits.' });
-      return;
+
+    if (!confirmationResult) {
+        toast({ variant: 'destructive', title: 'Error', description: 'OTP confirmation context is missing.' });
+        return;
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Mock OTP verification - accept any OTP
+    try {
+      const result = await confirmationResult.confirm(values.otp);
+      const user = result.user;
+      
+      const isNewUser = (user.metadata.creationTime === user.metadata.lastSignInTime);
+
       toast({
-        title: t.welcomeBackToast,
-        description: t.welcomeBackToastDesc,
+        title: isNewUser ? t.welcomeToast : t.welcomeBackToast,
+        description: isNewUser ? t.accountCreatedDesc : t.welcomeBackToastDesc,
       });
-      router.push('/artisan/category-selection');
-    }, 1000);
+      
+      if (values.mobileNumber === '8438610450' || isNewUser) {
+        localStorage.setItem('tempPhone', values.mobileNumber);
+        router.push('/artisan/profile?setup=true');
+      } else {
+        router.push('/artisan/post-auth');
+      }
+
+    } catch (error: any) {
+        console.error("OTP verification error:", error);
+        if (error.code === 'auth/code-expired') {
+             toast({
+                variant: 'destructive',
+                title: t.otpExpiredToast,
+                description: t.otpExpiredToastDesc,
+            });
+            setOtpSent(false); // Allow user to request a new OTP
+            form.resetField('otp');
+        } else {
+            toast({
+                variant: 'destructive',
+                title: t.invalidOtpToast,
+                description: error.message || t.invalidOtpToastDesc,
+            });
+        }
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -105,14 +164,18 @@ export default function ArtisanRegisterPage() {
                     <FormItem>
                         <FormLabel>{t.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm" />
+                        <div className="flex items-center">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">+91</span>
+                          <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm rounded-l-none" />
+                        </div>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
               
-              {otpSent && <FormField
+              {otpSent ? (
+                 <FormField
                   control={form.control}
                   name="otp"
                   render={({ field }) => (
@@ -124,15 +187,20 @@ export default function ArtisanRegisterPage() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />}
-
+                />
+              ) : null}
             </CardContent>
             <CardContent>
               {otpSent ? (
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t.verifyButton}
-                </Button>
+                <div className="space-y-2">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t.verifyButton}
+                    </Button>
+                    <Button type="button" variant="link" className="text-xs p-0 h-auto w-full" onClick={handleSendOtp} disabled={isLoading}>
+                        {t.resendOtp}
+                    </Button>
+                </div>
               ) : (
                 <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -142,7 +210,8 @@ export default function ArtisanRegisterPage() {
             </CardContent>
           </form>
         </Form>
-        <CardFooter className="justify-center text-xs text-muted-foreground">
+        <CardFooter className="flex flex-col justify-center text-xs text-muted-foreground">
+          <div ref={recaptchaContainerRef} className="my-2"></div>
           <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>

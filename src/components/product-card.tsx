@@ -20,13 +20,23 @@ export default function ProductCard({ product, onSave, showSaveButton, className
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(product.likes);
 
-  const handleLike = () => {
+  const handleLike = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
       setIsLiked(!isLiked);
       setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
   }
 
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if(onSave) {
+      onSave();
+    }
+  }
+
   return (
-    <Card className={cn("overflow-hidden shadow-md transition-shadow hover:shadow-xl h-full flex flex-col", className)}>
+    <Card className={cn("overflow-hidden shadow-sm transition-shadow hover:shadow-lg h-full flex flex-col", className)}>
       <CardContent className="p-0 flex-grow">
         <div className="relative aspect-[3/4] w-full">
           <Image
@@ -37,23 +47,23 @@ export default function ProductCard({ product, onSave, showSaveButton, className
             className="object-cover"
           />
         </div>
-        <div className="p-2">
-          <h3 className="font-headline text-sm font-semibold truncate">{product.name}</h3>
-          <p className="text-xs text-muted-foreground truncate">
+        <div className="p-1 sm:p-2 space-y-1">
+          <h3 className="font-headline text-[10px] sm:text-xs font-semibold truncate leading-tight">{product.name}</h3>
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
             by {product.artisan.name}
           </p>
-          <div className="mt-2 flex justify-between items-center">
-            <p className="font-semibold text-sm">₹{product.price.toFixed(2)}</p>
-            <div className="flex items-center gap-1">
+          <div className="flex justify-between items-center pt-0.5">
+            <p className="font-semibold text-[10px] sm:text-xs">₹{product.price.toFixed(2)}</p>
+            <div className="flex items-center gap-0.5">
                <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7"
+                className="h-6 w-6"
                 onClick={handleLike}
                 >
                 <Heart
                     className={cn(
-                    'h-4 w-4 text-slate-700',
+                    'h-3 w-3 text-slate-700',
                     isLiked && 'fill-red-500 text-red-500'
                     )}
                 />
@@ -62,8 +72,8 @@ export default function ProductCard({ product, onSave, showSaveButton, className
                     <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 px-2 py-1 text-xs"
-                        onClick={onSave}
+                        className="h-6 px-1.5 py-0.5 text-[10px]"
+                        onClick={handleSaveClick}
                     >
                         Save
                     </Button>
@@ -75,3 +85,5 @@ export default function ProductCard({ product, onSave, showSaveButton, className
     </Card>
   );
 }
+
+    

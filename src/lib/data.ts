@@ -135,43 +135,30 @@ export const products: Product[] = [
     story: "Each stitch is a tribute to the resilient flowers in my garden. This scarf is a wearable piece of nature's artistry."
   },
   {
-    id: '9',
-    name: 'Bronze Leaf Sculpture',
+    id: '12',
+    name: 'Cityscape at Dusk',
     artisan: artisans[3],
-    price: 320.0,
-    image: getImage('product-9'),
-    category: 'Sculpture',
-    description: 'A stunning bronze sculpture of a cluster of leaves, capturing the delicate details of nature in a permanent form. This piece has a classic, timeless appeal and will enhance any home or office decor.',
-    likes: 180,
-    sales: 12,
-    reviews: { rating: 4.9, count: 15 },
-    story: "I found a perfect leaf on a walk and was inspired to preserve its fleeting beauty in bronze. This is my homage to the elegance of nature."
+    price: 450.0,
+    image: getImage('product-12'),
+    category: 'Paintings',
+    description: 'An evocative oil painting that captures the mood of a city as day turns to night. The warm glow of streetlights reflects on wet pavement, creating a sense of both energy and intimacy. A perfect piece for a contemporary living space.',
+    likes: 520,
+    sales: 10,
+    reviews: { rating: 4.9, count: 18 },
+    story: "I love the city's dual personality. This painting is my attempt to capture that magical moment when the bustling day gives way to the electric energy of the night."
   },
   {
-    id: '10',
-    name: 'Forged Iron Candlesticks',
+    id: '13',
+    name: 'Tree of Life Pendant',
     artisan: artisans[4],
-    price: 90.0,
-    image: getImage('product-10'),
-    category: 'Metalwork',
-    description: 'A pair of hand-forged iron candlesticks with a rustic, textured finish. Their sturdy and elegant design provides a perfect accent for a mantlepiece or dining table, adding a touch of old-world charm.',
-    likes: 85,
-    sales: 32,
-    reviews: { rating: 4.6, count: 25 },
-    story: "Hammered and shaped by hand, these candlesticks carry the mark of the fire and the anvil. They are built to last for generations."
-  },
-  {
-    id: '11',
-    name: 'Earthenware Pitcher Set',
-    artisan: artisans[0],
-    price: 75.0,
-    image: getImage('product-11'),
-    category: 'Pottery',
-    description: 'A charming set of an earthenware pitcher and two matching cups. The pieces are finished with a speckled, cream-colored glaze. Ideal for serving beverages or for use as a decorative set.',
-    likes: 155,
-    sales: 40,
-    reviews: { rating: 4.8, count: 39 },
-    story: "This set is designed for sharing moments. Whether it's morning coffee or evening tea, it’s made for connection and conversation."
+    price: 150.0,
+    image: getImage('product-13'),
+    category: 'Jewelry',
+    description: 'A beautifully detailed silver pendant depicting the Tree of Life, symbolizing connection, family, and growth. This intricate piece is hung on a sturdy silver chain and makes a meaningful gift.',
+    likes: 480,
+    sales: 95,
+    reviews: { rating: 4.9, count: 150 },
+    story: 'The Tree of Life is a powerful symbol that connects us all. I crafted this pendant as a reminder that we are all rooted together in this world.'
   }
 ];
 
@@ -197,11 +184,10 @@ export const categories: Category[] = [
 export const languages: Language[] = [
     { code: 'en', name: 'English', nativeName: 'English' },
     { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-    { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
     { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
     { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
-    { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
     { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
+    { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
 ];
 
 export const statsData = {
@@ -225,3 +211,6 @@ export const statsData = {
     { year: "2024", likes: 18000, sales: 3500 },
   ],
 };
+
+    
+    

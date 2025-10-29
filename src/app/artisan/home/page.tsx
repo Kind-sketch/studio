@@ -17,11 +17,12 @@ import { Loader2, Lightbulb, Mic, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product, SavedCollection } from '@/lib/types';
 import { useTranslation } from '@/context/translation-context';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
+import TutorialDialog from '@/components/tutorial-dialog';
 
 
 // Mocking the current artisan as Elena Vance (ID '1')
@@ -47,9 +48,8 @@ export default function ArtisanHomePage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
-  const mostLikedProducts = [...myProducts].sort((a, b) => b.likes - a.likes);
-  const frequentlyBoughtProducts = [...myProducts].sort((a, b) => b.sales - a.sales);
+  const mostLikedProducts = [...allProducts].sort((a, b) => b.likes - a.likes).slice(0, 10);
+  const frequentlyBoughtProducts = [...allProducts].sort((a, b) => b.sales - a.sales).slice(0, 10);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -106,6 +106,7 @@ export default function ArtisanHomePage() {
       const response = await getCommunityTrendInsights({
         artisanId: CURRENT_ARTISAN_ID,
         productDescription: values.productDescription,
+        language: language,
       });
       setResult(response);
       toast({
@@ -170,60 +171,71 @@ export default function ArtisanHomePage() {
         toast({
             title: t.savedToCollectionToast.replace('{collectionName}', inspirationCollection.name),
         });
+    } else {
+        toast({
+            variant: 'default',
+            title: 'Already Saved',
+            description: 'This product is already in your Inspiration collection.',
+        });
     }
   }, [toast, t.savedToCollectionToast]);
 
   return (
-    <div className="flex flex-col p-4 space-y-4">
-      <div>
-        <h2 className="font-headline text-2xl font-bold tracking-tight truncate">{t.pageTitle}</h2>
-        <p className="text-muted-foreground text-sm truncate">{t.pageDescription}</p>
+    <div className="flex flex-col px-2 py-4 space-y-6 relative">
+      <TutorialDialog pageId="home" />
+      <div className="mt-12">
+        <h2 className="font-headline text-2xl font-bold tracking-tight">{t.pageTitle}</h2>
+        <p className="text-muted-foreground text-sm">{t.pageDescription}</p>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div className="space-y-8">
         {/* Frequently Bought Products */}
-        <section className="space-y-2">
-            <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
-            <Carousel 
-                opts={{ align: 'start', loop: true, direction: 'rtl' }}
-                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
-                className="w-full"
-            >
-                <CarouselContent>
-                {frequentlyBoughtProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/3 pl-2">
-                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-            </Carousel>
-        </section>
+        <div className="overflow-hidden">
+            <section className="space-y-3">
+                <h3 className="font-headline text-lg font-semibold">{t.frequentlyBought}</h3>
+                <Carousel
+                    opts={{ align: 'start', loop: true }}
+                    plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
+                    className="-mx-2"
+                >
+                    <CarouselContent className="-ml-2">
+                    {frequentlyBoughtProducts.map((product) => (
+                        <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                            <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                </Carousel>
+            </section>
+        </div>
 
         {/* Most Liked Products */}
-        <section className="space-y-2">
-          <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
-           <Carousel 
-            opts={{ align: 'start', loop: true }}
-            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
-            className="w-full"
-          >
-            <CarouselContent>
-              {mostLikedProducts.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/3 pl-2">
-                   <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-            <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
-          </Carousel>
-        </section>
+        <div className="overflow-hidden">
+            <section className="space-y-3">
+              <h3 className="font-headline text-lg font-semibold">{t.mostLiked}</h3>
+               <Carousel
+                    opts={{ align: 'start', loop: true }}
+                    plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
+                    className="-mx-2"
+                >
+                    <CarouselContent className="-ml-2">
+                    {mostLikedProducts.map((product) => (
+                        <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                            <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex" />
+                </Carousel>
+            </section>
+        </div>
 
         {/* AI Review Section */}
         <section>
-             <Card>
+             <Card className="max-w-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="text-md leading-tight">{t.aiReviewTitle}</CardTitle>
                 <CardDescription className="text-xs">{t.aiReviewDescription}</CardDescription>
@@ -267,7 +279,7 @@ export default function ArtisanHomePage() {
             </Card>
             
             {result && (
-              <Card className="mt-4">
+              <Card className="mt-4 max-w-sm">
                 <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-md">{t.aiGeneratedInsightsTitle}</CardTitle>

@@ -11,10 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { textToSpeech } from './text-to-speech';
+import { translateText } from '@/services/translation-service';
 
 const CommunityTrendInsightsInputSchema = z.object({
   artisanId: z.string().describe('The ID of the artisan.'),
   productDescription: z.string().describe('The description of the product.'),
+  language: z.string().optional().describe('The language of the product description.'),
 });
 export type CommunityTrendInsightsInput = z.infer<typeof CommunityTrendInsightsInputSchema>;
 
@@ -30,7 +32,7 @@ export async function getCommunityTrendInsights(input: CommunityTrendInsightsInp
 
 const prompt = ai.definePrompt({
   name: 'communityTrendInsightsPrompt',
-  input: {schema: CommunityTrendInsightsInputSchema},
+  input: {schema: z.object({ productDescription: z.string() })},
   output: {schema: z.object({ aiReview: z.string() })},
   prompt: `You are an expert AI business consultant for artisans. Your goal is to provide insightful, honest, and actionable feedback on their product ideas. Keep your feedback concise and to the point, in a single paragraph.
 
@@ -46,14 +48,44 @@ const communityTrendInsightsFlow = ai.defineFlow(
     inputSchema: CommunityTrendInsightsInputSchema,
     outputSchema: CommunityTrendInsightsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async ({ artisanId, productDescription, language }) => {
+    let descriptionInEnglish = productDescription;
+
+    // Translate the description to English if a language is provided and it's not English
+    if (language && language !== 'en' && productDescription) {
+      const translationResult = await translateText({
+        texts: [productDescription],
+        targetLanguage: 'en',
+      });
+      if (translationResult.translatedTexts.length > 0 && translationResult.translatedTexts[0]) {
+        descriptionInEnglish = translationResult.translatedTexts[0];
+      }
+    }
+
+    // Get the AI review in English
+    const {output} = await prompt({ productDescription: descriptionInEnglish });
     if (!output) {
         throw new Error("Failed to get review from AI.");
     }
-    const audioDataUri = await textToSpeech(output.aiReview);
+    
+    let finalReview = output.aiReview;
+
+    // Translate the review back to the original language if needed
+    if (language && language !== 'en' && output.aiReview) {
+        const backTranslationResult = await translateText({
+            texts: [output.aiReview],
+            targetLanguage: language,
+        });
+        if (backTranslationResult.translatedTexts.length > 0 && backTranslationResult.translatedTexts[0]) {
+            finalReview = backTranslationResult.translatedTexts[0];
+        }
+    }
+
+    // Generate audio from the final (potentially translated) review
+    const audioDataUri = await textToSpeech(finalReview);
+    
     return {
-        aiReview: output.aiReview,
+        aiReview: finalReview,
         aiReviewAudio: audioDataUri,
     };
   }

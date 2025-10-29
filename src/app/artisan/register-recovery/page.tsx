@@ -16,11 +16,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLanguage } from '@/context/language-context';
 import { translateText } from '@/services/translation-service';
+import { getAuth } from 'firebase/auth';
+import { useTranslation } from '@/context/translation-context';
 
 const formSchema = z.object({
   recoveryNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit recovery number.'),
-  primaryOtp: z.string().length(5, 'OTP must be 5 digits.'),
-  recoveryOtp: z.string().length(5, 'OTP must be 5 digits.'),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions.',
   }),
@@ -38,84 +38,37 @@ const baseTerms = [
 export default function ArtisanRegisterRecoveryPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const t = translations.artisan_register_recovery_page;
   const [isLoading, setIsLoading] = useState(false);
   const [primaryNumber, setPrimaryNumber] = useState('');
   const { language } = useLanguage();
   const [termsAndConditions, setTermsAndConditions] = useState(baseTerms);
 
-  const [translatedContent, setTranslatedContent] = useState({
-      title: 'Complete Your Registration',
-      description: 'Enter a recovery number and verify both numbers to secure your account.',
-      primaryNumberLabel: 'Primary Number',
-      primaryOtpLabel: 'OTP for Primary Number',
-      otpPlaceholder: 'Enter 5-digit OTP',
-      recoveryNumberLabel: 'Recovery Mobile Number',
-      recoveryNumberPlaceholder: '10-digit recovery number',
-      recoveryOtpLabel: 'OTP for Recovery Number',
-      termsLabel: 'Terms and Conditions',
-      agreeToTermsLabel: 'I agree to the terms and conditions.',
-      verifyButton: 'Verify & Create Account',
-      otpSentToast: 'OTPs Sent',
-      otpSentToastDesc: 'OTPs have been sent to both primary and recovery numbers.',
-      verificationSuccessToast: 'Verification Successful',
-      verificationSuccessToastDesc: "Let's get you started.",
-      invalidOtpToast: 'Invalid OTP',
-      invalidOtpToastDesc: 'One or both of the OTPs entered are incorrect. Please try again.',
-  });
-
+  const auth = getAuth();
+  
   useEffect(() => {
+     // If user is not logged in or didn't come from register page, redirect
+    if (!auth.currentUser) {
+        router.push('/artisan/register');
+        return;
+    }
+
     const phone = localStorage.getItem('tempPhone');
     if (phone) {
         setPrimaryNumber(phone);
     } else {
-        router.push('/artisan/register');
+        // If the tempPhone is not in storage, it implies they didn't just register.
+        // But if they ARE logged in, they shouldn't be on this page.
+        router.push('/artisan/post-auth');
     }
-  }, [router]);
+  }, [router, auth]);
 
   useEffect(() => {
     const translateContent = async () => {
       if (language !== 'en') {
-        const textsToTranslate = [
-            'Complete Your Registration',
-            'Enter a recovery number and verify both numbers to secure your account.',
-            'Primary Number',
-            'OTP for Primary Number',
-            'Enter 5-digit OTP',
-            'Recovery Mobile Number',
-            '10-digit recovery number',
-            'OTP for Recovery Number',
-            'Terms and Conditions',
-            'I agree to the terms and conditions.',
-            'Verify & Create Account',
-            'OTPs Sent',
-            'OTPs have been sent to both primary and recovery numbers.',
-            'Verification Successful',
-            "Let's get you started.",
-            'Invalid OTP',
-            'One or both of the OTPs entered are incorrect. Please try again.',
-            ...baseTerms,
-        ];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        setTranslatedContent({
-            title: translatedTexts[0],
-            description: translatedTexts[1],
-            primaryNumberLabel: translatedTexts[2],
-            primaryOtpLabel: translatedTexts[3],
-            otpPlaceholder: translatedTexts[4],
-            recoveryNumberLabel: translatedTexts[5],
-            recoveryNumberPlaceholder: translatedTexts[6],
-            recoveryOtpLabel: translatedTexts[7],
-            termsLabel: translatedTexts[8],
-            agreeToTermsLabel: translatedTexts[9],
-            verifyButton: translatedTexts[10],
-            otpSentToast: translatedTexts[11],
-            otpSentToastDesc: translatedTexts[12],
-            verificationSuccessToast: translatedTexts[13],
-            verificationSuccessToastDesc: translatedTexts[14],
-            invalidOtpToast: translatedTexts[15],
-            invalidOtpToastDesc: translatedTexts[16],
-        });
-        setTermsAndConditions(translatedTexts.slice(17));
+        const { translatedTexts } = await translateText({ texts: baseTerms, targetLanguage: language });
+        setTermsAndConditions(translatedTexts);
       } else {
         setTermsAndConditions(baseTerms);
       }
@@ -123,52 +76,36 @@ export default function ArtisanRegisterRecoveryPage() {
     translateContent();
   }, [language]);
 
-  useEffect(() => {
-    if (primaryNumber) {
-        toast({
-            title: translatedContent.otpSentToast,
-            description: translatedContent.otpSentToastDesc,
-        });
-    }
-  }, [primaryNumber, toast, translatedContent.otpSentToast, translatedContent.otpSentToastDesc]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       recoveryNumber: '',
-      primaryOtp: '',
-      recoveryOtp: '',
       agreeToTerms: false,
     },
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setTimeout(() => {
-      // Mock OTP verification
-      if (values.primaryOtp === '12345' && values.recoveryOtp === '54321') {
-        const existingUsers = JSON.parse(localStorage.getItem('artisanUsers') || '{}');
-        const newUser = {
-            phone: primaryNumber,
-            recovery: values.recoveryNumber,
-        };
-        existingUsers[primaryNumber] = newUser;
-        localStorage.setItem('artisanUsers', JSON.stringify(existingUsers));
-        localStorage.removeItem('tempPhone');
+    
+    // In a real app, you would save the primary and recovery numbers to your database here.
+    // For this prototype, we'll just store it in local storage to simulate.
+    const userProfile = {
+      primaryPhone: primaryNumber,
+      recoveryPhone: values.recoveryNumber,
+    };
+    localStorage.setItem('artisanFullProfile', JSON.stringify(userProfile));
+    localStorage.removeItem('tempPhone');
 
-        toast({
-          title: translatedContent.verificationSuccessToast,
-          description: translatedContent.verificationSuccessToastDesc,
-        });
-        router.push('/artisan/category-selection');
-      } else {
+    toast({
+      title: t.accountCreatedToast,
+      description: t.accountCreatedToastDesc,
+    });
+
+    // Simulate a network request
+    setTimeout(() => {
         setIsLoading(false);
-        toast({
-          variant: 'destructive',
-          title: translatedContent.invalidOtpToast,
-          description: translatedContent.invalidOtpToastDesc,
-        });
-      }
+        router.push('/artisan/category-selection');
     }, 1000);
   }
 
@@ -176,59 +113,33 @@ export default function ArtisanRegisterRecoveryPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-3xl">{t.title}</CardTitle>
           <CardDescription>
-            {translatedContent.description}
+            {t.description}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
                 <div>
-                    <FormLabel>{translatedContent.primaryNumberLabel}</FormLabel>
+                    <FormLabel>{t.primaryNumberLabel}</FormLabel>
                     <Input value={primaryNumber} disabled />
                 </div>
                 <FormField
                     control={form.control}
-                    name="primaryOtp"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{translatedContent.primaryOtpLabel}</FormLabel>
-                        <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                 <FormField
-                    control={form.control}
                     name="recoveryNumber"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{translatedContent.recoveryNumberLabel}</FormLabel>
+                        <FormLabel>{t.recoveryNumberLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.recoveryNumberPlaceholder} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                 <FormField
-                    control={form.control}
-                    name="recoveryOtp"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{translatedContent.recoveryOtpLabel}</FormLabel>
-                        <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} />
+                        <Input placeholder={t.recoveryNumberPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
                  <div className="space-y-2">
-                    <FormLabel>{translatedContent.termsLabel}</FormLabel>
+                    <FormLabel>{t.termsLabel}</FormLabel>
                     <ScrollArea className="h-24 w-full rounded-md border p-3 text-sm">
                         <ul className="list-disc pl-5 space-y-1">
                             {termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
@@ -244,7 +155,7 @@ export default function ArtisanRegisterRecoveryPage() {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                             <FormLabel>
-                                {translatedContent.agreeToTermsLabel}
+                                {t.agreeToTermsLabel}
                             </FormLabel>
                             <FormMessage />
                             </div>
@@ -255,18 +166,18 @@ export default function ArtisanRegisterRecoveryPage() {
             </CardContent>
             <CardContent>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {translatedContent.verifyButton}
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t.createAccountButton}
                 </Button>
             </CardContent>
           </form>
         </Form>
         <CardFooter className="justify-center text-xs text-muted-foreground">
-          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsLabel}</Button>
+          <Button variant="link" className="text-xs p-0 h-auto">{t.termsLabel}</Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
 
-    
+      

@@ -61,7 +61,7 @@ export default function CategorySelectionPage() {
               <Button
                 key={category.id}
                 variant={selectedCategories.includes(category.id) ? 'default' : 'outline'}
-                className="h-20 flex-col gap-2 relative text-xs"
+                className="h-24 flex-col gap-2 relative text-xs"
                 onClick={() => toggleCategory(category.id)}
               >
                 {selectedCategories.includes(category.id) && (
@@ -69,7 +69,7 @@ export default function CategorySelectionPage() {
                     <Check className="h-4 w-4" />
                   </div>
                 )}
-                <category.icon className="h-5 w-5" />
+                <category.icon className="h-8 w-8" />
                 <span className="text-center">{category.name}</span>
               </Button>
             ))}

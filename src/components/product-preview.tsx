@@ -10,7 +10,7 @@ interface ProductPreviewProps {
 
 export default function ProductPreview({ product }: ProductPreviewProps) {
     return (
-        <div className="p-4 md:p-6">
+        <div className="p-0">
             <Card className="overflow-hidden border-none shadow-none">
                 <CardContent className="p-0">
                     <div className="relative aspect-square w-full">
@@ -25,7 +25,7 @@ export default function ProductPreview({ product }: ProductPreviewProps) {
                 <CardHeader>
                     <CardTitle className="font-headline text-2xl md:text-3xl">{product.name}</CardTitle>
                     <CardDescription className="text-md">by {product.artisan.name}</CardDescription>
-                    <p className="font-semibold text-xl md:text-2xl pt-2">₹{product.price.toFixed(2)}</p>
+                    <p className="font-semibold text-xl md:text-2xl pt-2">₹{Number(product.price).toFixed(2)}</p>
                 </CardHeader>
                 <CardContent>
                     <Separator className="my-4" />
