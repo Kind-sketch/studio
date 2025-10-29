@@ -41,16 +41,18 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <LanguageProvider>
-          <TranslationProvider>
-            <div className="flex items-center justify-center min-h-screen w-full bg-zinc-200 dark:bg-zinc-800">
-                <div className="relative w-full max-w-[390px] h-screen max-h-[844px] bg-background shadow-2xl overflow-y-auto no-scrollbar">
-                    {children}
-                    {isClient && <Toaster />}
-                </div>
-            </div>
-          </TranslationProvider>
-        </LanguageProvider>
+        <FirebaseClientProvider>
+          <LanguageProvider>
+            <TranslationProvider>
+              <div className="flex items-center justify-center min-h-screen w-full bg-zinc-200 dark:bg-zinc-800">
+                  <div className="relative w-full max-w-[390px] h-screen max-h-[844px] bg-background shadow-2xl overflow-y-auto no-scrollbar">
+                      {children}
+                      {isClient && <Toaster />}
+                  </div>
+              </div>
+            </TranslationProvider>
+          </LanguageProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
