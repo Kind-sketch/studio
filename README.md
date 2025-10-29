@@ -10,7 +10,19 @@ Artistry Havens is a modern, AI-enhanced marketplace designed to connect artisan
 
 The application is multilingual and features a rich, interactive user interface powered by ShadCN components and Tailwind CSS.
 
-## 2. Current Progress & Features
+## 2. Running Locally & Connecting to Firebase
+
+The application is configured to connect to your live Firebase project when you run it locally. This allows you to see real-time updates in your Firebase Console.
+
+**Before you start:**
+
+1.  **Add Your API Key:** Open the newly created `.env.local` file in the root of the project. Replace `YOUR_API_KEY_HERE` with your actual Google AI (Gemini) API key.
+2.  **Enable Phone Sign-In:** Go to your **Firebase Console**, navigate to **Authentication -> Sign-in method**, and ensure the **Phone** provider is enabled.
+3.  **Run the App:** Start the local development server using `npm run dev`.
+
+Now, when you register a new user in your locally running application, they will immediately appear in the **Authentication -> Users** tab of your Firebase project.
+
+## 3. Current Progress & Features
 
 The front-end of the application is substantially complete and functional. Key features implemented include:
 
@@ -27,11 +39,11 @@ The front-end of the application is substantially complete and functional. Key f
 *   **Sponsor Dashboard:**
     *   Discover artisans and their products to sponsor.
 
-## 3. Recently Resolved File Issues
+## 4. Recently Resolved File Issues
 
 The application recently experienced several stability issues that have now been fixed:
 
-*   **Hydration Errors:** Multiple pages (e.g., `my-products`, `sponsors`, `home`) were attempting to access browser-only APIs like `localStorage` during the initial server-side render. This caused a mismatch with the client-side render, leading to application crashes.
+*   **Hydration Errors:** Multiple pages were attempting to access browser-only APIs like `localStorage` during the initial server-side render. This caused a mismatch with the client-side render, leading to application crashes.
     *   **Fix:** All `localStorage` access has been moved into `useEffect` hooks, ensuring this code only runs on the client-side after the page has fully loaded.
 
 *   **Invalid HTML Structure:** Some components had incorrect HTML nesting (e.g., a `<div>` inside a `<p>` tag), which also contributed to hydration errors.
@@ -40,7 +52,7 @@ The application recently experienced several stability issues that have now been
 *   **Firebase Initialization Errors:** The application was throwing a `Firebase: No Firebase App '[DEFAULT]' has been created` error because Firebase services were being accessed before the app was properly initialized.
     *   **Fix:** The root layout (`src/app/layout.tsx`) has been wrapped with a `FirebaseClientProvider`, which ensures that the Firebase app is initialized once and made available to all pages before it is needed.
 
-## 4. How to Create the Backend
+## 5. How to Create the Backend
 
 Currently, the application is running with mock data and a front-end implementation of Firebase. To make it a fully functional, data-persistent application, the Firebase backend needs to be provisioned.
 
