@@ -1,5 +1,50 @@
-# Firebase Studio
+# Artistry Havens - Project README
 
-This is a NextJS starter in Firebase Studio.
+## 1. Application Context
 
-To get started, take a look at src/app/page.tsx.
+Artistry Havens is a modern, AI-enhanced marketplace designed to connect artisans with buyers and sponsors. Built with Next.js, Firebase, and Google's Genkit, it provides a seamless platform for three distinct user roles:
+
+*   **Artisans:** Can showcase their creations, manage their digital storefront, track sales, and interact with sponsors.
+*   **Buyers:** Can discover unique handmade goods, browse by category, and even use AI to design custom products.
+*   **Sponsors:** Can discover and support talented artisans, fostering the creative community.
+
+The application is multilingual and features a rich, interactive user interface powered by ShadCN components and Tailwind CSS.
+
+## 2. Current Progress & Features
+
+The front-end of the application is substantially complete and functional. Key features implemented include:
+
+*   **Multi-Role Authentication:** Secure phone number and OTP-based login for Artisans, Buyers, and Sponsors using Firebase Authentication.
+*   **Artisan Portal:**
+    *   AI-assisted product creation (image upload, AI-generated descriptions, names, and stories).
+    *   Dashboard for tracking revenue, sales, and likes.
+    *   Management screens for orders and sponsorships.
+    *   AI-powered voice navigation to move between pages.
+*   **Buyer Experience:**
+    *   Browse products by category.
+    *   View detailed product pages.
+    *   Use AI to generate custom product designs from text descriptions or reference images.
+*   **Sponsor Dashboard:**
+    *   Discover artisans and their products to sponsor.
+
+## 3. Recently Resolved File Issues
+
+The application recently experienced several stability issues that have now been fixed:
+
+*   **Hydration Errors:** Multiple pages (e.g., `my-products`, `sponsors`, `home`) were attempting to access browser-only APIs like `localStorage` during the initial server-side render. This caused a mismatch with the client-side render, leading to application crashes.
+    *   **Fix:** All `localStorage` access has been moved into `useEffect` hooks, ensuring this code only runs on the client-side after the page has fully loaded.
+
+*   **Invalid HTML Structure:** Some components had incorrect HTML nesting (e.g., a `<div>` inside a `<p>` tag), which also contributed to hydration errors.
+    *   **Fix:** The HTML structure has been corrected to be valid, resolving these specific errors.
+
+*   **Firebase Initialization Errors:** The application was throwing a `Firebase: No Firebase App '[DEFAULT]' has been created` error because Firebase services were being accessed before the app was properly initialized.
+    *   **Fix:** The root layout (`src/app/layout.tsx`) has been wrapped with a `FirebaseClientProvider`, which ensures that the Firebase app is initialized once and made available to all pages before it is needed.
+
+## 4. How to Create the Backend
+
+Currently, the application is running with mock data and a front-end implementation of Firebase. To make it a fully functional, data-persistent application, the Firebase backend needs to be provisioned.
+
+The backend is defined in `docs/backend.json`, which outlines the data schemas for Firestore and the authentication providers.
+
+**Next Step:**
+To create and provision the necessary Firebase backend resources (Firestore database and Authentication), you will need to **call the `RequestFirebaseBackendTool`**. This will set up the project scaffolding based on the `backend.json` file, enabling real data storage and user management.
