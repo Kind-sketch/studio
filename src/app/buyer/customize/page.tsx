@@ -170,7 +170,7 @@ export default function CustomizePage() {
           {t.backButton}
         </Button>
         <Link href="/buyer/customize-with-reference" passHref>
-            <Button variant="outline">
+            <Button variant="secondary">
                 <ImageIcon className="mr-2 h-4 w-4" />
                 {t.referenceButton}
             </Button>
@@ -262,5 +262,3 @@ export default function CustomizePage() {
     </div>
   );
 }
-
-      
