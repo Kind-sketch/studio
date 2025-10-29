@@ -106,26 +106,25 @@ export function HeaderActions() {
             return;
         }
 
-        const recognition = new SpeechRecognition();
+        recognitionRef.current = new SpeechRecognition();
+        const recognition = recognitionRef.current;
         recognition.continuous = false;
         recognition.interimResults = false;
 
-            recognitionRef.current.onstart = () => setIsListening(true);
-            recognitionRef.current.onend = () => setIsListening(false);
-            recognitionRef.current.onerror = (event: any) => {
-                console.error('Speech recognition error:', event.error);
-                toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
-                setIsListening(false);
-            };
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+            setIsListening(false);
+        };
 
         recognition.onresult = (event: any) => {
             const command = event.results[0][0].transcript;
             setSpokenCommand(command);
         };
 
-        recognitionRef.current = recognition;
-
-    }, [toast, t_sidebar.voiceErrorDesc, t_sidebar.voiceErrorTitle, t_sidebar.voiceNetworkErrorDesc, t_sidebar.voiceNetworkErrorTitle]);
+    }, [toast]);
 
     useEffect(() => {
         if (!spokenCommand) {
