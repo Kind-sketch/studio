@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -34,6 +33,13 @@ const baseRoles = [
     icon: HeartHandshake,
     role: 'sponsor'
   },
+  {
+    name: 'Test Firestore & Storage',
+    description: 'Test data persistence and image uploads.',
+    href: '/test-firestore-storage',
+    icon: HeartHandshake,
+    role: 'test'
+  },
 ];
 
 
@@ -41,11 +47,14 @@ export default function RoleSelectionPage() {
   const { translations } = useTranslation();
   const t = translations.role_selection_page;
 
-  const roles = baseRoles.map((role, index) => ({
-    ...role,
-    name: t.roles[index].name,
-    description: t.roles[index].description,
-  }));
+  // Filter out the test role in production
+  const roles = baseRoles
+    .filter(role => process.env.NODE_ENV === 'development' || role.role !== 'test')
+    .map((role, index) => ({
+      ...role,
+      name: role.role === 'test' ? role.name : t.roles[index].name,
+      description: role.role === 'test' ? role.description : t.roles[index].description,
+    }));
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">

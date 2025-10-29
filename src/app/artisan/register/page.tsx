@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -16,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
-
+import { sendOTP, verifyOTP, createUser } from '@/services/firebase-service';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -28,6 +27,7 @@ export default function ArtisanRegisterPage() {
   const { toast } = useToast();
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const { translations } = useTranslation();
   const t = translations.artisan_register_page;
 
@@ -39,7 +39,7 @@ export default function ArtisanRegisterPage() {
     },
   });
 
-  function handleSendOtp() {
+  async function handleSendOtp() {
     const { mobileNumber } = form.getValues();
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
@@ -50,17 +50,27 @@ export default function ArtisanRegisterPage() {
 
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Using our Firebase service to send OTP
+      const result = await sendOTP(`+1${mobileNumber}`, null as any);
+      setConfirmationResult(result);
       setOtpSent(true);
       toast({
           title: t.otpSentToast,
           description: t.otpSentToastDesc,
       });
-    }, 1000);
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send OTP. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!otpSent) {
       handleSendOtp();
       return;
@@ -72,15 +82,34 @@ export default function ArtisanRegisterPage() {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Mock OTP verification - accept any OTP
+    
+    try {
+      // Verify OTP using our Firebase service
+      const result = await verifyOTP(confirmationResult, values.otp);
+      
+      // Create user in Firebase
+      await createUser({
+        uid: result.user.uid,
+        phoneNumber: result.user.phoneNumber,
+        role: 'artisan',
+        createdAt: new Date().toISOString(),
+      });
+      
       toast({
         title: t.welcomeBackToast,
         description: t.welcomeBackToastDesc,
       });
+      
       router.push('/artisan/category-selection');
-    }, 1000);
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: 'Invalid OTP. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -101,7 +130,7 @@ export default function ArtisanRegisterPage() {
                 <FormField
                     control={form.control}
                     name="mobileNumber"
-                    render={({ field }) => (
+                    render={({ field }: { field: any }) => (
                     <FormItem>
                         <FormLabel>{t.mobileLabel}</FormLabel>
                         <FormControl>
@@ -115,7 +144,7 @@ export default function ArtisanRegisterPage() {
               {otpSent && <FormField
                   control={form.control}
                   name="otp"
-                  render={({ field }) => (
+                  render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel>{t.otpLabel}</FormLabel>
                       <FormControl>

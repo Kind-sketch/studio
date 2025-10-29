@@ -1,0 +1,164 @@
+{
+  "name": "Artistry Havens Backend",
+  "description": "Firebase backend configuration for Artistry Havens application",
+  "services": {
+    "firestore": {
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    },
+    "auth": {
+      "providers": [
+        {
+          "type": "phone",
+          "enabled": true
+        }
+      ]
+    },
+    "storage": {
+      "rules": "storage.rules"
+    }
+  },
+  "collections": {
+    "users": {
+      "description": "User profiles for artisans, buyers, and sponsors",
+      "fields": {
+        "uid": {
+          "type": "string",
+          "required": true
+        },
+        "phoneNumber": {
+          "type": "string",
+          "required": true
+        },
+        "role": {
+          "type": "string",
+          "required": true,
+          "enum": ["artisan", "buyer", "sponsor"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "timestamp"
+        },
+        "updatedAt": {
+          "type": "timestamp"
+        }
+      }
+    },
+    "products": {
+      "description": "Product listings created by artisans",
+      "fields": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "required": true
+        },
+        "artisanId": {
+          "type": "string",
+          "required": true
+        },
+        "price": {
+          "type": "number",
+          "required": true
+        },
+        "category": {
+          "type": "string",
+          "required": true
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "likes": {
+          "type": "number",
+          "default": 0
+        },
+        "sales": {
+          "type": "number",
+          "default": 0
+        },
+        "createdAt": {
+          "type": "timestamp"
+        },
+        "updatedAt": {
+          "type": "timestamp"
+        }
+      }
+    },
+    "orders": {
+      "description": "Order records for product purchases",
+      "fields": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "productId": {
+          "type": "string",
+          "required": true
+        },
+        "buyerId": {
+          "type": "string",
+          "required": true
+        },
+        "artisanId": {
+          "type": "string",
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "required": true,
+          "enum": ["pending", "confirmed", "shipped", "delivered", "cancelled"]
+        },
+        "amount": {
+          "type": "number",
+          "required": true
+        },
+        "createdAt": {
+          "type": "timestamp"
+        },
+        "updatedAt": {
+          "type": "timestamp"
+        }
+      }
+    },
+    "sponsors": {
+      "description": "Sponsor relationships between sponsors and artisans",
+      "fields": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "sponsorId": {
+          "type": "string",
+          "required": true
+        },
+        "artisanId": {
+          "type": "string",
+          "required": true
+        },
+        "amount": {
+          "type": "number",
+          "required": true
+        },
+        "startDate": {
+          "type": "timestamp"
+        },
+        "endDate": {
+          "type": "timestamp"
+        },
+        "createdAt": {
+          "type": "timestamp"
+        }
+      }
+    }
+  }
+}
