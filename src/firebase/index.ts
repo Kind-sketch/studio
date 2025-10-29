@@ -12,7 +12,9 @@ export function initializeFirebase() {
   const auth = getAuth(firebaseApp);
   const firestore = getFirestore(firebaseApp);
   
-  if (process.env.NEXT_PUBLIC_EMULATOR_HOST) {
+  const useEmulator = process.env.NEXT_PUBLIC_USE_EMULATOR === 'true';
+
+  if (useEmulator && process.env.NEXT_PUBLIC_EMULATOR_HOST) {
     if (!auth.emulatorConfig) {
       connectAuthEmulator(auth, `http://${process.env.NEXT_PUBLIC_EMULATOR_HOST}:9099`, {
         disableWarnings: true,
