@@ -17,7 +17,8 @@ import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useTranslation } from '@/context/translation-context';
 import { useLanguage } from '@/context/language-context';
-import { getAuth, signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
+import { signInWithPhoneNumber, type ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
+import { useAuth } from '@/firebase';
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -34,7 +35,7 @@ export default function ArtisanRegisterPage() {
   const t = translations.artisan_register_page;
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
-  const auth = getAuth();
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
