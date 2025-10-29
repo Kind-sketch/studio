@@ -10,9 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Palette, ShoppingBag, HeartHandshake } from 'lucide-react';
 import { Logo } from '@/components/icons';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
-import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/translation-context';
 
 const baseRoles = [
   {
@@ -20,67 +18,34 @@ const baseRoles = [
     description: 'Showcase your creations, connect with buyers.',
     href: '/artisan/register',
     icon: Palette,
+    role: 'artisan'
   },
   {
     name: 'Buyer',
     description: 'Discover and purchase unique handmade goods.',
-    href: '/auth',
+    href: '/auth?role=buyer',
     icon: ShoppingBag,
+    role: 'buyer'
   },
   {
     name: 'Sponsor',
     description: 'Support artisans and the creative community.',
-    href: '/auth',
+    href: '/auth?role=sponsor',
     icon: HeartHandshake,
+    role: 'sponsor'
   },
 ];
 
-const initialContent = {
-    welcome: 'Welcome to Artistry Havens',
-    joinCommunity: 'How would you like to join our community?',
-    footer: 'For artisans, the first step will be to register.',
-};
 
 export default function RoleSelectionPage() {
-  const { language } = useLanguage();
-  const [translatedContent, setTranslatedContent] = useState(initialContent);
-  const [roles, setRoles] = useState(baseRoles);
+  const { translations } = useTranslation();
+  const t = translations.role_selection_page;
 
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const textsToTranslate = [
-          initialContent.welcome,
-          initialContent.joinCommunity,
-          initialContent.footer,
-          ...baseRoles.map(r => r.name),
-          ...baseRoles.map(r => r.description),
-        ];
-
-        const { translatedTexts } = await translateText({
-          texts: textsToTranslate,
-          targetLanguage: language,
-        });
-
-        setTranslatedContent({
-          welcome: translatedTexts[0],
-          joinCommunity: translatedTexts[1],
-          footer: translatedTexts[2],
-        });
-
-        const translatedRoles = baseRoles.map((role, index) => ({
-          ...role,
-          name: translatedTexts[3 + index],
-          description: translatedTexts[3 + baseRoles.length + index],
-        }));
-        setRoles(translatedRoles);
-      } else {
-        setTranslatedContent(initialContent);
-        setRoles(baseRoles);
-      }
-    };
-    translateContent();
-  }, [language]);
+  const roles = baseRoles.map((role, index) => ({
+    ...role,
+    name: t.roles[index].name,
+    description: t.roles[index].description,
+  }));
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
@@ -90,10 +55,10 @@ export default function RoleSelectionPage() {
             <Logo className="h-10 w-10 text-primary" />
           </div>
           <h1 className="font-headline text-xl font-bold">
-            {translatedContent.welcome}
+            {t.welcome}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {translatedContent.joinCommunity}
+            {t.joinCommunity}
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4">
@@ -116,7 +81,7 @@ export default function RoleSelectionPage() {
           ))}
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          {translatedContent.footer}
+          {t.footer}
         </p>
       </div>
     </div>

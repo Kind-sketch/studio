@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getCommunityTrendInsights } from '@/ai/flows/community-trend-insights';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,14 +13,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Lightbulb, Play, Pause, RotateCcw } from 'lucide-react';
+import { Loader2, Lightbulb, Mic, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import type { SavedCollection, Product } from '@/lib/types';
+import type { Product, SavedCollection } from '@/lib/types';
+import { useTranslation } from '@/context/translation-context';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import 'regenerator-runtime/runtime';
 import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { cn } from '@/lib/utils';
+
 
 // Mocking the current artisan as Elena Vance (ID '1')
 const CURRENT_ARTISAN_ID = '1';
@@ -30,65 +32,74 @@ interface AiReviewResult {
     aiReviewAudio: string;
 }
 
+const formSchema = z.object({
+  productDescription: z.string().min(10, 'Description must be at least 10 characters long.'),
+});
+
 export default function ArtisanHomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AiReviewResult | null>(null);
-
   const { toast } = useToast();
+  const { translations } = useTranslation();
   const { language } = useLanguage();
+  const t = translations.artisan_home;
   
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-
-  const [translatedContent, setTranslatedContent] = useState({
-    pageTitle: "Your Creative Space",
-    pageDescription: "Manage your products and get AI-powered feedback.",
-    myProductsTitle: "Your Products",
-    aiReviewTitle: "AI Product Review",
-    aiReviewDescription: "Get targeted audience insights and revenue metrics for your product idea.",
-    productDescriptionLabel: "Product Description or Idea",
-    productDescriptionPlaceholder: "Describe a product you're selling or thinking of creating...",
-    getReviewButton: "Get AI Review",
-    analyzingButton: "Analyzing...",
-    insightsGeneratedToast: "Insights Generated!",
-    insightsGeneratedToastDesc: "Your AI product review is ready.",
-    insightGenerationFailedToast: "Insight Generation Failed",
-    insightGenerationFailedToastDesc: "There was an error. Please try again.",
-    aiGeneratedInsightsTitle: "AI-Generated Insights",
-    aiGeneratedInsightsDescription: "Here's what our AI thinks.",
-    aiReviewAnalysisTitle: "AI Review & Analysis",
-    aiPlaceholder: "Your AI review and trend analysis will appear here.",
-    savedToCollectionToast: "Saved to {collectionName}",
-  });
-
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const textsToTranslate = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translateContent();
-  }, [language]);
-
-
   const myProducts = allProducts.filter(p => p.artisan.id === CURRENT_ARTISAN_ID);
+  const mostLikedProducts = [...myProducts].sort((a, b) => b.likes - a.likes);
+  const frequentlyBoughtProducts = [...myProducts].sort((a, b) => b.sales - a.sales);
 
   const form = useForm({
-    resolver: zodResolver(z.object({
-      productDescription: z.string().min(10, 'Description must be at least 10 characters.'),
-    })),
+    resolver: zodResolver(formSchema),
     defaultValues: { productDescription: '' },
   });
 
-  async function onSubmit(values: { productDescription: string }) {
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+   useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = language;
+
+      recognitionRef.current.onstart = () => setIsListening(true);
+      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event: any) => {
+        if (event.error === 'no-speech') {
+          setIsListening(false);
+          return;
+        }
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'network') {
+          toast({
+            variant: 'destructive',
+            title: 'Voice Service Unavailable',
+            description: 'Please check your network connection.',
+          });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Voice Error',
+            description: 'Could not recognize your voice.',
+          });
+        }
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = (event: any) => {
+        const command = event.results[0][0].transcript;
+        form.setValue('productDescription', command);
+      };
+    }
+  }, [language, form, toast]);
+
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
     try {
@@ -98,170 +109,189 @@ export default function ArtisanHomePage() {
       });
       setResult(response);
       toast({
-        title: translatedContent.insightsGeneratedToast,
-        description: translatedContent.insightsGeneratedToastDesc,
+        title: t.insightsGeneratedToast,
+        description: t.insightsGeneratedToastDesc,
       });
     } catch (error) {
       console.error('Error generating insights:', error);
       toast({
         variant: 'destructive',
-        title: translatedContent.insightGenerationFailedToast,
-        description: translatedContent.insightGenerationFailedToastDesc,
+        title: t.insightGenerationFailedToast,
+        description: t.insightGenerationFailedToastDesc,
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-  function handleSaveToCollection(product: Product) {
-    if (!product) return;
-
-    const collections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
-    const categoryName = product.category;
-    let collection = collections.find(c => c.name === categoryName);
-
-    if (collection) {
-      // Add product to existing collection if not already there
-      if (!collection.productIds.includes(product.id)) {
-        collection.productIds.push(product.id);
-      }
-    } else {
-      // Create new collection for the category
-      collection = {
-        id: `coll-${Date.now()}-${Math.random()}`,
-        name: categoryName,
-        productIds: [product.id],
-      };
-      collections.push(collection);
-    }
-
-    localStorage.setItem('artisanCollections', JSON.stringify(collections));
-
-    toast({
-      title: translatedContent.savedToCollectionToast.replace('{collectionName}', categoryName),
-    });
-  }
 
   const handlePlayPause = () => {
     if (audioRef.current) {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
+            if (audioRef.current.ended) {
+                audioRef.current.currentTime = 0;
+            }
             audioRef.current.play();
         }
         setIsPlaying(!isPlaying);
     }
   };
-
+  
   const handleAudioEnded = () => {
     setIsPlaying(false);
   };
 
-  const handleRestart = () => {
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setIsPlaying(true);
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice commands are not supported on this browser.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
     }
   };
 
-  return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">{translatedContent.pageTitle}</h1>
-        <p className="text-muted-foreground">{translatedContent.pageDescription}</p>
-      </header>
-      
-      <section className="mb-12">
-        <h2 className="font-headline text-2xl font-semibold mb-4">{translatedContent.myProductsTitle}</h2>
-        {myProducts.length > 0 ? (
-          <Carousel opts={{ align: 'start', loop: true }} plugins={[Autoplay({ delay: 3000 })]}>
-              <CarouselContent>
-              {myProducts.map((product) => (
-                  <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                    <ProductCard product={product} onSave={() => handleSaveToCollection(product)} showSaveButton />
-                  </CarouselItem>
-              ))}
-              </CarouselContent>
-          </Carousel>
-          ) : (
-            <Card className="flex items-center justify-center p-12">
-              <div className="text-center text-muted-foreground">
-                  <p className="text-lg">You haven't added any products yet.</p>
-              </div>
-          </Card>
-          )}
-      </section>
+  const handleSaveProduct = useCallback((productId: string) => {
+    const collections: SavedCollection[] = JSON.parse(localStorage.getItem('artisanCollections') || '[]');
+    let inspirationCollection = collections.find(c => c.name === 'Inspiration');
     
-      <section>
-        <div className="grid gap-8 lg:grid-cols-2">
-            <Card>
-                <CardHeader>
-                    <CardTitle>{translatedContent.aiReviewTitle}</CardTitle>
-                    <CardDescription>{translatedContent.aiReviewDescription}</CardDescription>
-                </CardHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent>
-                        <FormField control={form.control} name="productDescription" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{translatedContent.productDescriptionLabel}</FormLabel>
-                            <FormControl><Textarea placeholder={translatedContent.productDescriptionPlaceholder} {...field} className="h-32" /></FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )} />
-                    </CardContent>
-                    <CardFooter>
-                        <Button type="submit" disabled={isLoading} className="w-full">
-                        {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {translatedContent.analyzingButton}</> : <><Lightbulb className="mr-2 h-4 w-4" /> {translatedContent.getReviewButton}</>}
-                        </Button>
-                    </CardFooter>
-                    </form>
-                </Form>
-            </Card>
+    if (!inspirationCollection) {
+        inspirationCollection = { id: `col-${Date.now()}`, name: 'Inspiration', productIds: [] };
+        collections.push(inspirationCollection);
+    }
 
-            <Card className="flex flex-col">
-                <CardHeader>
-                    <CardTitle>{translatedContent.aiGeneratedInsightsTitle}</CardTitle>
-                    <CardDescription>{translatedContent.aiGeneratedInsightsDescription}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 space-y-6 flex flex-col">
-                    {isLoading && (
-                    <div className="flex h-full items-center justify-center">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+    if (!inspirationCollection.productIds.includes(productId)) {
+        inspirationCollection.productIds.push(productId);
+        localStorage.setItem('artisanCollections', JSON.stringify(collections));
+        toast({
+            title: t.savedToCollectionToast.replace('{collectionName}', inspirationCollection.name),
+        });
+    }
+  }, [toast, t.savedToCollectionToast]);
+
+  return (
+    <div className="flex flex-col p-4 space-y-4">
+      <div>
+        <h2 className="font-headline text-2xl font-bold tracking-tight truncate">{t.pageTitle}</h2>
+        <p className="text-muted-foreground text-sm truncate">{t.pageDescription}</p>
+      </div>
+
+      <div className="space-y-4 pt-4">
+        {/* Frequently Bought Products */}
+        <section className="space-y-2">
+            <h3 className="font-headline text-lg font-semibold truncate">Frequently Bought Products</h3>
+            <Carousel 
+                opts={{ align: 'start', loop: true, direction: 'rtl' }}
+                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'backward' })]} 
+                className="w-full"
+            >
+                <CarouselContent>
+                {frequentlyBoughtProducts.map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                    <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                    </CarouselItem>
+                ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            </Carousel>
+        </section>
+
+        {/* Most Liked Products */}
+        <section className="space-y-2">
+          <h3 className="font-headline text-lg font-semibold truncate">{t.mostLiked}</h3>
+           <Carousel 
+            opts={{ align: 'start', loop: true }}
+            plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, playOnInit: true, direction: 'forward' })]} 
+            className="w-full"
+          >
+            <CarouselContent>
+              {mostLikedProducts.map((product) => (
+                <CarouselItem key={product.id} className="basis-1/3 pl-2">
+                   <ProductCard product={product} onSave={() => handleSaveProduct(product.id)} showSaveButton />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+            <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2 hidden sm:flex" />
+          </Carousel>
+        </section>
+
+        {/* AI Review Section */}
+        <section>
+             <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-md leading-tight">{t.aiReviewTitle}</CardTitle>
+                <CardDescription className="text-xs">{t.aiReviewDescription}</CardDescription>
+              </CardHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <CardContent>
+                    <div className="relative">
+                      <FormField
+                        control={form.control}
+                        name="productDescription"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="sr-only">{t.productDescriptionLabel}</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder={t.productDescriptionPlaceholder} {...field} className="h-20 text-sm pr-12" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <Button 
+                          type="button" 
+                          size="icon" 
+                          variant="ghost" 
+                          onClick={handleMicClick}
+                          className="absolute right-2 top-1/2 -translate-y-1/2"
+                        >
+                          <Mic className={cn("h-5 w-5", isListening && "text-destructive")} />
+                        </Button>
                     </div>
-                    )}
-                    {!isLoading && !result && (
-                    <div className="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-secondary/50 p-8 text-center text-muted-foreground">
-                        <Sparkles className="h-12 w-12" />
-                        <p className="mt-4">{translatedContent.aiPlaceholder}</p>
-                    </div>
-                    )}
-                    {result && (
-                    <div className="space-y-4 flex-1 flex flex-col min-h-0">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-headline text-lg font-semibold">{translatedContent.aiReviewAnalysisTitle}</h3>
-                            {result.aiReviewAudio && (
-                                <div className="flex items-center gap-2">
-                                    <Button size="icon" onClick={handlePlayPause}>
-                                        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                                    </Button>
-                                    <Button size="icon" variant="outline" onClick={handleRestart}>
-                                        <RotateCcw className="h-4 w-4" />
-                                    </Button>
-                                    <audio ref={audioRef} src={result.aiReviewAudio} onEnded={handleAudioEnded} />
-                                </div>
-                            )}
-                        </div>
-                        <ScrollArea className="flex-1 h-80">
-                            <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap pr-4">{result.aiReview}</div>
-                        </ScrollArea>
-                    </div>
-                    )}
-                </CardContent>
+                  </CardContent>
+                  <CardFooter>
+                    <Button type="submit" disabled={isLoading} size="sm" className="w-full">
+                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
+                      {isLoading ? t.analyzingButton : t.getReviewButton}
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Form>
             </Card>
-        </div>
-      </section>
+            
+            {result && (
+              <Card className="mt-4">
+                <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-md">{t.aiGeneratedInsightsTitle}</CardTitle>
+                         {result.aiReviewAudio && (
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                className={cn("h-8 w-8 rounded-full", isPlaying && "bg-accent text-accent-foreground")}
+                                onClick={handlePlayPause}
+                                aria-label={t.playAudio}
+                            >
+                                <Volume2 className="h-5 w-5" />
+                                <audio ref={audioRef} src={result.aiReviewAudio} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={handleAudioEnded} />
+                            </Button>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-xs text-muted-foreground whitespace-pre-wrap">{result.aiReview}</p>
+                </CardContent>
+              </Card>
+            )}
+        </section>
+      </div>
     </div>
   );
 }

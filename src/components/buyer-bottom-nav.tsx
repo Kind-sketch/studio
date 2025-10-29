@@ -16,7 +16,7 @@ export default function BuyerBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-card md:hidden">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] z-40 border-t bg-card md:hidden">
       <div className="grid h-16 grid-cols-3">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -25,7 +25,7 @@ export default function BuyerBottomNav() {
               href={item.href}
               key={item.label}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors relative',
+                'flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-primary'

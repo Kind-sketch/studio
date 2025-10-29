@@ -4,7 +4,6 @@
 
 body {
   font-family: var(--font-open-sans), sans-serif;
-  @apply bg-zinc-200 dark:bg-zinc-800;
 }
 
 @layer base {
@@ -82,5 +81,15 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }

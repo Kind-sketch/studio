@@ -8,12 +8,12 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from '@/hooks/use-toast';
 import { Check, X, Package, Ship, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { products as sampleProducts } from '@/lib/data';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
+import { useTranslation } from '@/context/translation-context';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 interface MyOrder extends Product {
@@ -33,46 +33,8 @@ export default function OrdersPage() {
   const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
   const { toast } = useToast();
   const router = useRouter();
-  const { language } = useLanguage();
-
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Manage Orders',
-    description: 'Review requests and track ongoing orders.',
-    orderRequestsTab: 'Order Requests',
-    myOrdersTab: 'My Orders',
-    processingTab: 'Processing',
-    shippedTab: 'Shipped',
-    deliveredTab: 'Delivered',
-    noOrdersInCategory: 'No orders in this category.',
-    quantity: 'Quantity',
-    orderDate: 'Order Date',
-    expectedDelivery: 'Expected Delivery',
-    updateStatusButton: 'Update Status',
-    noNewRequests: 'No new order requests.',
-    checkBackLater: 'Check back later for new opportunities.',
-    from: 'From',
-    acceptButton: 'Accept',
-    declineButton: 'Decline',
-    orderAcceptedToast: 'Order Accepted',
-    orderAcceptedToastDesc: 'The order has been moved to "My Orders".',
-    orderDeclinedToast: 'Order Declined',
-    orderDeclinedToastDesc: 'The order request has been removed.',
-  });
-
-  useEffect(() => {
-    const translate = async () => {
-      if (language !== 'en') {
-        const values = Object.values(translatedContent);
-        const { translatedTexts } = await translateText({ texts: values, targetLanguage: language });
-        const newContent: any = {};
-        Object.keys(translatedContent).forEach((key, index) => {
-          newContent[key] = translatedTexts[index];
-        });
-        setTranslatedContent(newContent);
-      }
-    };
-    translate();
-  }, [language]);
+  const { translations } = useTranslation();
+  const t = translations.orders_page;
 
 
   useEffect(() => {
@@ -121,8 +83,8 @@ export default function OrdersPage() {
         localStorage.setItem('orderRequests', JSON.stringify(updatedRequests));
 
         toast({
-          title: translatedContent.orderAcceptedToast,
-          description: translatedContent.orderAcceptedToastDesc,
+          title: t.orderAcceptedToast,
+          description: t.orderAcceptedToastDesc,
         });
     }
   };
@@ -134,8 +96,8 @@ export default function OrdersPage() {
 
     toast({
       variant: 'destructive',
-      title: translatedContent.orderDeclinedToast,
-      description: translatedContent.orderDeclinedToastDesc,
+      title: t.orderDeclinedToast,
+      description: t.orderDeclinedToastDesc,
     });
   };
 
@@ -149,7 +111,7 @@ export default function OrdersPage() {
     if (filteredOrders.length === 0) {
       return (
         <div className="text-center text-muted-foreground py-12">
-          <p>{translatedContent.noOrdersInCategory}</p>
+          <p>{t.noOrdersInCategory}</p>
         </div>
       );
     }
@@ -159,26 +121,26 @@ export default function OrdersPage() {
         {filteredOrders.map(order => (
           <Card key={order.id} className="overflow-hidden">
             <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
-               <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
+               <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
-                    width={128}
-                    height={128}
+                    width={96}
+                    height={96}
                     className="rounded-md object-cover aspect-square bg-muted"
                 />
                </div>
-              <div className="flex-1 space-y-1">
-                <CardTitle className="text-md sm:text-lg font-headline leading-tight">{order.name}</CardTitle>
-                <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
-                    <p>{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
-                    <p>{translatedContent.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
-                    <p>{translatedContent.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
+              <div className="flex-grow space-y-1">
+                <CardTitle className="text-md font-headline leading-tight">{order.name}</CardTitle>
+                <div className="text-xs text-muted-foreground space-y-0.5">
+                    <p>{t.quantity}: <span className="font-medium">{order.quantity}</span></p>
+                    <p>{t.orderDate}: <span className="font-medium">{format(new Date(order.orderDate), 'PPP')}</span></p>
+                    <p>{t.expectedDelivery}: <span className="font-medium">{format(new Date(order.expectedDelivery), 'PPP')}</span></p>
                 </div>
+                <p className="font-bold text-md pt-1">₹{(order.price * order.quantity).toFixed(2)}</p>
               </div>
-              <div className="flex flex-col items-end gap-2 w-full sm:w-auto self-end sm:self-center">
-                <p className="font-bold text-md sm:text-lg">₹{(order.price * order.quantity).toFixed(2)}</p>
-                <Button onClick={() => handleUpdate(order.id)} size="sm">{translatedContent.updateStatusButton}</Button>
+              <div className="flex flex-col items-stretch gap-2 w-full sm:w-auto sm:self-center">
+                <Button onClick={() => handleUpdate(order.id)} size="sm">{t.updateStatusButton}</Button>
               </div>
             </CardContent>
           </Card>
@@ -192,8 +154,8 @@ export default function OrdersPage() {
       return (
         <Card className="flex items-center justify-center p-12">
             <div className="text-center text-muted-foreground">
-                <p className="text-lg">{translatedContent.noNewRequests}</p>
-                <p>{translatedContent.checkBackLater}</p>
+                <p className="text-lg">{t.noNewRequests}</p>
+                <p>{t.checkBackLater}</p>
             </div>
         </Card>
       );
@@ -203,28 +165,28 @@ export default function OrdersPage() {
       <div className="space-y-4">
         {orderRequests.map((order) => (
           <Card key={order.id} className="overflow-hidden">
-            <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-4">
-              <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0">
+            <CardContent className="p-3 sm:p-4 flex items-start gap-4">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                 <Image
                     src={order.image.url}
                     alt={order.name}
-                    width={128}
-                    height={128}
+                    width={96}
+                    height={96}
                     className="rounded-md object-cover aspect-square bg-muted"
                 />
                </div>
               <div className="flex-1">
-                <CardTitle className="text-md sm:text-lg font-headline mb-1 leading-tight">{order.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">{translatedContent.from}: {order.buyerName}</p>
-                <p className="font-bold text-md sm:text-lg my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
-                <p className="text-sm">{translatedContent.quantity}: <span className="font-medium">{order.quantity}</span></p>
+                <CardTitle className="text-md font-headline mb-1 leading-tight">{order.name}</CardTitle>
+                <p className="text-sm text-muted-foreground">{t.from}: {order.buyerName}</p>
+                <p className="font-bold text-md my-2">₹{(order.price * order.quantity).toFixed(2)}</p>
+                <p className="text-sm">{t.quantity}: <span className="font-medium">{order.quantity}</span></p>
               </div>
-              <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-                <Button onClick={() => handleAccept(order.id)} className="w-full">
-                  <Check className="mr-2 h-4 w-4" /> {translatedContent.acceptButton}
+              <div className="flex flex-col gap-2 mt-0 w-auto">
+                <Button onClick={() => handleAccept(order.id)} size="sm" className="whitespace-nowrap">
+                  <Check className="mr-2 h-4 w-4" /> {t.acceptButton}
                 </Button>
-                <Button onClick={() => handleDecline(order.id)} variant="outline" className="w-full">
-                  <X className="mr-2 h-4 w-4" /> {translatedContent.declineButton}
+                <Button onClick={() => handleDecline(order.id)} variant="outline" size="sm" className="whitespace-nowrap">
+                  <X className="mr-2 h-4 w-4" /> {t.declineButton}
                 </Button>
               </div>
             </CardContent>
@@ -237,41 +199,60 @@ export default function OrdersPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">{translatedContent.title}</h1>
-        <p className="text-sm text-muted-foreground">{translatedContent.description}</p>
+        <h1 className="font-headline text-3xl font-bold">{t.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.description}</p>
       </header>
 
       <Tabs defaultValue="requests" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="requests">{translatedContent.orderRequestsTab}</TabsTrigger>
-          <TabsTrigger value="my-orders">{translatedContent.myOrdersTab}</TabsTrigger>
+          <TabsTrigger value="requests">{t.orderRequestsTab}</TabsTrigger>
+          <TabsTrigger value="my-orders">{t.myOrdersTab}</TabsTrigger>
         </TabsList>
         <TabsContent value="requests">
           {renderRequests()}
         </TabsContent>
         <TabsContent value="my-orders">
-          <Tabs defaultValue="processing" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 text-xs">
-              <TabsTrigger value="processing">
-                <Package className="mr-1 h-4 w-4" /> {translatedContent.processingTab}
-              </TabsTrigger>
-              <TabsTrigger value="shipped">
-                <Ship className="mr-1 h-4 w-4" /> {translatedContent.shippedTab}
-              </TabsTrigger>
-              <TabsTrigger value="delivered">
-                <CheckCircle className="mr-1 h-4 w-4" /> {translatedContent.deliveredTab}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="processing">
-              {renderOrderList('Processing')}
-            </TabsContent>
-            <TabsContent value="shipped">
-              {renderOrderList('Shipped')}
-            </TabsContent>
-            <TabsContent value="delivered">
-              {renderOrderList('Delivered')}
-            </TabsContent>
-          </Tabs>
+           <Accordion type="multiple" defaultValue={['processing']} className="w-full space-y-2">
+            <Card>
+                <AccordionItem value="processing" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <Package className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.processingTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Processing')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+            <Card>
+                 <AccordionItem value="shipped" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <Ship className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.shippedTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Shipped')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+            <Card>
+                 <AccordionItem value="delivered" className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <CheckCircle className="h-5 w-5" /> 
+                           <span className="font-semibold">{t.deliveredTab}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {renderOrderList('Delivered')}
+                    </AccordionContent>
+                </AccordionItem>
+            </Card>
+           </Accordion>
         </TabsContent>
       </Tabs>
     </div>

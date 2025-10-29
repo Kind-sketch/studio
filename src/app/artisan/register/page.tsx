@@ -11,12 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons';
-import { useLanguage } from '@/context/language-context';
-import { translateText } from '@/services/translation-service';
 import Link from 'next/link';
+import { useTranslation } from '@/context/translation-context';
+
 
 const formSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
@@ -28,73 +28,8 @@ export default function ArtisanRegisterPage() {
   const { toast } = useToast();
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { language } = useLanguage();
-  const [translatedContent, setTranslatedContent] = useState({
-    title: 'Artisan Login',
-    description: 'Enter your mobile number to login or register.',
-    mobileLabel: 'Mobile Number',
-    mobilePlaceholder: '10-digit mobile number',
-    sendOtpButton: 'Send OTP',
-    otpDescription: 'Enter the OTP sent to your mobile.',
-    otpLabel: 'One-Time Password (OTP)',
-    otpPlaceholder: 'Enter 5-digit OTP',
-    verifyButton: 'Verify & Continue',
-    otpSentToast: 'OTP Sent',
-    otpSentToastDesc: 'An OTP has been sent to your mobile number.',
-    invalidOtpToast: 'Invalid OTP',
-    invalidOtpToastDesc: 'The OTP you entered is incorrect. Please try again.',
-    welcomeBackToast: 'Verification Successful',
-    welcomeBackToastDesc: 'Welcome back!',
-    invalidNumber: 'Please enter a valid 10-digit mobile number.',
-    termsAndConditions: 'Terms & Conditions',
-  });
-
-  useEffect(() => {
-    const translateContent = async () => {
-      if (language !== 'en') {
-        const textsToTranslate = [
-          'Artisan Login',
-          'Enter your mobile number to login or register.',
-          'Mobile Number',
-          '10-digit mobile number',
-          'Send OTP',
-          'Enter the OTP sent to your mobile.',
-          'One-Time Password (OTP)',
-          'Enter 5-digit OTP',
-          'Verify & Continue',
-          'OTP Sent',
-          'An OTP has been sent to your mobile number.',
-          'Invalid OTP',
-          'The OTP you entered is incorrect. Please try again.',
-          'Verification Successful',
-          'Welcome back!',
-          'Please enter a valid 10-digit mobile number.',
-          'Terms & Conditions',
-        ];
-        const { translatedTexts } = await translateText({ texts: textsToTranslate, targetLanguage: language });
-        setTranslatedContent({
-          title: translatedTexts[0],
-          description: translatedTexts[1],
-          mobileLabel: translatedTexts[2],
-          mobilePlaceholder: translatedTexts[3],
-          sendOtpButton: translatedTexts[4],
-          otpDescription: translatedTexts[5],
-          otpLabel: translatedTexts[6],
-          otpPlaceholder: translatedTexts[7],
-          verifyButton: translatedTexts[8],
-          otpSentToast: translatedTexts[9],
-          otpSentToastDesc: translatedTexts[10],
-          invalidOtpToast: translatedTexts[11],
-          invalidOtpToastDesc: translatedTexts[12],
-          welcomeBackToast: translatedTexts[13],
-          welcomeBackToastDesc: translatedTexts[14],
-          invalidNumber: translatedTexts[15],
-          termsAndConditions: translatedTexts[16],
-        });
-      }
-    };
-    translateContent();
-  }, [language]);
+  const { translations } = useTranslation();
+  const t = translations.artisan_register_page;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,7 +44,7 @@ export default function ArtisanRegisterPage() {
     const mobileResult = z.string().regex(/^\d{10}$/).safeParse(mobileNumber);
 
      if (!mobileResult.success) {
-      form.setError('mobileNumber', { message: translatedContent.invalidNumber });
+      form.setError('mobileNumber', { message: t.invalidNumber });
       return;
     }
 
@@ -119,8 +54,8 @@ export default function ArtisanRegisterPage() {
       setIsLoading(false);
       setOtpSent(true);
       toast({
-          title: translatedContent.otpSentToast,
-          description: translatedContent.otpSentToastDesc,
+          title: t.otpSentToast,
+          description: t.otpSentToastDesc,
       });
     }, 1000);
   }
@@ -141,8 +76,8 @@ export default function ArtisanRegisterPage() {
       setIsLoading(false);
       // Mock OTP verification - accept any OTP
       toast({
-        title: translatedContent.welcomeBackToast,
-        description: translatedContent.welcomeBackToastDesc,
+        title: t.welcomeBackToast,
+        description: t.welcomeBackToastDesc,
       });
       router.push('/artisan/category-selection');
     }, 1000);
@@ -155,9 +90,9 @@ export default function ArtisanRegisterPage() {
             <Link href="/role-selection" className="flex justify-center mb-4">
                 <Logo className="h-10 w-10 text-primary" />
             </Link>
-          <CardTitle className="font-headline text-xl">{translatedContent.title}</CardTitle>
+          <CardTitle className="font-headline text-xl">{t.title}</CardTitle>
           <CardDescription className="text-sm">
-            {translatedContent.description}
+            {t.description}
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -168,9 +103,9 @@ export default function ArtisanRegisterPage() {
                     name="mobileNumber"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{translatedContent.mobileLabel}</FormLabel>
+                        <FormLabel>{t.mobileLabel}</FormLabel>
                         <FormControl>
-                        <Input placeholder={translatedContent.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm" />
+                        <Input placeholder={t.mobilePlaceholder} {...field} disabled={otpSent} className="text-sm" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -182,9 +117,9 @@ export default function ArtisanRegisterPage() {
                   name="otp"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{translatedContent.otpLabel}</FormLabel>
+                      <FormLabel>{t.otpLabel}</FormLabel>
                       <FormControl>
-                        <Input placeholder={translatedContent.otpPlaceholder} {...field} disabled={!otpSent || isLoading} className="text-sm" />
+                        <Input placeholder={t.otpPlaceholder} {...field} disabled={!otpSent || isLoading} className="text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -196,25 +131,21 @@ export default function ArtisanRegisterPage() {
               {otpSent ? (
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {translatedContent.verifyButton}
+                  {t.verifyButton}
                 </Button>
               ) : (
                 <Button type="button" className="w-full" onClick={handleSendOtp} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {translatedContent.sendOtpButton}
+                  {t.sendOtpButton}
                 </Button>
               )}
             </CardContent>
           </form>
         </Form>
         <CardFooter className="justify-center text-xs text-muted-foreground">
-          <Button variant="link" className="text-xs p-0 h-auto">{translatedContent.termsAndConditions}</Button>
+          <Button variant="link" className="text-xs p-0 h-auto">{t.termsAndConditions}</Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
-
-    
-
-    

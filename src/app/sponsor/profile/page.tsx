@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Edit, Save } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTranslation } from '@/context/translation-context';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -24,24 +25,14 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { translations } = useTranslation();
+  const t = translations.sponsor_profile_page;
   
   const [sponsor, setSponsor] = useState({
       name: 'Sponsor Name',
       avatarUrl: 'https://picsum.photos/seed/sponsor/200',
       phone: '123-456-7890'
   });
-
-  const translatedContent = {
-    title: 'My Profile',
-    description: 'Manage your sponsor profile details.',
-    editProfileButton: 'Edit Profile',
-    fullNameLabel: 'Full Name',
-    phoneLabel: 'Phone Number',
-    cancelButton: 'Cancel',
-    saveButton: 'Save Changes',
-    profileUpdatedToast: 'Profile Updated',
-    profileUpdatedToastDesc: 'Your details have been successfully saved.',
-  };
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -75,8 +66,8 @@ export default function ProfilePage() {
       setIsLoading(false);
       setIsEditing(false);
       toast({
-        title: translatedContent.profileUpdatedToast,
-        description: translatedContent.profileUpdatedToastDesc,
+        title: t.profileUpdatedToast,
+        description: t.profileUpdatedToastDesc,
       });
     }, 1000);
   };
@@ -85,13 +76,13 @@ export default function ProfilePage() {
     <div className="container mx-auto p-4 md:p-8 max-w-2xl">
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-4xl font-bold">{translatedContent.title}</h1>
-          <p className="text-muted-foreground">{translatedContent.description}</p>
+          <h1 className="font-headline text-4xl font-bold">{t.title}</h1>
+          <p className="text-muted-foreground">{t.description}</p>
         </div>
         {!isEditing && (
             <Button onClick={() => setIsEditing(true)}>
                 <Edit className="mr-2 h-4 w-4" />
-                {translatedContent.editProfileButton}
+                {t.editProfileButton}
             </Button>
         )}
       </header>
@@ -111,7 +102,7 @@ export default function ProfilePage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{translatedContent.fullNameLabel}</FormLabel>
+                        <FormLabel>{t.fullNameLabel}</FormLabel>
                         <FormControl>
                           <Input {...field} className="text-2xl font-bold font-headline" />
                         </FormControl>
@@ -132,7 +123,7 @@ export default function ProfilePage() {
                         name="phone"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{translatedContent.phoneLabel}</FormLabel>
+                            <FormLabel>{t.phoneLabel}</FormLabel>
                             <FormControl>
                             <Input {...field} disabled={!isEditing} />
                             </FormControl>
@@ -144,10 +135,10 @@ export default function ProfilePage() {
 
                 {isEditing && (
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: sponsor.name, phone: sponsor.phone})}}>{translatedContent.cancelButton}</Button>
+                  <Button variant="outline" onClick={() => {setIsEditing(false); form.reset({name: sponsor.name, phone: sponsor.phone})}}>{t.cancelButton}</Button>
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {translatedContent.saveButton}
+                    {t.saveButton}
                   </Button>
                 </div>
               )}

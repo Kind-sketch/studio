@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { products, categories as baseCategories, artisans } from '@/lib/data';
 import ProductCard from '@/components/product-card';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,26 +10,24 @@ import Autoplay from 'embla-carousel-autoplay';
 import type { Category, Product } from '@/lib/types';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTranslation } from '@/context/translation-context';
 
 export default function BuyerHomePage() {
+  const { translations } = useTranslation();
+  const t = translations.buyer_home;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const categories = baseCategories.map((category, index) => ({
+    ...category,
+    name: translations.product_categories[index] || category.name,
+  }));
+  
   const trendingProducts = [...products].sort((a, b) => b.likes - a.likes).slice(0, 8);
   const bestSellingProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
-  const categories: Category[] = baseCategories;
   
   const filteredProducts = selectedCategory
     ? products.filter(p => p.category === selectedCategory)
     : products;
-
-  const translatedContent = {
-    artisansTitle: 'Meet the Artisans',
-    categoriesTitle: 'Shop by Category',
-    trendingTitle: 'Trending Now',
-    bestSellingTitle: 'Best Sellers',
-    allProductsTitle: 'All Products',
-    allCategories: 'All',
-  };
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-6">
@@ -37,7 +35,7 @@ export default function BuyerHomePage() {
       {/* Artisans Showcase Section */}
       <section className="mb-8">
         <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-          {translatedContent.artisansTitle}
+          {t.artisansTitle}
         </h2>
         <Carousel opts={{ align: 'start' }} className="-mx-2">
             <CarouselContent className="ml-2">
@@ -64,7 +62,7 @@ export default function BuyerHomePage() {
       {/* Categories Section */}
       <section className="mb-8">
         <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-          {translatedContent.categoriesTitle}
+          {t.categoriesTitle}
         </h2>
         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
            <Card
@@ -72,21 +70,25 @@ export default function BuyerHomePage() {
               className={`group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1 ${!selectedCategory ? 'bg-primary text-primary-foreground' : ''}`}
             >
               <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
-                <span className="font-semibold text-xs sm:text-sm">{translatedContent.allCategories}</span>
+                <span className="font-semibold text-xs sm:text-sm">{t.allCategories}</span>
               </CardContent>
             </Card>
-          {categories.map((category) => (
-            <Card
-              key={category.id}
-              onClick={() => setSelectedCategory(category.name)}
-              className={`group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1 ${selectedCategory === category.name ? 'bg-primary text-primary-foreground' : ''}`}
-            >
-              <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
-                <category.icon className={`mb-1 h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedCategory === category.name ? 'text-primary-foreground': 'text-primary group-hover:text-accent-foreground'}`} />
-                <span className={`font-semibold text-[10px] sm:text-xs text-center transition-colors ${selectedCategory === category.name ? 'text-primary-foreground' : 'text-foreground group-hover:text-accent-foreground'}`}>{category.name}</span>
-              </CardContent>
-            </Card>
-          ))}
+          {categories.map((category) => {
+            const originalCategory = baseCategories.find(c => c.id === category.id);
+            if (!originalCategory) return null;
+            return (
+                <Card
+                key={category.id}
+                onClick={() => setSelectedCategory(originalCategory.name)}
+                className={`group cursor-pointer overflow-hidden text-center transition-all hover:shadow-lg hover:-translate-y-1 ${selectedCategory === originalCategory.name ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                    <category.icon className={`mb-1 h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedCategory === originalCategory.name ? 'text-primary-foreground': 'text-primary group-hover:text-accent-foreground'}`} />
+                    <span className={`font-semibold text-[10px] sm:text-xs text-center transition-colors ${selectedCategory === originalCategory.name ? 'text-primary-foreground' : 'text-foreground group-hover:text-accent-foreground'}`}>{category.name}</span>
+                </CardContent>
+                </Card>
+            )
+          })}
         </div>
       </section>
 
@@ -94,7 +96,7 @@ export default function BuyerHomePage() {
       {selectedCategory ? (
         <section>
           <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-            {selectedCategory}
+            {categories.find(c => baseCategories.find(bc => bc.id === c.id)?.name === selectedCategory)?.name || selectedCategory}
           </h2>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:grid-cols-3 lg:grid-cols-4">
             {filteredProducts.map((product) => (
@@ -107,7 +109,7 @@ export default function BuyerHomePage() {
           {/* Trending Products Section */}
           <section className="mb-10">
             <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-              {translatedContent.trendingTitle}
+              {t.trendingTitle}
             </h2>
             <Carousel
               opts={{ align: 'start', loop: true }}
@@ -127,7 +129,7 @@ export default function BuyerHomePage() {
           {/* Best Selling Products Section */}
           <section>
             <h2 className="mb-4 font-headline text-lg sm:text-xl font-semibold">
-              {translatedContent.bestSellingTitle}
+              {t.bestSellingTitle}
             </h2>
             <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6">
               {bestSellingProducts.map((product) => (
