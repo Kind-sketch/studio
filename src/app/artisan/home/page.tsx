@@ -70,6 +70,10 @@ export default function ArtisanHomePage() {
       recognitionRef.current.onstart = () => setIsListening(true);
       recognitionRef.current.onend = () => setIsListening(false);
       recognitionRef.current.onerror = (event: any) => {
+        if (event.error === 'no-speech') {
+          setIsListening(false);
+          return;
+        }
         console.error('Speech recognition error:', event.error);
         if (event.error === 'network') {
           toast({

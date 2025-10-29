@@ -110,32 +110,13 @@ export function HeaderActions() {
         recognition.continuous = false;
         recognition.interimResults = false;
 
-        recognition.onstart = () => setIsListening(true);
-        recognition.onend = () => {
-            setIsListening(false);
-        };
-        
-        recognition.onerror = (event: any) => {
-            if (event.error === 'no-speech' || event.error === 'aborted') {
-                // These are common, non-critical errors. Don't show a toast.
-                console.log('Speech recognition aborted or no speech detected.');
-                return; 
-            }
-            if (event.error === 'network') {
-                toast({
-                variant: 'destructive',
-                title: t_sidebar.voiceNetworkErrorTitle,
-                description: t_sidebar.voiceNetworkErrorDesc,
-                });
-            } else {
-                toast({
-                variant: 'destructive',
-                title: t_sidebar.voiceErrorTitle,
-                description: t_sidebar.voiceErrorDesc,
-                });
-            }
-            setIsListening(false);
-        };
+            recognitionRef.current.onstart = () => setIsListening(true);
+            recognitionRef.current.onend = () => setIsListening(false);
+            recognitionRef.current.onerror = (event: any) => {
+                console.error('Speech recognition error:', event.error);
+                toast({ variant: 'destructive', title: 'Voice Error', description: 'Could not recognize your voice.' });
+                setIsListening(false);
+            };
 
         recognition.onresult = (event: any) => {
             const command = event.results[0][0].transcript;
